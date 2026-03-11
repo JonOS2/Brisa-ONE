@@ -1,0 +1,73 @@
+/* Brisa Color Palette */
+:root {
+  /* Brand Colors */
+  --brisa-primary: #1F285F;
+  --brisa-primary-dark: #151d45;
+  --brisa-primary-light: #2a3570;
+  
+  --brisa-secondary: #0288d1;
+  --brisa-secondary-dark: #0277bd;
+  --brisa-secondary-light: #039be5;
+  
+  --brisa-white: #ffffff;
+  --brisa-background: #f5f7fa;
+  
+  /* UI Colors */
+  --color-text: #333333;
+  --color-text-light: #666666;
+  --color-text-lighter: #999999;
+  
+  --color-border: #e0e0e0;
+  --color-border-light: #f0f0f0;
+  
+  --color-success: #4caf50;
+  --color-warning: #ff9800;
+  --color-error: #f44336;
+  --color-info: #2196f3;
+  
+  /* Semantic Variables */
+  --color-background: var(--brisa-white);
+  --color-background-soft: var(--brisa-background);
+  --color-background-mute: #fafafa;
+
+  --color-heading: var(--brisa-primary);
+  --color-primary: var(--brisa-primary);
+  --color-secondary: var(--brisa-secondary);
+
+  --section-gap: 160px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  font-weight: normal;
+}
+
+body {
+  min-height: 100vh;
+  color: var(--color-text);
+  background: var(--color-background-soft);
+  transition:
+    color 0.5s,
+    background-color 0.5s;
+  line-height: 1.6;
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    'Fira Sans',
+    'Droid Sans',
+    'Helvetica Neue',
+    sans-serif;
+  font-size: 15px;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
