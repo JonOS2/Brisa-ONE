@@ -19,26 +19,12 @@
           </div>
           <div v-else class="state-label default-label">Projetos Pelo Brasil</div>
 
-          <div class="brazil-map-container">
-            <svg
-              viewBox="0 0 800 900"
-              xmlns="http://www.w3.org/2000/svg"
-              class="brazil-svg"
-            >
-              <g v-for="(path, uf) in brazilPaths" :key="uf">
-                <path
-                  :d="path"
-                  :fill="getStateFill(uf)"
-                  :stroke="selectedState === uf ? '#fff' : '#cdd5e0'"
-                  :stroke-width="selectedState === uf ? 2 : 0.8"
-                  :class="['state-path', { active: activeStates.includes(uf), selected: selectedState === uf }]"
-                  @click="selectState(uf)"
-                  @mouseenter="hoveredState = uf"
-                  @mouseleave="hoveredState = null"
-                />
-              </g>
-            </svg>
-          </div>
+          <BrazilMap
+            :activeStates="activeStates"
+            :selectedState="selectedState"
+            :stateColors="stateColors"
+            @select="selectState"
+          />
         </div>
 
         <!-- Painel de Stats -->
@@ -141,17 +127,17 @@ import { programService } from '@/services/programService';
 import { classService } from '@/services/classService';
 import { institutionService } from '@/services/institutionService';
 import StageChart from '@/components/dashboard/StageChart.vue';
+import BrazilMap from '@/components/dashboard/BrazilMap.vue';
 
 export default {
   name: 'DashboardView',
-  components: { StageChart },
+  components: { StageChart, BrazilMap },
   setup() {
     const loading = ref(true);
     const programs = ref([]);
     const classes = ref([]);
     const institutions = ref([]);
     const selectedState = ref(null);
-    const hoveredState = ref(null);
 
     const stateNames = {
       AC: 'Acre', AL: 'Alagoas', AM: 'Amazonas', AP: 'Amapá',
@@ -167,37 +153,6 @@ export default {
       AL: '#27ae60', BA: '#1abc9c', MG: '#2980b9', PR: '#e74c3c',
       SP: '#8e44ad', RJ: '#f39c12', CE: '#16a085', PE: '#d35400',
       RS: '#c0392b', SC: '#2c3e50'
-    };
-
-    // Paths simplificados dos estados do Brasil (SVG viewBox 800x900)
-    const brazilPaths = {
-      RR: "M 220 60 L 260 55 L 280 80 L 270 110 L 240 120 L 210 100 Z",
-      AP: "M 320 70 L 355 65 L 370 90 L 355 115 L 325 110 L 310 90 Z",
-      AM: "M 100 120 L 230 110 L 270 140 L 290 200 L 250 240 L 200 250 L 150 230 L 100 200 L 80 160 Z",
-      PA: "M 290 110 L 400 100 L 450 130 L 460 180 L 420 220 L 370 240 L 310 230 L 270 200 L 260 160 Z",
-      MA: "M 400 130 L 460 120 L 490 150 L 480 190 L 450 210 L 410 200 L 390 170 Z",
-      PI: "M 460 140 L 510 135 L 530 165 L 520 200 L 490 215 L 460 205 L 445 175 Z",
-      CE: "M 510 130 L 555 125 L 570 155 L 560 185 L 530 195 L 505 180 L 498 155 Z",
-      RN: "M 558 125 L 595 120 L 608 145 L 600 165 L 570 168 L 552 150 Z",
-      PB: "M 558 165 L 600 162 L 612 182 L 600 200 L 565 202 L 550 185 Z",
-      PE: "M 500 195 L 610 192 L 618 215 L 600 230 L 510 228 L 495 215 Z",
-      AL: "M 575 225 L 615 222 L 620 245 L 605 258 L 575 255 L 568 240 Z",
-      SE: "M 562 255 L 598 252 L 604 272 L 590 285 L 565 280 L 555 268 Z",
-      BA: "M 450 200 L 565 195 L 600 240 L 590 330 L 550 380 L 490 390 L 440 370 L 410 310 L 415 250 Z",
-      TO: "M 380 210 L 440 205 L 455 260 L 445 320 L 410 340 L 380 320 L 365 270 Z",
-      GO: "M 350 300 L 420 295 L 440 355 L 425 410 L 385 430 L 350 415 L 330 370 L 335 325 Z",
-      DF: "M 393 355 L 410 352 L 413 368 L 400 372 L 390 365 Z",
-      MG: "M 430 350 L 545 340 L 570 395 L 555 455 L 500 480 L 440 475 L 405 440 L 408 390 Z",
-      ES: "M 555 390 L 590 385 L 600 420 L 585 450 L 555 455 L 545 425 Z",
-      RJ: "M 490 465 L 560 458 L 570 490 L 545 510 L 495 505 L 480 488 Z",
-      SP: "M 390 440 L 490 435 L 520 480 L 510 530 L 450 550 L 390 535 L 365 495 L 370 458 Z",
-      PR: "M 365 525 L 460 518 L 475 555 L 455 585 L 380 590 L 350 565 L 348 540 Z",
-      SC: "M 355 590 L 455 583 L 462 615 L 440 635 L 375 635 L 345 618 Z",
-      RS: "M 340 630 L 450 625 L 460 680 L 430 720 L 380 730 L 340 710 L 322 675 Z",
-      MS: "M 300 400 L 385 395 L 395 460 L 375 510 L 315 515 L 285 470 L 288 425 Z",
-      MT: "M 200 260 L 330 250 L 355 310 L 345 390 L 295 415 L 225 405 L 190 355 L 192 300 Z",
-      RO: "M 145 240 L 210 235 L 225 280 L 215 330 L 175 340 L 145 315 L 135 275 Z",
-      AC: "M 80 270 L 145 262 L 155 300 L 145 330 L 100 335 L 70 310 L 68 285 Z",
     };
 
     // Calcula estados ativos (que têm turmas com location tendo state cadastrado)
@@ -285,10 +240,10 @@ export default {
 
     return {
       loading, programs, classes, institutions,
-      selectedState, hoveredState,
-      stateNames, stateColors, brazilPaths,
+      selectedState,
+      stateNames, stateColors,
       activeStates, globalStats, stateStats, stageData,
-      getStateColor, getStateFill, selectState
+      getStateColor, selectState
     };
   }
 };
@@ -337,44 +292,12 @@ export default {
   margin-bottom: 32px;
 }
 
+/* Map card */
 .map-card {
   background: white;
   border-radius: 16px;
   padding: 20px;
   box-shadow: 0 2px 12px rgba(31,40,95,0.08);
-}
-
-.state-label {
-  font-size: 18px;
-  font-weight: 700;
-  color: #1F285F;
-  text-align: center;
-  margin-bottom: 8px;
-}
-.default-label { color: #1F285F; }
-
-.brazil-map-container {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-.brazil-svg {
-  width: 100%;
-  max-width: 320px;
-  height: auto;
-  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.08));
-}
-
-.state-path {
-  cursor: default;
-  transition: fill 0.2s, stroke-width 0.2s;
-}
-.state-path.active {
-  cursor: pointer;
-}
-.state-path.selected {
-  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));
 }
 
 /* Stats Card */
