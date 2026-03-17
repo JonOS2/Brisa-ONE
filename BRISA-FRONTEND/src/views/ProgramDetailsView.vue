@@ -322,7 +322,7 @@ export default {
     };
 
     const goBack = () => {
-      router.push('/programs');
+      router.back();
     };
 
     const viewClass = (classItem) => {

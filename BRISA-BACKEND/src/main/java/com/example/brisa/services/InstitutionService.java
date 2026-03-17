@@ -39,6 +39,7 @@ public class InstitutionService {
         institution.setCode(dto.getCode());
         institution.setName(dto.getName());
         institution.setAcronym(dto.getAcronym());
+        institution.setState(dto.getState()); // ✅
         institution.setLocalCoordinatorName(dto.getLocalCoordinatorName());
 
         InstitutionModel saved = institutionRepository.save(institution);
@@ -63,6 +64,9 @@ public class InstitutionService {
         }
         if (dto.getAcronym() != null) {
             institution.setAcronym(dto.getAcronym());
+        }
+        if (dto.getState() != null) {
+            institution.setState(dto.getState()); // ✅
         }
         if (dto.getLocalCoordinatorName() != null) {
             institution.setLocalCoordinatorName(dto.getLocalCoordinatorName());

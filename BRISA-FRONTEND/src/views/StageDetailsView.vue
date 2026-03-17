@@ -480,13 +480,7 @@ export default {
     };
 
     const goBack = () => {
-      router.push({ 
-        name: 'ClassDetails', 
-        params: { 
-          programId: programId.value,
-          classId: classId.value 
-        } 
-      });
+      router.back();
     };
 
     onMounted(() => {

@@ -11,5 +11,6 @@ public class InstitutionRequestDTO {
     private String code;
     private String name;
     private String acronym;
+    private String state; // ✅ campo adicionado
     private String localCoordinatorName;
 }

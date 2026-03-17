@@ -69,6 +69,15 @@
           </div>
 
           <div class="institution-details">
+            <!-- ✅ Estado exibido no card -->
+            <div class="detail-item" v-if="institution.state">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              <span>{{ institution.state }}</span>
+            </div>
+
             <div class="detail-item" v-if="institution.code">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
@@ -121,6 +130,20 @@
                 v-model="form.code" 
                 type="text" 
                 placeholder="Código identificador"
+              />
+            </div>
+
+            <!-- ✅ Campo Estado adicionado ao formulário -->
+            <div class="form-group full-width">
+              <label>Estado (UF) *</label>
+              <input 
+                v-model="form.state" 
+                type="text" 
+                placeholder="Ex: AL"
+                maxlength="2"
+                required
+                style="text-transform: uppercase"
+                @input="form.state = form.state.toUpperCase()"
               />
             </div>
 
@@ -183,6 +206,15 @@
 import { ref, onMounted } from 'vue';
 import { institutionService } from '@/services/institutionService';
 
+// ✅ Objeto base do formulário — centralizado para evitar inconsistências
+const emptyForm = () => ({
+  name: '',
+  acronym: '',
+  code: '',
+  state: '',           // ✅ adicionado
+  localCoordinatorName: ''
+});
+
 export default {
   name: 'InstitutionsView',
   setup() {
@@ -191,12 +223,7 @@ export default {
     const error = ref(null);
     const showModal = ref(false);
     const isEditing = ref(false);
-    const form = ref({
-      name: '',
-      acronym: '',
-      code: '',
-      localCoordinatorName: ''
-    });
+    const form = ref(emptyForm());
     const saving = ref(false);
     const formError = ref(null);
     const showDeleteModal = ref(false);
@@ -218,37 +245,31 @@ export default {
 
     const openCreateModal = () => {
       isEditing.value = false;
-      form.value = {
-        name: '',
-        acronym: '',
-        code: '',
-        localCoordinatorName: ''
-      };
+      form.value = emptyForm(); // ✅ usa a função centralizada
       formError.value = null;
       showModal.value = true;
     };
 
     const openEditModal = (institution) => {
       isEditing.value = true;
-      form.value = { ...institution };
+      form.value = { ...institution }; // inclui state automaticamente pois vem da API
       formError.value = null;
       showModal.value = true;
     };
 
     const closeModal = () => {
       showModal.value = false;
-      form.value = {
-        name: '',
-        acronym: '',
-        code: '',
-        localCoordinatorName: ''
-      };
+      form.value = emptyForm(); // ✅ usa a função centralizada
       formError.value = null;
     };
 
     const handleSave = async () => {
       if (!form.value.name) {
         formError.value = 'Nome da instituição é obrigatório';
+        return;
+      }
+      if (!form.value.state || form.value.state.trim().length !== 2) {
+        formError.value = 'Estado (UF) é obrigatório e deve ter 2 letras';
         return;
       }
 
@@ -607,14 +628,8 @@ export default {
 }
 
 @keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .modal-content h2 {
@@ -664,135 +679,97 @@ export default {
 .form-group input:focus {
   outline: none;
   border-color: #0288d1;
-  box-shadow: 0 0 0 4px rgba(2, 136, 209, 0.08);
-}
-
-.form-group input::placeholder {
-  color: #999;
-}
-
-.delete-message {
-  color: #666;
-  font-size: 15px;
-  margin-bottom: 24px;
-  line-height: 1.6;
-}
-
-.delete-message strong {
-  color: #1F285F;
-  font-weight: 600;
+  box-shadow: 0 0 0 4px rgba(2, 136, 209, 0.1);
 }
 
 .alert {
-  padding: 16px 20px;
-  border-radius: 12px;
-  margin-bottom: 20px;
-  font-weight: 500;
   display: flex;
-  align-items: flex-start;
-  gap: 12px;
-}
-
-.alert svg {
-  flex-shrink: 0;
-  margin-top: 2px;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 16px;
 }
 
 .alert-error {
-  background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+  background: #ffebee;
   color: #c62828;
-  border-left: 5px solid #f44336;
-  box-shadow: 0 4px 12px rgba(244, 67, 54, 0.2);
+  border-left: 4px solid #f44336;
 }
 
 .modal-actions {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-  padding-top: 24px;
-  border-top: 2px solid #f0f0f0;
+  margin-top: 8px;
 }
 
-.btn-primary {
-  background: linear-gradient(135deg, #1F285F 0%, #0288d1 100%);
-  color: white;
-  border: none;
+.btn-secondary {
   padding: 12px 24px;
+  background: white;
+  color: #666;
+  border: 2px solid #e0e0e0;
   border-radius: 10px;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  border-color: #999;
+  background: #f5f5f5;
+}
+
+.btn-primary {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #1F285F 0%, #0288d1 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
   box-shadow: 0 4px 12px rgba(31, 40, 95, 0.2);
 }
 
 .btn-primary:hover:not(:disabled) {
-  box-shadow: 0 6px 20px rgba(31, 40, 95, 0.3);
   transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(31, 40, 95, 0.3);
 }
 
 .btn-primary:disabled {
-  opacity: 0.7;
+  opacity: 0.6;
   cursor: not-allowed;
-}
-
-.btn-secondary {
-  background: white;
-  color: #666;
-  border: 2px solid #e0e0e0;
-  padding: 12px 24px;
-  border-radius: 10px;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn-secondary:hover {
-  border-color: #0288d1;
-  color: #0288d1;
 }
 
 .btn-danger {
-  background: linear-gradient(135deg, #d32f2f 0%, #f44336 100%);
+  padding: 12px 24px;
+  background: #f44336;
   color: white;
   border: none;
-  padding: 12px 24px;
   border-radius: 10px;
   font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(211, 47, 47, 0.2);
+  transition: all 0.2s;
 }
 
 .btn-danger:hover:not(:disabled) {
-  box-shadow: 0 6px 20px rgba(211, 47, 47, 0.3);
-  transform: translateY(-1px);
+  background: #d32f2f;
 }
 
 .btn-danger:disabled {
-  opacity: 0.7;
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
-@media (max-width: 768px) {
-  .institutions-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .btn-create {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
+.delete-message {
+  color: #555;
+  font-size: 15px;
+  margin-bottom: 24px;
+  line-height: 1.5;
 }
 </style>

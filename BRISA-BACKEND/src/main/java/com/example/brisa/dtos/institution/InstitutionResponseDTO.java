@@ -13,6 +13,7 @@ public class InstitutionResponseDTO {
     private String code;
     private String name;
     private String acronym;
+    private String state; // ✅ campo adicionado
     private String localCoordinatorName;
 
     public InstitutionResponseDTO(InstitutionModel institution) {
@@ -20,6 +21,7 @@ public class InstitutionResponseDTO {
         this.code = institution.getCode();
         this.name = institution.getName();
         this.acronym = institution.getAcronym();
+        this.state = institution.getState(); // ✅
         this.localCoordinatorName = institution.getLocalCoordinatorName();
     }
 }

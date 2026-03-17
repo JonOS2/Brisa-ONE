@@ -287,7 +287,7 @@ export default {
     };
 
     const goBack = () => {
-      router.push({ name: 'ProgramDetails', params: { id: programId.value } });
+      router.back();
     };
 
     onMounted(() => {
