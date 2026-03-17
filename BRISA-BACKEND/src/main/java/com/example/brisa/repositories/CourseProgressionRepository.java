@@ -23,4 +23,17 @@ public interface CourseProgressionRepository extends JpaRepository<CourseProgres
         )
     """)
     List<CourseProgressionModel> findByClassId(@Param("classId") Long classId);
+
+    // ✅ Novo: Progressões de um curso específico para alunos de uma turma
+    @Query("""
+        SELECT cp FROM CourseProgressionModel cp
+        WHERE cp.course.id = :courseId
+        AND cp.people.id IN (
+            SELECT e.people.id FROM EnrollmentModel e WHERE e.classModel.id = :classId
+        )
+    """)
+    List<CourseProgressionModel> findByCourseIdAndClassId(
+        @Param("courseId") Long courseId,
+        @Param("classId") Long classId
+    );
 }

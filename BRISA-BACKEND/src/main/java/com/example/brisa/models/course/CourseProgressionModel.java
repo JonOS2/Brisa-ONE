@@ -25,17 +25,21 @@ public class CourseProgressionModel {
 
     @ManyToOne
     @JoinColumn(name = "course_id")
-    private CourseModel course; // id do curso
+    private CourseModel course;
 
     @ManyToOne
-    @JoinColumn(name = "people_id") 
-    private PeopleModel people; // id da pessoa
+    @JoinColumn(name = "people_id")
+    private PeopleModel people;
 
     @Column(name = "date")
-    private LocalDate date; // data que foi feita a medição
+    private LocalDate date;
 
     @Column(name = "completion_percentage")
-    private double completionPercentage; // percentual de conclusão do curso
-    
+    private double completionPercentage;
+
     private String status; // concluído, em andamento, não iniciado
+
+    // ✅ Novo campo: último acesso do aluno ao curso (Opção B — campo novo no banco)
+    @Column(name = "last_access")
+    private LocalDate lastAccess;
 }
