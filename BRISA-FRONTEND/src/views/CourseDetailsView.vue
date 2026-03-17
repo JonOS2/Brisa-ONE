@@ -516,7 +516,7 @@ export default {
     };
 
     const goBack = () => {
-      router.push({ name: 'ClassCourses', params: { programId: programId.value, classId: classId.value } });
+        router.back();
     };
 
     onMounted(loadData);
