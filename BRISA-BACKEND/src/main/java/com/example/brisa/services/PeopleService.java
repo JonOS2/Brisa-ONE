@@ -86,7 +86,9 @@ public class PeopleService {
                 
                 // Coluna B (1): Email
                 person.setEmail(getCellValueAsString(row.getCell(1)));
-                
+
+                person.setCpf(getCellValueAsString(row.getCell(2)));
+
                 // Adiciona apenas se tiver nome e email
                 if (person.getName() != null && !person.getName().isEmpty() 
                     && person.getEmail() != null && !person.getEmail().isEmpty()) {
