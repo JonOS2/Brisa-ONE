@@ -28,7 +28,6 @@
             <span class="bar-label">{{ item.label }}</span>
             <div class="bar-track">
               <div class="bar-fill" :style="{ width: item.progress + '%', background: color }"></div>
-              <span class="bar-date primary-date">{{ item.date }}</span>
               <span v-if="secondary" class="bar-date secondary-date" :style="{ left: item.progress2 + '%' }">{{ item.date }}</span>
               <span class="bar-dot" :style="{ left: item.progress + '%', background: color }"></span>
               <span v-if="secondary" class="bar-dot secondary-dot" :style="{ left: item.progress2 + '%' }"></span>

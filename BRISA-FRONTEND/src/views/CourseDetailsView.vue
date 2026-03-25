@@ -177,7 +177,7 @@
 
             <!-- Filtro de status -->
             <select v-model="filterStatus" class="filter-select">
-              <option value="">Todos os Status</option>
+              <option value="">Todos</option>
               <option value="não iniciado">Não Iniciado</option>
               <option value="em andamento">Em Andamento</option>
               <option value="concluído">Concluído</option>

@@ -34,10 +34,10 @@
                 <polyline points="17 8 12 3 7 8"></polyline>
                 <line x1="12" y1="3" x2="12" y2="15"></line>
               </svg>
-              Importar Excel
+              Importar
             </button>
             <button @click="showAddCandidateModal = true" class="btn-primary">
-              + Adicionar Candidato
+              + Adicionar
             </button>
           </div>
         </div>
