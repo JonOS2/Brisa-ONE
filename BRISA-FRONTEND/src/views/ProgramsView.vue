@@ -462,6 +462,7 @@ export default {
 }
 .header-actions {
   display: flex;
+  align-items: center;
   gap: 12px;
 }
 .btn-create {
