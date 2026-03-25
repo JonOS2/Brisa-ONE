@@ -200,9 +200,43 @@
     <div v-if="showUploadModal" class="modal-overlay" @click="closeUploadModal">
       <div class="modal-content" @click.stop>
         <h2>Importar Pessoas via Excel</h2>
-        <div class="upload-area">
-          <input type="file" @change="handleFileSelect" accept=".xlsx,.xls" ref="fileInput" />
-          <p v-if="selectedFile">{{ selectedFile.name }}</p>
+        <div
+          class="upload-area"
+          :class="{ 'drag-over': isDragging, 'has-file': selectedFile }"
+          @dragover.prevent="handleDragOver"
+          @dragleave.prevent="handleDragLeave"
+          @drop.prevent="handleDrop"
+          @click="fileInput.click()"
+        >
+          <input
+            type="file"
+            @change="handleFileSelect"
+            accept=".xlsx,.xls"
+            ref="fileInput"
+            class="hidden-input"
+          />
+
+          <div class="upload-icon-wrapper">
+            <svg v-if="!selectedFile" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="upload-icon">
+              <polyline points="16 16 12 12 8 16"></polyline>
+              <line x1="12" y1="12" x2="12" y2="21"></line>
+              <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
+            </svg>
+            <svg v-else xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="upload-icon file-ok">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <polyline points="9 15 11 17 15 13"></polyline>
+            </svg>
+          </div>
+
+          <div class="upload-text">
+            <p v-if="!selectedFile" class="upload-main-text">
+              <span v-if="isDragging">Solte o arquivo aqui</span>
+              <span v-else>Solte aqui ou <span class="upload-link">selecione o arquivo</span></span>
+            </p>
+            <p v-else class="upload-main-text file-name">{{ selectedFile.name }}</p>
+            <p class="upload-sub-text">{{ selectedFile ? 'Clique para trocar o arquivo' : 'Formatos aceitos: .xlsx, .xls' }}</p>
+          </div>
         </div>
         <div class="modal-actions">
           <button @click="closeUploadModal" class="btn-secondary">Cancelar</button>
@@ -363,6 +397,7 @@ export default {
     const uploadSuccess = ref(null);
     const uploadResult = ref(null);
     const fileInput = ref(null);
+    const isDragging = ref(false);
     const currentPage = ref(1);
     const itemsPerPage = 20;
     const createForm = ref({
@@ -544,6 +579,26 @@ export default {
       uploadSuccess.value = null;
     };
 
+    const handleDragOver = () => {
+      isDragging.value = true;
+    };
+
+    const handleDragLeave = () => {
+      isDragging.value = false;
+    };
+
+    const handleDrop = (event) => {
+      isDragging.value = false;
+      const file = event.dataTransfer.files[0];
+      if (file && (file.name.endsWith('.xlsx') || file.name.endsWith('.xls'))) {
+        selectedFile.value = file;
+        uploadError.value = null;
+        uploadSuccess.value = null;
+      } else if (file) {
+        uploadError.value = 'Formato inválido. Use arquivos .xlsx ou .xls.';
+      }
+    };
+
     const uploadFile = async () => {
       if (!selectedFile.value) return;
 
@@ -615,6 +670,7 @@ export default {
       uploadSuccess,
       uploadResult,
       fileInput,
+      isDragging,
       createForm,
       creating,
       createError,
@@ -623,6 +679,9 @@ export default {
       viewDetails,
       editPerson,
       handleFileSelect,
+      handleDragOver,
+      handleDragLeave,
+      handleDrop,
       uploadFile,
       closeUploadModal,
       handleCreate,
@@ -1309,27 +1368,125 @@ export default {
   font-weight: 700;
 }
 
+/* Upload / Dropzone */
 .upload-area {
   margin: 20px 0;
-  padding: 48px 32px;
-  border: 3px dashed #d0d0d0;
+  padding: 40px 32px;
+  border: 2px dashed #c5cae9;
   border-radius: 16px;
   text-align: center;
-  background: linear-gradient(135deg, #fafafa 0%, #f5f9fc 100%);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
   cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.upload-area::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(2, 136, 209, 0.06) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
 }
 
 .upload-area:hover {
   border-color: #0288d1;
-  background: linear-gradient(135deg, #ffffff 0%, #e3f2fd 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(2, 136, 209, 0.15);
+  background: linear-gradient(135deg, #f0f8ff 0%, #e3f2fd 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(2, 136, 209, 0.18);
 }
 
-.upload-area input[type="file"] {
-  font-size: 14px;
-  cursor: pointer;
+.upload-area:hover::before {
+  opacity: 1;
+}
+
+.upload-area.drag-over {
+  border-color: #1F285F;
+  background: linear-gradient(135deg, #e8ebff 0%, #dce8ff 100%);
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 16px 40px rgba(31, 40, 95, 0.2);
+}
+
+.upload-area.has-file {
+  border-color: #43a047;
+  border-style: solid;
+  background: linear-gradient(135deg, #f1fff4 0%, #e8f5e9 100%);
+}
+
+.hidden-input {
+  display: none;
+}
+
+.upload-icon-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.upload-icon {
+  color: #90a4d4;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.upload-area:hover .upload-icon {
+  color: #0288d1;
+  transform: translateY(-4px);
+}
+
+.upload-area.drag-over .upload-icon {
+  color: #1F285F;
+  transform: translateY(-6px) scale(1.1);
+}
+
+.upload-icon.file-ok {
+  color: #43a047;
+}
+
+.upload-area:hover .upload-icon.file-ok {
+  color: #2e7d32;
+}
+
+.upload-text {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.upload-main-text {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #3d4a6e;
+  transition: color 0.3s ease;
+}
+
+.upload-area:hover .upload-main-text {
+  color: #1F285F;
+}
+
+.upload-link {
+  color: #0288d1;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.file-name {
+  color: #2e7d32;
+  word-break: break-all;
+}
+
+.upload-sub-text {
+  margin: 0;
+  font-size: 13px;
+  color: #8a96b3;
+  transition: color 0.3s ease;
+}
+
+.upload-area:hover .upload-sub-text {
+  color: #5c6bc0;
 }
 
 .modal-actions {
