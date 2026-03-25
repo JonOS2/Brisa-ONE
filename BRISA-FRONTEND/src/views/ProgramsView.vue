@@ -12,7 +12,7 @@
             <line x1="12" y1="5" x2="12" y2="19"></line>
             <line x1="5" y1="12" x2="19" y2="12"></line>
           </svg>
-          Novo Programa
+          Cadastrar
         </button>
         <button @click="showUploadModal = true" class="btn-import">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -21,7 +21,7 @@
             <polyline points="17 8 12 3 7 8"></polyline>
             <line x1="12" y1="3" x2="12" y2="15"></line>
           </svg>
-          Importar Excel
+          Importar
         </button>
       </div>
     </div>
@@ -55,14 +55,6 @@
       </svg>
       <h3>Nenhum programa encontrado</h3>
       <p>Comece criando um novo programa ou importe via Excel</p>
-      <button @click="showCreateModal = true" class="btn-create">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-          stroke="currentColor" stroke-width="2">
-          <line x1="12" y1="5" x2="12" y2="19"></line>
-          <line x1="5" y1="12" x2="19" y2="12"></line>
-        </svg>
-        Criar Primeiro Programa
-      </button>
     </div>
     <div v-else class="programs-grid">
       <div v-for="program in filteredPrograms" :key="program.id" class="program-card" @click="viewClasses(program)">
@@ -473,10 +465,11 @@ export default {
   gap: 12px;
 }
 .btn-create {
+  height: 44px;
   background: linear-gradient(135deg, #1F285F 0%, #0288d1 100%);
   color: white;
   border: none;
-  padding: 12px 24px;
+  padding: 0 24px;
   border-radius: 10px;
   font-size: 15px;
   font-weight: 600;
@@ -485,21 +478,23 @@ export default {
   align-items: center;
   gap: 10px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 8px rgba(31, 40, 95, 0.15);
+  box-shadow: 0 4px 12px rgba(31, 40, 95, 0.2);
 }
 .btn-create:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(31, 40, 95, 0.25);
+  box-shadow: 0 6px 20px rgba(31, 40, 95, 0.3);
 }
 .btn-create:active {
   transform: translateY(0);
   box-shadow: 0 2px 8px rgba(31, 40, 95, 0.15);
 }
 .btn-import {
+  height: 44px;
+  box-sizing: border-box;
   background: white;
   color: #0288d1;
   border: 2px solid #0288d1;
-  padding: 12px 24px;
+  padding: 0 22px;
   border-radius: 10px;
   font-size: 15px;
   font-weight: 600;

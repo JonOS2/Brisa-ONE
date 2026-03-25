@@ -14,7 +14,7 @@
             <line x1="20" y1="8" x2="20" y2="14"></line>
             <line x1="23" y1="11" x2="17" y2="11"></line>
           </svg>
-          Nova Pessoa
+          Cadastrar
         </button>
         <button @click="showUploadModal = true" class="btn-import">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -23,7 +23,7 @@
             <polyline points="17 8 12 3 7 8"></polyline>
             <line x1="12" y1="3" x2="12" y2="15"></line>
           </svg>
-          Importar Excel
+          Importar
         </button>
       </div>
     </div>
@@ -729,10 +729,11 @@ export default {
 }
 
 .btn-create {
+  height: 44px;
   background: linear-gradient(135deg, #1F285F 0%, #0288d1 100%);
   color: white;
   border: none;
-  padding: 12px 24px;
+  padding: 0 24px;
   border-radius: 10px;
   font-size: 15px;
   font-weight: 600;
@@ -872,10 +873,12 @@ export default {
 
 /* Import Button */
 .btn-import {
+  height: 44px;
+  box-sizing: border-box;
   background: white;
   color: #0288d1;
   border: 2px solid #0288d1;
-  padding: 12px 24px;
+  padding: 0 22px;
   border-radius: 10px;
   font-size: 15px;
   font-weight: 600;

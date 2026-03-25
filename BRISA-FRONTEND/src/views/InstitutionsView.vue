@@ -5,13 +5,34 @@
         <h1>Instituições</h1>
         <p class="subtitle">{{ institutions.length}} instituição(ões) cadastrada(s)</p>
       </div>
-      <button @click="openCreateModal" class="btn-create">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-          <polyline points="9 22 9 12 15 12 15 22"></polyline>
-        </svg>
-        Nova Instituição
-      </button>
+      <div class="header-actions">
+        <button @click="openCreateModal" class="btn-create">
+          <!-- Ícone Opção 1 (ativo): casa/instituição com + dentro -->
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"></path>
+            <line x1="12" y1="10" x2="12" y2="16"></line>
+            <line x1="9" y1="13" x2="15" y2="13"></line>
+          </svg>
+          Cadastrar
+        </button>
+        <button @click="showUploadModal = true" class="btn-import">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+          Importar
+        </button>
+      </div>
+    </div>
+
+    <div class="search-container">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" class="search-icon">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.35-4.35"></path>
+      </svg>
+      <input v-model="searchTerm" type="text" placeholder="Buscar por nome, sigla ou estado..." class="search-input" />
     </div>
 
     <div v-if="loading" class="loading">
@@ -28,7 +49,7 @@
       {{ error }}
     </div>
 
-    <div v-else-if="institutions.length === 0" class="empty-state">
+    <div v-else-if="filteredInstitutions.length === 0" class="empty-state">
       <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
         <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -38,7 +59,7 @@
     </div>
 
     <div v-else class="institutions-grid">
-      <div v-for="institution in institutions" :key="institution.id" class="institution-card">
+      <div v-for="institution in filteredInstitutions" :key="institution.id" class="institution-card">
         <div class="card-header">
           <div class="institution-icon">
             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -199,11 +220,69 @@
         </div>
       </div>
     </div>
+    <!-- Modal de Upload -->
+    <div v-if="showUploadModal" class="modal-overlay" @click="closeUploadModal">
+      <div class="modal-content" @click.stop>
+        <h2>Importar Instituições via Excel</h2>
+        <div
+          class="upload-area"
+          :class="{ 'drag-over': isDragging, 'has-file': selectedFile }"
+          @dragover.prevent="handleDragOver"
+          @dragleave.prevent="handleDragLeave"
+          @drop.prevent="handleDrop"
+          @click="fileInput.click()"
+        >
+          <input type="file" @change="handleFileSelect" accept=".xlsx,.xls" ref="fileInput" class="hidden-input" />
+          <div class="upload-icon-wrapper">
+            <svg v-if="!selectedFile" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="upload-icon">
+              <polyline points="16 16 12 12 8 16"></polyline>
+              <line x1="12" y1="12" x2="12" y2="21"></line>
+              <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
+            </svg>
+            <svg v-else xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="upload-icon file-ok">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <polyline points="9 15 11 17 15 13"></polyline>
+            </svg>
+          </div>
+          <div class="upload-text">
+            <p v-if="!selectedFile" class="upload-main-text">
+              <span v-if="isDragging">Solte o arquivo aqui</span>
+              <span v-else>Solte aqui ou <span class="upload-link">selecione o arquivo</span></span>
+            </p>
+            <p v-else class="upload-main-text file-name">{{ selectedFile.name }}</p>
+            <p class="upload-sub-text">{{ selectedFile ? 'Clique para trocar o arquivo' : 'Formatos aceitos: .xlsx, .xls' }}</p>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button @click="closeUploadModal" class="btn-secondary">Cancelar</button>
+          <button @click="uploadFile" :disabled="!selectedFile || uploading" class="btn-primary">
+            {{ uploading ? 'Enviando...' : 'Enviar' }}
+          </button>
+        </div>
+        <div v-if="uploadError" class="alert alert-error">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          {{ uploadError }}
+        </div>
+        <div v-if="uploadSuccess" class="alert alert-success">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+          {{ uploadSuccess }}
+        </div>
+      </div>
+    </div>
+
   </div>
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import { institutionService } from '@/services/institutionService';
 
 // ✅ Objeto base do formulário — centralizado para evitar inconsistências
@@ -230,6 +309,26 @@ export default {
     const institutionToDelete = ref(null);
     const deleting = ref(false);
     const deleteError = ref(null);
+    const showUploadModal = ref(false);
+    const selectedFile = ref(null);
+    const uploading = ref(false);
+    const uploadError = ref(null);
+    const uploadSuccess = ref(null);
+    const fileInput = ref(null);
+    const isDragging = ref(false);
+    const searchTerm = ref('');
+
+    const filteredInstitutions = computed(() => {
+      if (!searchTerm.value) return institutions.value;
+      const term = searchTerm.value.toLowerCase();
+      return institutions.value.filter(i =>
+        i.name?.toLowerCase().includes(term) ||
+        i.acronym?.toLowerCase().includes(term) ||
+        i.state?.toLowerCase().includes(term)
+      );
+    });
+
+    watch(searchTerm, () => { /* reatividade automática via computed */ });
 
     const loadInstitutions = async () => {
       loading.value = true;
@@ -315,12 +414,62 @@ export default {
       }
     };
 
+    const handleFileSelect = (event) => {
+      selectedFile.value = event.target.files[0];
+      uploadError.value = null;
+      uploadSuccess.value = null;
+    };
+
+    const handleDragOver = () => { isDragging.value = true; };
+    const handleDragLeave = () => { isDragging.value = false; };
+
+    const handleDrop = (event) => {
+      isDragging.value = false;
+      const file = event.dataTransfer.files[0];
+      if (file && (file.name.endsWith('.xlsx') || file.name.endsWith('.xls'))) {
+        selectedFile.value = file;
+        uploadError.value = null;
+        uploadSuccess.value = null;
+      } else if (file) {
+        uploadError.value = 'Formato inválido. Use arquivos .xlsx ou .xls.';
+      }
+    };
+
+    const uploadFile = async () => {
+      if (!selectedFile.value) return;
+      uploading.value = true;
+      uploadError.value = null;
+      uploadSuccess.value = null;
+      try {
+        await institutionService.importExcel(selectedFile.value);
+        uploadSuccess.value = 'Arquivo importado com sucesso!';
+        setTimeout(() => {
+          closeUploadModal();
+          loadInstitutions();
+        }, 2000);
+      } catch (err) {
+        uploadError.value = 'Erro ao importar arquivo: ' + (err.response?.data?.message || err.message);
+      } finally {
+        uploading.value = false;
+      }
+    };
+
+    const closeUploadModal = () => {
+      showUploadModal.value = false;
+      selectedFile.value = null;
+      uploadError.value = null;
+      uploadSuccess.value = null;
+      if (fileInput.value) fileInput.value.value = '';
+    };
+
     onMounted(() => {
       loadInstitutions();
     });
 
     return {
       institutions,
+      filteredInstitutions,
+      searchTerm,
       loading,
       error,
       showModal,
@@ -332,12 +481,25 @@ export default {
       institutionToDelete,
       deleting,
       deleteError,
+      showUploadModal,
+      selectedFile,
+      uploading,
+      uploadError,
+      uploadSuccess,
+      fileInput,
+      isDragging,
       openCreateModal,
       openEditModal,
       closeModal,
       handleSave,
       confirmDelete,
-      handleDelete
+      handleDelete,
+      handleFileSelect,
+      handleDragOver,
+      handleDragLeave,
+      handleDrop,
+      uploadFile,
+      closeUploadModal
     };
   }
 };
@@ -372,11 +534,49 @@ export default {
   font-size: 15px;
 }
 
+.search-container {
+  position: relative;
+  max-width: 480px;
+  margin-bottom: 28px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+  pointer-events: none;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 16px 12px 44px;
+  border: 2px solid #e8e8e8;
+  border-radius: 10px;
+  font-size: 15px;
+  color: #333;
+  background: white;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #0288d1;
+  box-shadow: 0 0 0 4px rgba(2, 136, 209, 0.08);
+}
+
+.search-input::placeholder {
+  color: #aaa;
+}
+
 .btn-create {
+  height: 44px;
   background: linear-gradient(135deg, #1F285F 0%, #0288d1 100%);
   color: white;
   border: none;
-  padding: 12px 24px;
+  padding: 0 24px;
   border-radius: 10px;
   font-size: 15px;
   font-weight: 600;
@@ -391,6 +591,130 @@ export default {
 .btn-create:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(31, 40, 95, 0.3);
+}
+
+.btn-create svg,
+.btn-import svg {
+  flex-shrink: 0;
+  display: block;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-import {
+  height: 44px;
+  box-sizing: border-box;
+  background: white;
+  color: #0288d1;
+  border: 2px solid #0288d1;
+  padding: 0 22px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-import:hover {
+  background: #e3f2fd;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(2, 136, 209, 0.2);
+}
+
+/* Upload / Dropzone */
+.upload-area {
+  margin: 20px 0;
+  padding: 40px 32px;
+  border: 2px dashed #c5cae9;
+  border-radius: 16px;
+  text-align: center;
+  background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+  cursor: pointer;
+  transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+.upload-area::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(2, 136, 209, 0.06) 0%, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+.upload-area:hover {
+  border-color: #0288d1;
+  background: linear-gradient(135deg, #f0f8ff 0%, #e3f2fd 100%);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(2, 136, 209, 0.18);
+}
+.upload-area:hover::before { opacity: 1; }
+.upload-area.drag-over {
+  border-color: #1F285F;
+  background: linear-gradient(135deg, #e8ebff 0%, #dce8ff 100%);
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 16px 40px rgba(31, 40, 95, 0.2);
+}
+.upload-area.has-file {
+  border-color: #43a047;
+  border-style: solid;
+  background: linear-gradient(135deg, #f1fff4 0%, #e8f5e9 100%);
+}
+.hidden-input { display: none; }
+.upload-icon-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+.upload-icon {
+  color: #90a4d4;
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+.upload-area:hover .upload-icon { color: #0288d1; transform: translateY(-4px); }
+.upload-area.drag-over .upload-icon { color: #1F285F; transform: translateY(-6px) scale(1.1); }
+.upload-icon.file-ok { color: #43a047; }
+.upload-area:hover .upload-icon.file-ok { color: #2e7d32; }
+.upload-text { display: flex; flex-direction: column; gap: 6px; }
+.upload-main-text {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #3d4a6e;
+  transition: color 0.3s ease;
+}
+.upload-area:hover .upload-main-text { color: #1F285F; }
+.upload-link {
+  color: #0288d1;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.file-name { color: #2e7d32; word-break: break-all; }
+.upload-sub-text {
+  margin: 0;
+  font-size: 13px;
+  color: #8a96b3;
+  transition: color 0.3s ease;
+}
+.upload-area:hover .upload-sub-text { color: #5c6bc0; }
+.alert-success {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-top: 12px;
+  background: #e8f5e9;
+  color: #2e7d32;
+  border-left: 4px solid #4caf50;
 }
 
 .loading {
