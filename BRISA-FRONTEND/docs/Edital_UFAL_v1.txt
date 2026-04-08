@@ -1,0 +1,1045 @@
+--- PAGE 1 ---
+                                                                      
+ 
+                                                                      
+ 
+1 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+EDITAL DO PROCESSO DE SELEÇÃO 
+Programa de Residência em TIC 
+BRISA – EASY/UFAL 
+ 
+Executora:          Parceira:  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Maceió, 9 de dezembro de 2024  
+
+
+--- PAGE 2 ---
+                                                                      
+ 
+                                                                      
+ 
+2 
+ 
+Sumário 
+1. Apresentação ........................................................................................................................ 3 
+2. Objetivo ................................................................................................................................. 3 
+3. Público-alvo ........................................................................................................................... 3 
+4. Inscrição ................................................................................................................................ 3 
+5. Etapa de Nivelamento em Computação Básica .................................................................... 6 
+5.1. Seleção e matrícula .......................................................................................................... 6 
+5.2. Etapa de Nivelamento - execução .................................................................................... 8 
+6. Etapa de Imersão em Computação Avançada - execução .................................................. 11 
+6.1. Desenvolvimento das atividades ................................................................................... 11 
+6.2. Avaliação ........................................................................................................................ 13 
+7. Comunicação oficial e divulgação dos resultados ............................................................... 13 
+8. Cronograma ......................................................................................................................... 14 
+9. Do descumprimento das regras do edital e desligamento ................................................. 15 
+10. Disposições gerais .......................................................................................................... 15 
+ANEXO I ....................................................................................................................................... 17 
+ANEXO II ...................................................................................................................................... 19 
+ANEXO III ..................................................................................................................................... 20 
+ANEXO IV ..................................................................................................................................... 22 
+ANEXO V ...................................................................................................................................... 23 
+ANEXO VI ..................................................................................................................................... 24 
+ANEXO VII .................................................................................................................................... 25 
+ANEXO VIII ................................................................................................................................... 26 
+ 
+  
+
+--- PAGE 3 ---
+                                                                      
+ 
+                                                                      
+ 
+3 
+ 
+1. Apresentação 
+A BRISA, no âmbito dos Projetos de Interesse Nacional nas Áreas de TIC (PPI) do Ministério da 
+Ciência, Tecnologia e Inovações (MCTI), com recursos da Lei nº 8.248, de 23 de outubro de 1991, 
+publicado como Residência em TIC 16 - Aditivo DOU 01245.014132/2022-22, do programa PPI 
+SOFTEX, coordenado pela Associação para Promoção da Excelência do Software Brasileiro - 
+Softex, torna público a abertura do processo seletivo para a primeira turma em parceria com o 
+EASY/UFAL (Programa Residência em TIC BRISA-UFAL). 
+2. Objetivo 
+Formar profissionais qualificados em programação avançada para atender às demandas do 
+mercado do Estado de Alagoas. 
+3. Público-alvo 
+3.1. São elegíveis a participarem do programa candidatos(as) residentes preferencialmente 
+no Estado de Alagoas, e que sejam:  
+3.1.1. Graduados ou graduandos em curso das áreas tecnológicas ou ciências exatas 
+(engenharias, computação, física, matemática, química etc.),  seja tecnólogo, 
+bacharelado ou licenciatura. 
+3.1.2. Formados em cursos técnicos de nível médio em ciências exatas. 
+4. Inscrição 
+4.1.  A inscrição deve ser realizada no endereço eletrônico: 
+https://inscricoesrestic.brisabr.com.br/ até a data limite prevista no cronograma 
+constante da tabela 1 do item 8 deste Edital. 
+4.1.1. Será obrigatório o(a) candidato(a) ter e informar uma conta ativa no 
+LinkedIn® para realizar a inscrição. 
+4.1.2. Concluído o processo de inscrição, o(a) candidato(a) receberá, no endereço 
+de e-mail indicado, a confirmação da inscrição, com tod as as informações 
+inseridas. 
+4.1.2.1. Antes de finalizar sua inscrição revise seus dados, verifique se não 
+há nenhum erro de digitação, ou números errados de 
+documentos. 
+4.1.2.2. Após o cadastro caso haja alguma informação incorreta ou haja 
+necessidade de alteração ou atualização de alguma informação 
+enviada, o(a) candidato(a) deverá enviar um e-mail para 
+suporteeasyufal@brisabr.com.br, solicitando a correção. 
+4.1.3. O(A) candidato(a) que não fornecer endereço de e-mail válido será 
+automaticamente desclassificado, assim como aquele que se inscrever 
+mais de uma vez com contas de e-mails diferentes. Caso seja necessário 
+ajustar o e-mail cadastrado, o(a) candidato(a) deve entrar em contato com 
+suporteeasyufal@brisabr.com.br. 
+
+--- PAGE 4 ---
+                                                                      
+ 
+                                                                      
+ 
+4 
+ 
+4.1.4. O(A) candidato(a) deve informar um número de CPF válido, sendo 
+permitida uma única inscrição por pessoa física. 
+4.1.4.1. O(A) candidato(a) que informar dados inválidos ou de outra 
+pessoa será desclassificado. 
+4.1.5. O Anexo I contém uma tabela com o resumo do processo d e inscrição, o 
+Anexo II, as informações sobre os documentos válidos para a inscrição dos 
+candidatos e o Anexo III contém orientações detalhadas para a inscrição no 
+Programa Residência em TIC na plataforma de inscrições. 
+4.2. Não estão aptos a participar da capa citação membros da equipe de gestão e suporte 
+do programa, sejam da BRISA ou de qualquer parceiro envolvido na implementação do 
+programa, direta e indiretamente, bem como alunos(as) já matriculados(as) ou que 
+tenham concluído a capacitação em outras turmas  do Projeto ou pessoas envolvidas 
+diretamente na execução ou gestão do Programa. 
+4.2.1. Caso sejam feitas inscrições de pessoas nessas condições de inabilitação, 
+elas serão desclassificadas do processo. 
+4.2.2. Não é vedada a participação de pessoas que tenham se inscrito em turmas 
+anteriores e não tenham sido classificadas para a etapa de Imersão em 
+Computação Avançada ou, por motivos de força maior, não tenham podido 
+iniciar essa etapa de Imersão em Computação Avançada. 
+4.2.3. É vedada a participação de pessoas que já t enham participado de  fase 
+anterior de Imersão em Computação Avançada, em qualquer localidade, 
+tendo ou não obtido aprovação. 
+4.3. Será aceita apenas uma inscrição por participante. 
+4.4. Ao se inscrever, o(a) candidato(a) concorda que, caso aprovado para a etapa de 
+Imersão, será exigid a, nesta etapa, dedicação de uma média de 20 (vinte) horas 
+semanais, ao longo dos seis meses, perfa zendo o total de 480 horas, incluindo as 
+atividades presenciais previstas. 
+4.4.1. As atividades presenciais da etapa de Imersão serão realizadas no Campus 
+A. C. Simões da UFAL, situado em Maceió - AL. 
+4.5. Das vagas reservadas para pessoas com diversidade funcional (Pess oa com 
+deficiência - PcD ou neurodiversa)  - Será reservado um percentual  de 5% (cinco por 
+cento) das vagas oferecidas aos(as) candidatos(as) que se enquadrem nos critérios 
+definidos neste item. 
+4.5.1. Consideram-se pessoas com diversidade funcional (pessoas com 
+deficiência - PcD ou neurodiversa) aquelas que se enquadram nas 
+tipologias de deficiência elegíveis, especificadas no Anexo IV. 
+4.5.2. Em casos não previstos entre os especificados, o candidato deverá 
+apresentar laudos específicos e válidos, que serão avaliados pela comissão 
+do programa. 
+4.5.3. Os(as) candidatos(as) que desejarem concorrer às vagas reservadas para 
+pessoas com diversidade funcional , deverão no ato da inscrição informar a 
+opção. 
+
+--- PAGE 5 ---
+                                                                      
+ 
+                                                                      
+ 
+5 
+ 
+4.5.4. Os(as) candidatos(as) que desejarem concorrer às vagas reservadas para 
+pessoas com diversidade funcional deverão encaminhar, no ato da inscrição, 
+laudo médico que ateste sua condição de pessoas com diversidade funcional, 
+conforme o disposto no item 4.5.1 e 4.5.2. 
+4.5.5 O laudo médico pode ser substituído por documento oficial que ateste a 
+condição de pessoas com diversidade funcional (a exemplo de CNH). 
+4.6. Das vagas reservadas para negros e pardos - Será reservado um percentual de 20% 
+(vinte por cento) das vagas deste edital para candidatos(as) que se autodeclarem 
+negros ou pardos, de acordo com os parâmetros estabelecidos pela Lei nº 12.990, de 9 
+de junho de 2014. 
+4.6.1. O(A) candidato(a) que desejar concorrer às vagas reservadas para negros e 
+pardos deverá, no ato da inscrição e sob sua exclusiva responsabilidade, 
+optar por concorrer a essas vagas, realizando sua autodeclaração assinada 
+(há exemplo de modelo no Anexo V) e incluindo o documento de 
+identidade, no campo próprio do formulário de inscrição. 
+4.7. Das vagas reservadas para mulheres – Será reservado um percentual de 20% (vinte 
+por cento) das vagas deste edital para mulheres. 
+4.7.1. A candidata que desejar concorrer às vagas reservadas para mulheres 
+deverá, no ato da inscrição e sob sua exclusiva responsabilidade, optar por 
+concorrer a essas vagas, no campo próprio do formulário de inscrição.  
+4.7.1.1. O enquadramento nessa cota será confirmad o pelas 
+informações constantes do documento de identidade enviado. 
+4.8.  Das vagas reservadas para pessoas com idade acima de 45 anos (45+) – Será 
+reservado um percentual de 5% (cinco por cento) das vagas deste edital para pessoas 
+com idade igual ou superior a 45 anos (45+). 
+4.8.1. O(A) candidato(a) que desejar concorrer às vagas reservadas para pessoas 
+acima de 45 anos deverá, no ato da inscrição e sob sua exclusiva 
+responsabilidade, optar por concorrer a essas vagas, no campo próprio do 
+formulário de inscrição. 
+4.8.1.1. A ida de será confirmada pelas informações constantes do 
+documento de identidade enviado. 
+4.9. As pessoas que se candidatarem às vagas das cotas e não forem selecionadas na 
+categoria pretendida, participarão normalmente do processo seletivo, entre aquelas da 
+ampla concorrência, sem nenhum outro critério de prioridade. 
+4.10 Na hipótese de não haver número de candidatos(as) aprovados(as) suficiente para 
+ocupar as vagas reservadas para as cotas, as vagas remanescentes serão revertidas para 
+a ampla concorrência e serão preenchidas pelos demais candidatos(as) aprovados(as), 
+observada a ordem de classificação. 
+4.11 Somente será aceita a indicação de uma única categoria de vagas reservadas, não 
+sendo permitida a cumulatividade. 
+
+--- PAGE 6 ---
+                                                                      
+ 
+                                                                      
+ 
+6 
+ 
+5. Etapa de Nivelamento em Computação Básica 
+5.1. Seleção e matrícula 
+5.1.1. A etapa de Nivelamento objetiva uniformizar os conhecimentos dos 
+participantes nos temas fundamentais, para a continuidade dos estudos na 
+etapa de Imersão. 
+5.1.2. A etapa de Nivelamento é totalmente à distância ( assíncrona) e terá a 
+duração de dois meses. 
+5.1.3. Os candidatos à etapa de Nivelamento serão classificados de acordo com 
+os seguintes critérios:  
+a. Estejam cursando graduação ou já graduados em área de engenharia 
+ou exatas: 
+i. 5 pontos para cursos de Engenharia (exceto os de Engenharia de 
+Software, Engenharia de Computação ou similares); 
+ii. 4 pontos para outros cursos de ciências exatas ou tecnológicos 
+(exceto os de Engenharia de Software, Engenharia de 
+Computação, Ciência da Computação, Sistemas de Informação, 
+Análise de Sistemas ou similares); 
+iii. 2 pontos para cursos de Engenharia de Software,  Engenharia de 
+Computação, Ciência da Computação, Sistemas de Informação, 
+Análise de Sistemas ou similares. 
+b. 3 pontos para formados em cursos técnicos de nível médio na área de 
+ciências exatas. 
+5.1.4. Os(As) alunos(as) deverão dispor de equipamentos e recursos de 
+infraestrutura física e tecnológica para a etapa de Nivelamento. 
+5.1.5. O(A) candidato(a)  inscrito(a) na categoria de pessoas com diversidade 
+funcional (pessoas com deficiência e/ou neuro diversidade) devem 
+providenciar os recursos de metodologias ass istivas em seus respectivos 
+equipamentos (computadores, notebooks ou equipamentos similares) 
+para participar do treinamento, de acordo com sua necessidade específica. 
+5.1.6. Os(As) candidatos(as) serão classificados com base na soma de pontos 
+conseguidos e os 250  (duzentos e cinquenta) mais bem pontuados serão 
+chamados para formalizarem sua participação no programa, começando 
+pela etapa de Nivelamento. 
+5.1.7. As vagas desta etapa serão distribuídas da seguinte forma: 
+Quantidade 
+de vagas  
+Ampla 
+concorrência PCDs (5%) Negros e 
+pardos (20%) 
+Mulheres 
+(20%) 45+ (5%) 
+250 124 13 50 50 13 
+
+--- PAGE 7 ---
+                                                                      
+ 
+                                                                      
+ 
+7 
+ 
+5.1.8. A seleção para as cotas será feita entre os(as) candidatos(as)  que 
+preencham os requisitos para participação e forem classificadas, de acordo 
+com os critérios estabelecidos. 
+5.1.9. Caso as vagas reservadas para cotas não sejam preenchidas em sua 
+totalidade, as remanescentes serão preenchidas por ampla concorrência. 
+5.1.10. Os(As) candidatos(as)  que se inscreverem nas  vagas de cotas e não 
+forem selecionadas na categoria pretendida, participarão normalmente do 
+processo seletivo, entre aquelas da ampla concorrência, sem nenhum 
+outro critério de prioridade. 
+5.1.11. O critério de desempa te será a data de nascimento do candidato (os 
+mais idosos terão prioridade sobre os demais). 
+5.1.12. A critério das entidades executora (BRISA) e parceira (EASY /UFAL), e 
+dependendo das condições operacionais locais e da plataforma, poderá ser 
+chamada uma quantidade adicional de alunos para a fase de Nivelamento, 
+com o objetivo de oferecer oportunidade de capacitação inicial a mais 
+pessoas. 
+5.1.13. O resultado da seleção será publicado no  site 
+https://ic.ufal.br/easy/brisa/residencia.html contendo a lista dos 250 
+selecionados e mais uma lista de espera. 
+5.1.14. Os(as) alunos(as) selecionados(as) receberão, no mesmo dia da 
+publicação do resultado, uma mensagem através do e-mail cadastrado no 
+momento da inscrição, com um link para confirmar sua participação. 
+5.1.15. Para e ssa confirmação, basta acessar o link para confirmar sua 
+participação, que deverá ser feita em até a data da Palestra de Abertura do 
+Programa prevista no cronograma (item 8). 
+5.1.16. Caso o e -mail com o link de confirmação  não seja recebido , essa 
+situação deve ser informada por mensagem ao 
+suporteeasyufal@brisabr.com.br, em até 2 (dois) dias úteis da publicação 
+do resultado, para que seja providenciado o reenvio da mensagem citada; 
+5.1.16.1. O(A) aluno(a) que não realizar o acesso no prazo estabelecido 
+no item 5.1.15 será desclassificado por desistência; 
+5.1.16.2. Feita a confirmação de interesse, o(a) aluno(a) receberá, em 
+novo e-mail, suas credenciais para acesso ao ambiente virtual 
+de aprendizado e, com o uso dessas credenciais, estará apto a 
+ingressar nesse ambiente e iniciar os cursos. 
+5.1.16.3. Caso o(a) aluno(a) não receba a mensagem com as credenciais, 
+deve solicitar o reenvio por mensagem enviada a 
+suporteeasyufal@brisabr.com.br. 
+5.1.17. Para a etapa de Nivelamento não caberá recurso. 
+
+--- PAGE 8 ---
+                                                                      
+ 
+                                                                      
+ 
+8 
+ 
+5.2. Etapa de Nivelamento - execução 
+5.2.1. A etapa de Nivelamento em Computação Básica (com 180 horas) terá como 
+foco a uniformização dos conhecimentos básicos e o desenvolvimento das 
+habilidades de autoestudo e organização do trabalho. Para esta etapa, será 
+usada uma plataforma de EaD com os conteúdos de: 
+a. Introdução à Plataforma de EaD da BRISA; 
+b. Lógica de Programação (com Python); 
+c. Programação Python; 
+d. Organização de Computadores; 
+e. Banco de Dados; 
+f. Empreendedorismo e Gerência de Projetos; 
+g. Desenvolvimento de Aplicativos Mobile; 
+h. Business Intelligence (BI); 
+i. Introdução a Big Data; 
+j. Introdução à Inteligência Artificial; 
+k. Introdução a Internet da Coisas (IoT); 
+l. Introdução à Engenharia de Requisitos; 
+m. Introdução ao Treinamento de IA; 
+n. Introdução à UI/UX. 
+5.2.2. Durante a etapa de Nivelamento em Computação Básica, os alunos terão 
+apoio de Professor de EaD (Instrutor) e Monitor de EaD. 
+5.2.3. Os(as) alunos(as) contarão com sistema de mensagens (WhatsApp, Discord 
+etc.) a ser escolhido pelo EASY/UFAL para apoiar o processo de 
+aprendizagem durante esta etapa, interagindo entre si e com o professor. 
+5.2.4. Os cursos a, b, c, d, e e f são obrigatórios e, caso não realizados, implicam 
+na desclassificação do(a) aluno(a). 
+5.2.5. Os conteúdos estarão organizados em formato de verbetes a utocontidos, 
+com conceitos, vídeos explicativos, exemplos de uso e uma lista de 
+exercícios de fixação. 
+5.2.6. Serão considerados para efeito de avaliação e classificação dos(as) 
+alunos(as) os seguintes critérios: 
+a. Realização de todos os cursos obrigatórios – a não  realização 
+desclassifica o(a) aluno(a), mesmo com nota mínima atingida na 
+avaliação final; 
+b. Pontuação obtida na prova final da etapa de Nivelamento; 
+c. Quantidade de cursos efetivamente realizados; 
+
+--- PAGE 9 ---
+                                                                      
+ 
+                                                                      
+ 
+9 
+ 
+d. Pontuação por residir no Estado de Alagoas, conforme item 3.1. 
+5.2.7. Os(as) alunos(as) devem seguir as instruções do sistema para a conclusão 
+dos cursos, em especial a indicação de completude (100%) assinalada na 
+barra de tarefas, conforme a orientação do Anexo VII. 
+5.2.7.1. Um curso é considerado realizado quando o(a) aluno(a)  
+responde a todas as questões de fixação com acerto mínimo de 
+50% e tenha realizado todas as atividades, inclusive o vídeo 
+introdutório existente no curso. 
+5.2.7.2. É importante destacar que para completar o curso o(a) aluno(a) 
+deverá também concluir a(s) avaliações disponíveis ao seu final.  
+5.2.8. Cada curso não obrigatório realizado gerará um acréscimo de 2,5 pontos 
+na pontuação final. 
+5.2.9. A nota final dos(as) alunos(as) será calculada com base na pontuação 
+obtida em uma prova final, com até 80 (oitenta) pontos, na quantidade de 
+cursos não obrigatórios (g, h, i, j, k, l, m e n) efetivamente realizados, com 
+até 20 (vinte) pontos , acrescida de 10 (dez) pontos para os(as) alunos(as) 
+residentes no Estado de Alagoas, conforme item 3.1. 
+5.2.10. A prova final da etapa de Nivelament o em Computação Básica será 
+realizada na data indicada no cronograma,  das 20h às 21h (horário de 
+Brasília). 
+5.2.10.1. O Anexo VII contém orientações sobre o funcionamento da 
+plataforma para a realização da prova. 
+5.2.10.2. A prova será composta por questões objetivas de múlti pla 
+escolha e terá duração de 1 (uma) hora. 
+5.2.10.3. O(A) aluno(a) é responsável por assegurar os recursos 
+necessários para realizar a prova. 
+5.2.10.4. É de responsabilidade do(a) aluno(a) a disponibilização de 
+equipamentos e condições para a realização da prova (energia, 
+acesso à internet etc.) e, caso esses recursos não estejam 
+disponíveis no horário da prova, ela não será reagendada e o(a) 
+aluno(a) será desclassificado. 
+5.2.10.5. Não haverá nova data para realização da prova. 
+5.2.11. Serão considerados aprovados na etapa de Nivelamento os(as) 
+alunos(as) que conseguirem pontuação final igual ou acima de 50% da 
+maior nota obtida na turma. 
+5.2.11.1. Apenas os alunos aprovados receberão certificados de 
+participação emitidos pela BRISA e pelo EASY/UFAL. 
+5.2.12. Serão categorizados e selecionados 50 (cinquenta) alunos(as), entre os 
+aprovados e mais bem classificados na etapa de Nivelamento, para 
+participar da etapa de Imersão, mantidos os percentuais adotados para as 
+cotas: 
+
+--- PAGE 10 ---
+                                                                      
+ 
+                                                                      
+ 
+10 
+ 
+Quantidade 
+de vagas  
+Ampla 
+concorrência PCDs (5%) Negros e 
+pardos (20%) 
+Mulheres 
+(20%) 45+ (5%) 
+50 24 3 10 10 3 
+5.2.13. A aplicação das cotas será feita apenas entre as pessoas que tenham 
+atingido nota para aprovação, conforme item 5.2.11. 
+5.2.13.1. Caso as vagas reservadas para cotas não sejam preenchidas em 
+sua totalidade, as remanescentes serão preenchidas por ampla 
+concorrência. 
+5.2.13.2. As pessoas que se candidatarem às vagas de cotas e não forem 
+selecionadas na categoria pretendida, participarão 
+normalmente do processo seletivo, entre aquelas da ampla 
+concorrência, sem nenhum outro critério de prioridade. 
+5.2.14. A relação preliminar dos(as) 50 (cinquenta) alunos(as) classificados para 
+a etapa de Imersão e mais a lista de espera, ambos em ordem de 
+classificação, serão divulgadas em até dois dias úteis após a data da prova 
+final. 
+5.2.15. Logo a pós a publicação do resultado das provas, seu gabarito estará 
+disponível no ambiente virtual, para conferência pelos participantes. 
+5.2.16. Os pedidos de recursos sobre o resultado das provas deverão ser 
+encaminhados por e-mail para suporteeasyufal@brisabr.com.br em até 2 
+(dois) dias úteis após a divulgação do resultado da prova. 
+5.2.16.1. Os recursos apresentados devem ser acompanhados de 
+evidências que comprovem o argumento ou o questionamento 
+feito. 
+5.2.16.2. Os recursos serão respondidos em até d ois dias úteis  após 
+encerrado o prazo para sua apresentação. 
+5.2.17. A relação final dos alunos(as) classificados para a etapa de Imersão será 
+divulgada em até dois dias úteis  após o prazo para a decisão sobre os 
+recursos impetrados, mantido o número máximo de 50 (cinquenta) alunos. 
+5.2.18. Nos casos de empate na pontuação dar -se-á prioridade para os 
+participantes mais idosos (aferidos pela data de nascimento). 
+5.2.19. A relação final dos alunos(as) classificados para a etapa de Imersão 
+pode ter a inclusão ou exclusão de alunos, em função dos resultados dos 
+recursos.  
+
+--- PAGE 11 ---
+                                                                      
+ 
+                                                                      
+ 
+11 
+ 
+6. Etapa de Imersão em Computação Avançada - execução 
+6.1. Desenvolvimento das atividades 
+6.1.1. Os(as) alunos(as) selecionados(as) receberão uma mensagem com um link 
+para confirmar sua participação. 
+6.1.1.1. Essa confirmação, por meio do link enviado, deverá ser feita em 
+até 2 (dois) dias úteis após a publicação do resultado final da 
+seleção. 
+6.1.1.2. Caso o e-mail não seja recebido em até 1 (um) dia út il da 
+publicação do resultado final, essa situação deve ser informada 
+por mensagem a suporteeasyufal@brisabr.com.br para que 
+seja providenciado o reenvio da mensagem citada. 
+6.1.1.2.1 O(A) aluno(a) que não realizar o acesso no prazo 
+estabelecido, no item 6.1.1.1 será desclassificado 
+por desistência. 
+6.1.2. Após a confirmação de interesse, serão elaborados os contratos 
+correspondentes para os(as) alunos(as) que tenham cumprido as condições 
+do item 6.1.1. 
+6.1.2.1. A entrega do notebook em comodato e o pagamento da bolsa, 
+só serão efetivados a partir da assinatura dos contratos. 
+6.1.2.2. A não assinatura dos contratos até 3 dias úteis após seu 
+recebimento será considerada como desistência e o(a) aluno(a) 
+perderá a vaga, sendo chamado o próximo(a) aluno(a) da lista 
+de aprovados(as) na etapa de Nivelamento em Computação 
+Básica, conforme a ordem de classificação. 
+6.1.3. Poderão ser chamados novos(as) alunos(as) em até 30 (trinta) dias úteis 
+depois da publicação da nominata dos(as) alunos(as) selecionados(as), em 
+caso de vagas não preenchidas. Esses novos(as) alunos(as) terão os 
+mesmos prazos de confirmação, contados da data da chamada, conforme 
+as cláusulas 6.1.1.1, 6.1.1.2, 6.1.1.2.1 e 6.1.2.2. 
+6.1.3.1. Após esse período, não serão mais convocadas pessoas da lista 
+de espera. 
+6.1.4. A etapa de Imersão é híbrida com duração total de 480 horas, sendo 
+realizada em seis meses. 
+6.1.5. Durante a etapa de Imersão em Computação Avançada, deverá ser 
+desenvolvido, em grupo, projeto com aplicação prática, com 
+disponibilidade de uma média de 20 horas semanais, em agendas a serem 
+estabelecidas pelo grupo. 
+6.1.5.1. Na primeira semana dessa etapa (de segunda a sexta-feira), será 
+dado aos participantes um treinamento presencial em aspectos 
+básicos necessários para o sucesso no projeto, de quatro horas 
+
+--- PAGE 12 ---
+                                                                      
+ 
+                                                                      
+ 
+12 
+ 
+diárias, com presença obrigatória, n o Campus A. C. Simões da 
+UFAL, situado em Maceió - AL. 
+6.1.5.2. O horário desse treinamento será estabelecido pelo EASY/UFAL, 
+em função das condições locais. 
+6.1.5.3. No início da etapa, serão definidos os projetos e estruturados os 
+grupos para sua execução. 
+6.1.5.4. Os temas dos projetos serão escolhidos de acordo com as 
+demandas do mercado regional, definidos em conjunto pela 
+BRISA e pelo EASY/UFAL. 
+6.1.5.5. Cada grupo receberá um tema de projeto para desenvolver. 
+6.1.6. A divisão dos grupos será feita pelo EASY/UFAL e pela BRISA, c om base no 
+perfil dos(as) alunos(as) e expectativa da empresa que irá propor o projeto. 
+6.1.7. Cada grupo deverá realizar reuniões diárias online entre os seus membros, 
+em plataforma de comunicação escolhida pelo EASY/UFAL, e 
+semanalmente reunião presencial na sede do EASY/UFAL, em Maceió, com 
+o Professor Orientador de Projetos, em dia e horário a ser estabelecido pela 
+coordenação do projeto (se a reunião cair em feriados nacionais, estaduais 
+de Alagoas ou municipal de Maceió, ela deverá ser reagendada). 
+6.1.8. É obrigatória a presença de todos os(as) alunos(as) do grupo  nos 
+encontros presenciais agendados com o professor orientador de projeto. 
+6.1.8.1. Na segunda falta não justificada  o(a) aluno(a) receberá uma 
+advertência. 
+6.1.8.2. Na terceira falta não justificada o(a) aluno(a) será excluído do 
+programa. 
+6.1.8.3. Na sexta falta, justificada ou não , o aluno será excluído do 
+programa. 
+6.1.8.4. As justificativas por ausência serão avaliadas p elo coordenador 
+local, conforme as evidências apresentadas pelo(a) aluno(a). 
+6.1.9. Durante a etapa de Imersão em Computação Avançada, os(as) alunos(as) 
+terão apoio de Professor Orientador de Projetos e Monitor Técnico. 
+6.1.10. Todos os cursos estudados na etapa de Nivel amento em Computação 
+Básica estarão disponíveis para que os(as) alunos(as), se necessário, 
+revejam conceitos e técnicas durante a etapa de Imersão em Computação 
+Avançada. 
+6.1.11. Os(as) alunos(as) selecionados para a etapa de Imersão receberão 
+bolsas mensais, no valor de R$ 1.260,00 (um mil duzentos e sessenta reais), 
+pelo prazo de 6 (seis) meses, para custear seus estudos durante esta etapa, 
+incluindo suas participações em todos os encontros presenciais. 
+6.1.11.1. Para o recebimento da bolsa, o(a) aluno(a) deverá informar um 
+número de conta corrente  em estabelecimento bancário no 
+Brasil, feita em seu nome e com o número de CPF informado na 
+
+--- PAGE 13 ---
+                                                                      
+ 
+                                                                      
+ 
+13 
+ 
+inscrição para o programa, sendo vedada a utilização de conta 
+em nome de terceiros. 
+6.1.11.2. Os(as) alunos(as) deverão assinar digitalmente recibos para o 
+recebimento da bolsa. 
+6.1.11.3. No caso de recibos não assinados até 3 dias úteis após seu 
+recebimento por e-mail, o aluno(a) estará passível do não 
+recebimento da bolsa do mês seguinte, ou em caso de 
+encerramento do projeto e pendência da assinatura dele, estará 
+passível da devolução do notebook para a BRISA. 
+6.1.11.4. Em caso de problemas com e-mail ou não recebimento do 
+recibo o(a) aluno(a) deverá avisar a equipe de gestão , pelo 
+endereço suporteeasyufal@brisabr.com.br, até o último dia  
+útil do mês de referência da bolsa. 
+6.1.12. Os(as) alunos(as) receberão um notebook, na condição de comodato, 
+para que possam realizar as atividades previstas para a etapa de Imersão. 
+6.1.12.1. O(A) aluno(a) deverá cuidar do notebook e devolvê -lo nas 
+mesmas condições em que lhe foi entregue. 
+6.1.12.2. A cessão do notebook em comodato será regida por um 
+contrato específico assinado entre o(a) aluno(a) e a BRISA. 
+6.1.12.3. Os notebooks serão retirados e devolvidos no Campus A. C. 
+Simões da UFAL, situado em Maceió - AL. 
+6.2.  Avaliação 
+6.2.1. Durante a etapa de Imersão em Computação Avançada, haverá duas 
+avaliações (parcial e final) com três compone ntes, conforme os critérios 
+descritos no Anexo VIII; 
+6.2.2. As datas das apresentações dos projetos da etapa de Imersão estão 
+definidas no cronog rama neste Edital e serão realizadas de forma 
+presencial, Campus A. C. Simões da UFAL, situado em Maceió  - AL, em  
+horário a ser estabelecido pela coordenação do programa. 
+6.2.3. A critério dos professores e da equipe pedagógica do projeto, e em função 
+das características dos projetos desenvolvidos, poderá ser agendada mais 
+de uma apresentação para o mesmo grupo. 
+6.2.4. O não comparecimento a qualquer uma dessas apresentações de avaliação 
+previamente agendadas implicará na reprovação do(a) aluno(a) ausente. 
+6.2.4.1. Em caso de ausência, as justificat ivas correspondentes serão 
+avaliadas pelo coordenador local, conforme as evidências 
+apresentadas pelo(a) aluno(a). 
+7. Comunicação oficial e divulgação dos resultados 
+7.1. Toda comunicação oficial do projeto, incluindo os resultados dos processos seletivos, 
+tanto para a etapa de Nivelamento, quanto para a da Imersão, bem como os resultados 
+
+--- PAGE 14 ---
+                                                                      
+ 
+                                                                      
+ 
+14 
+ 
+da prova final da etapa de Nivelamento e listagem final com os aprovados no programa 
+(etapa Imersão) será feita por intermédio da página 
+https://ic.ufal.br/easy/brisa/residencia.html. 
+7.2. Caso haja opção pelo uso de outras formas de comunicação complementares, como 
+mídias sociais, elas não serão consideradas oficiais e seu uso não isenta o participante 
+de buscar a comunicação oficial 
+8. Cronograma 
+O programa de Residência em TIC BRISA – UFAL seguirá cronograma da Tabela 1, a seguir: 
+Evento Data/Período 
+Publicação do edital 09/12/2024 
+Período de inscrição 10/12/2024 a 31/01/2025 
+Divulgação da lista de alunos selecionados para o 
+nivelamento 03/02/2025 
+Confirmação de participação por parte dos alunos 
+selecionados para o nivelamento 05/02/2025 a 10/02/2025 
+Palestra de abertura do programa  10/02/2025 
+Etapa de Nivelamento 11/02/2025 a 10/04/2025 
+Prova final do Nivelamento 11/04/2025 
+Divulgação da lista preliminar dos alunos selecionados para 
+a Imersão 15/04/2025 
+Período de recursos após divulgação da lista de aprovados 16/04/2025 a 17/04/2025 
+Avaliação dos recursos 22/04/2025 a 23/04/2025 
+Divulgação da lista final dos alunos selecionados para a 
+Imersão 24/04/2025 
+Confirmação por parte dos alunos de participação na Imersão 25/04/2025 a 28/04/2025 
+Análise da documentação e preparação dos contratos para a 
+participação na Imersão 29/04/2025 a 06/05/2025 
+Emissão dos certificados da etapa de Nivelamento 07/05/2025 
+
+--- PAGE 15 ---
+                                                                      
+ 
+                                                                      
+ 
+15 
+ 
+Evento Data/Período 
+Assinatura dos contratos de participação na Imersão 12/05/2025 a 14/05/2025 
+Início Etapa de Imersão 19/05/2025 
+Treinamento de Integração presencial 19/05/2025 a 23/05/2025 
+Desenvolvimento dos Projetos de Imersão 26/05/2025 a 18/11/2025 
+Avaliação parcial dos projetos - presencial 27/08/2025 
+Avaliação final dos projetos e dos alunos - presencial 19/11/2025 
+Emissão dos certificados da etapa de Imersão 27/11/2025 
+Tabela 1 – Cronograma 
+9. Do descumprimento das regras do edital e desligamento 
+9.1. O descumprimento de qualquer uma das cláusulas deste edital, das cláusulas 
+contratuais ou do Código de Conduta por parte de alunos(as) selecionados(as) 
+implicará em sua desclassificação. 
+9.2. Havendo descumprimento de contrato da fase de Imersão, será realizado um distrato 
+com o(a) aluno(a) e ele(a) deverá devolver os equipamentos e materiais oferecidos em 
+termos de comodato. 
+9.2.1. Os valores já recebidos pelo(a) aluno(a) não precisarão ser devolvidos, mas 
+serão interrompidos os demais pagamentos previstos. 
+9.3 As organizações parceiras do Programa poderão, a qualquer momento, solicitar a 
+apresentação de documentação complementar para comprovar a veracidade das 
+informações declaradas. 
+10. Disposições gerais 
+10.1. As questões não previstas em edital poderão ser revisadas a qualquer momento 
+por meio das organizações parceiras BRISA e EASY/UFAL, sendo de inteira 
+responsabilidade delas dirimirem todas as questões que extrapolem os preâmbulos 
+aqui previstos; 
+10.2. É de responsabilidade do participante assegurar que o e-mail informado seja 
+válido, providenciar para que não seja direcionado para a caixa de SPAM e verificar se 
+não há mensagens do programa direcionadas a essa caixa. 
+10.3. O(A) candidato(a), no ato da inscrição, autoriza que as informações e dados que 
+se enquadrem ou n ão como dados sensíveis e pessoais, na forma da Lei Geral de 
+Proteção de Dados, poderão ser utilizadas pela BRISA, pelo EASY/UFAL e pelos 
+parceiros envolvidos no Programa. 
+
+--- PAGE 16 ---
+                                                                      
+ 
+                                                                      
+ 
+16 
+ 
+10.3.1. O(A) candidato(a)/aluno(a) é o(a) único(a) responsável pelas informações 
+prestadas no formulário de inscrição, durante o processo seletivo e na Residência em 
+TIC BRISA – EASY/UFAL, as quais serão utilizadas para todas as finalidades que se fizerem 
+necessárias. 
+10.3.2. A ausência de veracidade das informações prestadas pelo(a) 
+candidato(a)/aluno(a) poderá implicar em sua responsabilização pessoal e na 
+eliminação do processo seletivo, bem como da Residência em TIC BRISA – EASY/UFAL. 
+10.4 O(A) aluno(a) autoriza o compartilhamento de seus seguintes dados com futuras 
+empresas parceiras interessadas na contratação de ex -alunos(as): nome, gênero, 
+contatos, currículo LinkedIn, município de residência e formação. 
+10.5 O(A) aluno(a) autoriza a divulgação, a título gratuito e livre de quaisquer ônus, de sua 
+imagem e voz em vídeos e fotografias para fins de divulgação publicitária e pedagógica, 
+relacionadas ao Programa, em meios físicos e/ou digitais, próprios e de terceiros, 
+incluindo, sites, redes sociais e materiais publicitários em qualquer meio de 
+comunicação, em ambiente nacional e internacional. 
+10.6 O(A) aluno(a) deve comunicar, em até 7 (sete) dias úteis, a ocorrência de quaisquer 
+das situações abaixo, através do endereço de e-mail suporteeasyufal@brisabr.com.br: 
+a. Atualização de dados pessoais; 
+b. Eventual saída do Programa; 
+c. Contratação por empresas parceiras, ou não, do Programa; 
+d. Qualquer fato que comprometa a sua disponibilidade de tempo para 
+participação nas aulas. 
+10.7 O(A) aluno(a) se compromete, mesmo após o término do programa, a manter 
+completa confidencialidade e sigilo sobre quaisquer dados ou informações obtidas em 
+razão dos projetos, estudos e relatórios do Programa, das empresas parceiras, da BRISA, 
+do EASY /UFAL e demais parceiros, reconhecendo que não poderão ser utilizados, 
+divulgados ou fornecidos a terceiros, salvo com expressa autorização, por escrito, da 
+outra parte, sob pena de civil e criminal, por quaisquer danos causados uma à outra e/ou 
+terceiros em virtude da quebra da confidencialidade e sigilo a que estão obrigadas. 
+10.8. A critério exclusivo da BRISA e/ou do EASY/UFAL, o presente Edital, assim como o 
+cronograma de datas, poderão sofrer alterações que serão previamente informadas no 
+site https://ic.ufal.br/easy/brisa/residencia.html, sempre tendo em vista os critérios 
+da transparência, razoabilidade e legalidade. 
+10.9. A partir da inscrição, o candidato aceita todas as regras, disposições e diretrizes deste 
+Edital, de forma irrevogável e irretratável, nada tendo a opor e a perquirir. 
+
+--- PAGE 17 ---
+                                                                      
+ 
+                                                                      
+ 
+17 
+ 
+ANEXO I 
+Resumo do processo de inscrição 
+Passo Verificação 
+Qualificação ✔ Conta ativa no LinkedIn 
+✔ E-mail válido 
+✔ CPF válido 
+✔ Curso superior de graduação na área de 
+ciências exatas (cursando ou graduado) 
+ou  
+✔ Formado em curso técnico na área de 
+ciências exatas 
+Cadastro ✔ Cadastrar, usando seu e-mail, acessando 
+https://inscricoesrestic.brisabr.com.br/, 
+você receberá um código. 
+Recebeu código por e-mail ✔ Usar o código e completar o 
+preenchimento das informações 
+Preencheu informações de 
+cadastro 
+✔ Continuar a inscrição em 
+https://inscricoesrestic.brisabr.com.br/, 
+no programa UFAL2025.1, usando o e-
+mail e a senha cadastrada 
+✔ Responder a todas as questões do 
+questionário de inscrição, revisar as 
+informações preenchidas 
+Respondeu ao questionário ✔ Enviar os documentos necessários, 
+incluindo, se for o caso, a documentação 
+de cota 
+Concluiu a inscrição ✔ Acompanhar sempre o e-mail, sob 
+possíveis comunicações do período de 
+inscrições 
+✔ Aguardar prazo final das inscrições 
+Inscrições finalizadas ✔ Acompanhar, pelo e-mail, a possível 
+notificação de aprovação 
+
+--- PAGE 18 ---
+                                                                      
+ 
+                                                                      
+ 
+18 
+ 
+✔ Verificar lista de selecionados na página 
+do Projeto 
+Foi selecionado(a) ✔ Você receberá um e-mail de aprovação e 
+deverá acessar 
+https://inscricoesrestic.brisabr.com.br/ 
+para confirmar sua participação na, 
+conforme orientação do edital 
+✔ Acompanhar as informações sobre o 
+início da capacitação 
+✔ Recebimento de Login e senha de acesso 
+à plataforma de estudos online. 
+ 
+  
+
+--- PAGE 19 ---
+                                                                      
+ 
+                                                                      
+ 
+19 
+ 
+ 
+ANEXO II 
+Documentos válidos para inscrição 
+1. Comprovação de escolaridade: 
+● Diploma ou certificado de conclusão de curso superior ou técnico na área de 
+ciências exatas; 
+● Histórico escolar, declaração de matrícula ou outro documento que comprove 
+a matrícula em curso superior na área de ciências exatas no semestre em 
+andamento e contenha nome do(a) aluno(a), da instituição de ensino e do curso em 
+que está matriculado. 
+2. Documento de identidade: 
+● Documento válido como identificação em território brasileiro, com foto e nome 
+do(a) candidato(a), copiado integralmente (frente e verso). 
+3. CPF: 
+● CPF emitido pela Secretaria da Receita Federal; 
+● Desnecessário, caso o documento de identidade contenha o número de CPF. 
+4. Comprovante de residência: 
+● Documento atualizado (últimos 3 meses) que mencione o endereço declarado 
+em nome do(a) candidato(a) ou de pessoa cujo parentesco possa ser comprovado 
+na identificação; 
+● Caso não haja esse documento, declaração assinada de residência no endereço 
+(modelo no Anexo VI). 
+5. Comprovação de cota: 
+● Declaração assinada para candidato(a) na cota de negros/pardos; 
+● Laudo médico que comprove a deficiência, no caso de pessoa com diversidade 
+funcional (PcD). 
+Observação: Os documentos fornecidos devem estar de acordo com as informações prestadas 
+no preenchimento do formulário de inscrição. 
+
+--- PAGE 20 ---
+                                                                      
+ 
+                                                                      
+ 
+20 
+ 
+ANEXO III 
+Orientação para a inscrição no Programa Residência em TIC 
+ 
+1. Para se inscrever, o usuário deve primeiro se cadastrar, por meio do botão CADASTRO. 
+1.1.  O(A) candidato(a) deve informar um endereço de e-mail válido para receber todas as 
+comunicações formais; 
+1.2. Após a indicação de e-mail e escolha de senha, ao pressionar o botão ENVIAR CÓDIGO 
+será enviado um e-mail de validação, com o código a ser usado para dar sequência à 
+inscrição. 
+1.3. O(A) candidato(a) deverá informar o código recebido e completar o preenchimento das 
+informações iniciais; 
+1.4. Depois de concluído o cadastro, deverá fazer acesso ao sistema, 
+https://inscricoesrestic.brisabr.com.br/, com uso do e-mail e da senha cadastrada para 
+dar sequência ao processo de inscrição; 
+1.5. O início do processo de inscrição é feito com a escolha do programa UFAL2025.1, que 
+estará disponível na tela de detalhamento do programa (com nome do programa, datas 
+etc.); 
+1.6. Em seguida, será aberta tela para preenchimento dos demais dados cadastrais e, depois 
+de todos os dados preenchidos, ao clicar o botão PRÓXIMO, será aberta a tela para o(a) 
+candidato(a) que se enquadrar, e se desejar, optar por uma das cotas previstas no edital; 
+1.7. Em seguida, o(a) candidato(a) deverá responder a todas as questões do questionário de 
+inscrição; 
+1.8. Preenchido o questionário, será apresentada a tela de confirmação dos dados, para que 
+o(a) candidato(a) verifique a correção das informações prestadas. Caso haja alguma 
+informação incorreta, o(a) candidato(a) deverá retroceder à tela correspondente e 
+corrigir a informação; 
+1.9. Após o preenchimento o(a) candidato(a) precisará dar aceite no termo de uso, política 
+de privacidade e veracidade das informações; 
+1.10. Depois de todas as informações estarem corretas, clicar em PRÓXIMA, na qual 
+será solicitado o envio digitalizado dos documentos necessários; 
+2. Caso o documento de identidade já contenha o número do CPF, não é necessário enviar 
+o CPF. 
+3. Os documentos devem ser completos, com todas as suas partes digitalizadas, frente e 
+verso; 
+4. Os comprovantes de residência devem ter sido emitidos em até 3 (três) meses antes de 
+sua submissão; 
+5. A ausência de upload, digitalização ilegível ou incompleta de qualquer documento 
+requerido ou documento incorreto implicará na desclassificação do(a) candidato(a); 
+
+--- PAGE 21 ---
+                                                                      
+ 
+                                                                      
+ 
+21 
+ 
+5.1. Durante o prazo aberto para inscrições, o(a) candidato(a) poderá substituir documentos 
+enviados e que tenham sido rejeitados durante o processo de inscrição; 
+5.2. Recebida a mensagem de rejeição de um documento, o(a) candidato(a) poderá 
+substituir o documento, respeitado o prazo final de inscrições; 
+5.3. Caso haja interesse em substituir um documento não rejeitado, o(a) candidato(a) deverá 
+solicitar sua rejeição, em mensagem a ser enviada a suporteeasyufal@brisabr.com.br, 
+para posteriormente fazer a substituição, a partir da confirmação da rejeição. 
+  
+
+--- PAGE 22 ---
+                                                                      
+ 
+                                                                      
+ 
+22 
+ 
+ANEXO IV 
+Tipologias de deficiência elegíveis para pessoas com diversidade funcional (PcD) 
+ 
+1. Deficiência Física: pessoa com alteração completa ou parcial de um ou mais segmentos 
+do corpo humano, causada por alteração no sistema musculoesquelético; 
+2. Deficiência Auditiva: pessoa com perda bilateral, parcial ou total, de quarenta e um 
+decibéis (dB) ou mais, aferida por audiograma nas frequências de 500 Hz, 1.000 Hz, 
+2.000 Hz e 3.000 Hz; 
+3. Deficiência Visual: pessoa cega, com acuidade visual igual ou menor que 0,05 no melhor 
+olho, após a melhor correção óptica; ou pessoa com baixa visão, que apresenta acuidade 
+visual entre 0,3 e 0,05 no melhor olho, após a melhor correção óptica; ou ainda pessoa 
+com campo visual inferior a 20 graus; 
+4. Deficiência Intelectual: p essoa com distúrbio do desenvolvimento neurológico, com 
+limitações associadas a duas ou mais áreas de habilidades adaptativas; 
+5. Deficiência Múltipla: Pessoa com associação de duas ou mais deficiências que se 
+enquadram nas tipologias acima. 
+  
+
+--- PAGE 23 ---
+                                                                      
+ 
+                                                                      
+ 
+23 
+ 
+ANEXO V 
+Modelo de autodeclaração para cota negro/pardo 
+ 
+AUTODECLARAÇÃO ÉTNICO-RACIAL 
+ 
+(nome), (nacionalidade), (estado civil), (profissão), inscrito(a) no CPF sob o nº (informar) e no RG 
+(ou RNE - Registro Nacional de Estrangeiro/Identidade Funcional/Carteira de Trabalho e 
+Previdência Social (CTPS)/Carteira Nacional de Habilitação (CNH)/Pas saporte) nº_____, 
+documento expedido por _________________, residente e domiciliado(a) a (endereço), declaro 
+ser de cor (preta/parda) e assumo a opção de concorrer às vagas por meio do Sistema de Cotas 
+para negros(as)/pardos(as), de acordo com os critérios  do Edital do Projeto Residência em TIC 
+16 e com os critérios e procedimentos adotados pela legislação brasileira. 
+ 
+As informações prestadas nesta declaração são de minha inteira responsabilidade e estou ciente 
+que poderei responder criminalmente no caso de falsidade. 
+ 
+(Município)/(UF), __/__/____. 
+ 
+ 
+ 
+(assinatura) 
+(nome) 
+ 
+  
+
+--- PAGE 24 ---
+                                                                      
+ 
+                                                                      
+ 
+24 
+ 
+ANEXO VI 
+Modelo de autodeclaração de residência 
+ 
+AUTODECLARAÇÃO DE RESIDÊNCIA 
+ 
+Eu, (nome), (estado civil atual), (nacionalidade), portador (a) da Cédula de Identidade (RG) (ou 
+RNE - Registro Nacional de Estrangeiro/Identidade Funcional/Carteira de Trabalho e Previdência 
+Social (CTPS)/Carteira Nacional de Habilitação (CNH)/Passaporte) nº _________________, 
+documento expedido por _________________, inscrito (a) no CPF sob o nº 
+_________________, DECLARO, para os devidos fins de comprovação de residência, sob as 
+penas da Lei (art. 2º da Lei 7.115/83) que sou residente e domiciliado(a) no endereço (Endereço), 
+(Complemento), (Bairro), (Cidade)/(UF), CEP _____-___. 
+ 
+Estou ciente de que, comprova da a falsidade desta declaração, estarei sujeito(a) às penas 
+previstas no Art. 299 do Código Penal Brasileiro. 
+ 
+(Município)/(UF), __/__/____. 
+ 
+ 
+ 
+(assinatura) 
+(nome) 
+  
+
+--- PAGE 25 ---
+                                                                      
+ 
+                                                                      
+ 
+25 
+ 
+ANEXO VII 
+Orientação para a realização da prova final da etapa de Nivelamento em Computação 
+Avançada 
+ 
+1. A prova será realizada no próprio ambiente virtual de aprendizado, por meio da opção 
+“PROVA”, que estará disponível exclusivamente na data e no horário estabelecidos para 
+sua realização. 
+2. A prova será composta por questões objetivas de múltipla escolha e terá duração de 1 
+(uma) hora. 
+3. Até o prazo final da prova, havendo preenchimento total ou parcial das questões, o(a) 
+aluno(a) deverá acionar o botão ENVIAR. 
+4. Se não for acionado o botão ENVIAR da prova e o tempo se encerrar, a prova será 
+encerrada e levada para avaliação no estado em que se encontrar, situação em que não 
+caberá direito a recurso. 
+  
+
+--- PAGE 26 ---
+                                                                      
+ 
+                                                                      
+ 
+26 
+ 
+ANEXO VIII 
+Critérios de Avaliação da fase de Imersão em Computação Avançada 
+ 
+Durante a etapa de Imersão em Computação Avançada, haverá duas avaliações (parcial e final) 
+com três componentes, conforme os seguintes critérios: 
+1. Nota do Grupo do Projeto (NG) realizado – a banca, formada pelo professor orientador, o 
+coordenador local e um representante do cliente que sugeriu o tema e eventuais 
+convidados, assistirá à apresentação do grupo sobre o projeto e fa rá uma avaliação dos 
+seguintes critérios (com total máximo de 60 pontos): 
+a. Estágio da solução apresentada 
+b. Complexidade da solução 
+c. Escalabilidade 
+d. Demonstração dos resultados 
+e. Qualidade da apresentação 
+f. Qualidade das respostas 
+2. Nota de Participação (NP) – nesta nota, é avaliado o grau de engajamento dos participantes 
+dos grupos, em que cada aluno(a) avaliará, de forma sigilo sa, seus colegas de grupo  (total 
+máximo de 16 pontos), com notas nos seguintes aspectos: 
+a. Colaboração  
+b. Empatia 
+c. Respeito  
+d. Liberdade 
+3. Nota de Comportamento e Desempenho (NC) desenvolvidos no curso, feita pelo professor-
+orientador da turma, de acordo com os seguintes indicadores (total máximo de 70 pontos): 
+a. Produção técnica: quantidade de código publicado no GitHub ou similar; 
+b. Produção técnica: qualidade do código publicado no GitHub ou similar; 
+c. Proatividade: habilidade de se antecipar a demandas ou problemas; 
+d. Comunicação: habilidade de se fazer entender e de entender as expressões 
+dos outros; 
+e. Responsabilidade: cumprimento de prazos e de compromissos assumidos 
+ante terceiros; 
+f. Autoestudo: capacidade de aprender conteúdos novos sem a necessidade de 
+explicações detalhadas do professor ou tutor; 
+g. Trabalho em equipe:  habilidade de trabalho com várias pessoas em um 
+projeto conjunto. 
+4. Em cada avaliação, a nota do(a) aluno(a) será a soma dos pontos obtidos nas três dimensões 
+de avaliação (NG+NP+NC). 
+
+--- PAGE 27 ---
+                                                                      
+ 
+                                                                      
+ 
+27 
+ 
+5. A nota final de cada aluno(a) contemplará a avaliação 1 (com peso um) e a avaliação 2 (com 
+peso dois). O resultado de cada avaliação será informado a cada aluno(a) individualmente, 
+não cabendo recurso. 
+6. Os(as) alunos(as) com avaliação final maior ou igual a 75% da maior pontuação conseguida 
+serão considerados aprovados e consequentemente receberão certificados. 
+ 
+

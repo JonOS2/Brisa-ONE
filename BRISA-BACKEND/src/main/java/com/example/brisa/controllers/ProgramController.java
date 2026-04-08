@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.UUID;
 
 @RestController
@@ -38,6 +39,20 @@ public class ProgramController {
     public ResponseEntity<ProgramModel> createProgram(
             @RequestBody ProgramModel program,
             HttpServletRequest request) {
+        List<String> errors = new ArrayList<>();
+        if (program.getContractNumber() == null || program.getContractNumber().trim().isEmpty()) {
+            errors.add("Contract number is required");
+        }
+        if (program.getStartDate() == null) {
+            errors.add("Start date is required");
+        }
+        if (program.getEndDate() == null) {
+            errors.add("End date is required");
+        }
+        if (!errors.isEmpty()) {
+            throw new com.example.brisa.exceptions.ValidationException(errors);
+        }
+
         ProgramModel createdProgram = programService.create(program);
         
         try {
@@ -56,6 +71,20 @@ public class ProgramController {
             @PathVariable Long id,
             @RequestBody ProgramModel program,
             HttpServletRequest request) {
+        List<String> errors = new ArrayList<>();
+        if (program.getContractNumber() == null || program.getContractNumber().trim().isEmpty()) {
+            errors.add("Contract number is required");
+        }
+        if (program.getStartDate() == null) {
+            errors.add("Start date is required");
+        }
+        if (program.getEndDate() == null) {
+            errors.add("End date is required");
+        }
+        if (!errors.isEmpty()) {
+            throw new com.example.brisa.exceptions.ValidationException(errors);
+        }
+
         ProgramModel updatedProgram = programService.update(id, program);
         
         try {

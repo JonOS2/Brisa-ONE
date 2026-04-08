@@ -8,6 +8,8 @@ import com.example.brisa.models.PeopleModel;
 public interface PeopleRepository extends JpaRepository<PeopleModel, Long> {
     
     Optional<PeopleModel> findByEmail(String email);
+
+    Optional<PeopleModel> findByCpf(String cpf);
     
     boolean existsByEmail(String email);
     
@@ -16,4 +18,7 @@ public interface PeopleRepository extends JpaRepository<PeopleModel, Long> {
     
     // Retorna todas as pessoas ordenadas por nome em ordem alfabética
     List<PeopleModel> findAllByOrderByNameAsc();
+    
+    // Find seed users by email prefix (e.g. 'candidate')
+    List<PeopleModel> findByEmailStartingWith(String prefix);
 }

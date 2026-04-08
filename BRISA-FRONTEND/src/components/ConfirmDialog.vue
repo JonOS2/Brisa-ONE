@@ -116,19 +116,23 @@ export default {
   border-radius: 6px;
   font-size: 14px;
   font-weight: 600;
-  border: none;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: background 160ms ease, transform 120ms ease, box-shadow 160ms ease;
 }
 
 .btn-cancel {
-  background: #f0f0f0;
+  background: white;
   color: #333;
+  border: 1.5px solid #dde6f0;
 }
 
 .btn-cancel:hover {
-  background: #e0e0e0;
+  background: #f4f7fb;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(31, 40, 95, 0.06);
 }
+
+.btn-cancel:active { transform: translateY(0); }
 
 .btn-confirm {
   background: #c0392b;

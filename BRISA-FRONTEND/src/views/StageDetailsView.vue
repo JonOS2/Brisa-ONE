@@ -15,7 +15,7 @@
           Voltar
         </button>
         <div class="stage-info">
-          <h1>{{ stageData.name }}</h1>
+          <h1>{{ displayStageName(stageData.name) }}</h1>
           <p v-if="stageData.description" class="stage-description">{{ stageData.description }}</p>
           <div class="stage-meta">
             <span class="meta-item"><strong>Turma:</strong> {{ stageData.className }}</span>
@@ -29,6 +29,12 @@
         <div class="section-header">
           <h2>Candidatos</h2>
           <div class="header-actions">
+            <button v-if="isNivelamento && candidates.length > 0" @click="openCourses" class="btn-primary">
+              Abrir Cursos
+            </button>
+            <button v-if="isNivelamento" @click="openAddCoursesModal" class="btn-secondary">
+              Adicionar Cursos
+            </button>
             <button @click="showImportModal = true" class="btn-import">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -96,13 +102,86 @@
       </div>
     </div>
 
+    <!-- Modal combinado: Importar via Excel ou Adicionar Manualmente -->
+    <div v-if="showAddCandidatesModal" class="modal-overlay" @click="closeAddCandidatesModal">
+      <div class="modal-content" @click.stop>
+        <h2>Adicionar Candidatos (Importar ou Manual)</h2>
+
+        <div class="form-group">
+          <label>Importar via Excel</label>
+          <div class="upload-area">
+            <input type="file" @change="handleFileChange" accept=".xlsx,.xls" ref="fileInput" />
+            <p v-if="selectedFile">{{ selectedFile.name }}</p>
+          </div>
+          <div class="modal-actions">
+            <button @click="closeAddCandidatesModal" class="btn-secondary">Fechar</button>
+            <button @click="importExcel" :disabled="!selectedFile || importing" class="btn-primary">{{ importing ? 'Enviando...' : 'Importar' }}</button>
+          </div>
+          <div v-if="importError" class="error">{{ importError }}</div>
+          <div v-if="importSuccess" class="alert alert-success">
+            <div>{{ importSuccessMessage }}</div>
+          </div>
+        </div>
+
+        <hr />
+
+        <div class="form-group">
+          <label>Adicionar Manualmente</label>
+          <div class="search-container" ref="searchContainerRef">
+            <input 
+              type="text"
+              v-model="searchPeopleQuery"
+              @input="handleSearchInput"
+              @focus="showSearchResults = true"
+              class="form-input search-input"
+              placeholder="Digite o nome, email ou CPF..."
+            />
+            <div v-if="showSearchResults && filteredPeople.length > 0" class="search-results">
+              <div 
+                v-for="person in filteredPeople" 
+                :key="person.id"
+                @click="selectPerson(person)"
+                class="search-result-item"
+              >
+                <div class="result-name">{{ person.name }}</div>
+                <div class="result-details">{{ person.email }} - {{ formatCPF(person.cpf) }}</div>
+              </div>
+            </div>
+            <div v-if="showSearchResults && searchPeopleQuery && filteredPeople.length === 0" class="search-no-results">
+              Nenhuma pessoa encontrada
+            </div>
+          </div>
+          <div v-if="selectedPerson" class="selected-person">
+            <strong>Selecionado:</strong> {{ selectedPerson.name }} - {{ selectedPerson.email }}
+            <button @click="clearSelection" class="btn-clear">×</button>
+          </div>
+          <div class="form-group">
+            <label for="candidateStatus">Status *</label>
+            <select id="candidateStatus" v-model="newCandidate.status" class="form-input">
+              <option value="APROVADO">Aprovado</option>
+              <option value="REPROVADO">Reprovado</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="candidateNotes">Observações</label>
+            <textarea id="candidateNotes" v-model="newCandidate.notes" class="form-input" rows="3" placeholder="Observações sobre o candidato (opcional)"></textarea>
+          </div>
+          <div class="modal-actions">
+            <button @click="closeAddCandidatesModal" class="btn-secondary">Cancelar</button>
+            <button @click="addCandidate" :disabled="!newCandidate.peopleId || !newCandidate.status || addingCandidate" class="btn-primary">{{ addingCandidate ? 'Adicionando...' : 'Adicionar' }}</button>
+          </div>
+          <div v-if="candidateError" class="error">{{ candidateError }}</div>
+        </div>
+      </div>
+    </div>
+
     <!-- Modal de Adicionar Candidato -->
     <div v-if="showAddCandidateModal" class="modal-overlay" @click="closeAddCandidateModal">
       <div class="modal-content" @click.stop>
         <h2>Adicionar Candidato</h2>
         <div class="form-group">
           <label for="candidatePeople">Pesquisar Pessoa *</label>
-          <div class="search-container">
+          <div class="search-container" ref="searchContainerRef">
             <input 
               type="text"
               v-model="searchPeopleQuery"
@@ -222,14 +301,63 @@
         </div>
       </div>
     </div>
+    <!-- Modal: Adicionar Cursos à Turma -->
+    <div v-if="showAddCoursesModal" class="modal-overlay" @click="closeAddCoursesModal">
+      <div class="modal-content" @click.stop>
+        <h2>Adicionar Cursos à Turma</h2>
+        <div class="upload-area" style="margin-top:0;margin-bottom:16px;padding:20px;">
+          <input type="file" accept=".xlsx,.xls" @change="handleCourseExcelFileChange" />
+          <p v-if="selectedCourseExcelFile">{{ selectedCourseExcelFile.name }}</p>
+          <div class="modal-actions" style="margin-top:12px;padding-top:0;border-top:none;">
+            <button
+              @click="importCoursesExcelToClass"
+              :disabled="importingCourseExcel || !selectedCourseExcelFile"
+              class="btn-primary"
+            >{{ importingCourseExcel ? 'Importando...' : 'Importar Cursos por Excel' }}</button>
+          </div>
+          <div v-if="courseExcelImportError" class="error" style="padding:8px 0 0 0;text-align:left;">{{ courseExcelImportError }}</div>
+          <div v-if="courseExcelImportSuccess" class="alert alert-success" style="margin-top:12px;">{{ courseExcelImportSuccess }}</div>
+        </div>
+
+        <div v-if="loadingModalCourses" class="loading"> Carregando cursos...</div>
+        <div v-else>
+          <div class="courses-selection-list">
+            <div v-for="course in modalCourses" :key="course.id" :class="['course-row', { assigned: course.assigned }]" style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #f0f0f0;">
+              <div style="flex:1; display:flex; gap:12px; align-items:center;">
+                <input v-if="!course.assigned" type="checkbox" :value="course.id" @change="toggleCourseSelection(course.id, $event.target.checked)" :checked="selectedCourseIds.includes(course.id)" />
+                <div>
+                  <div style="font-weight:700;color:#1F285F">{{ course.name }}</div>
+                  <div style="font-size:13px;color:#666">{{ course.knowledgeArea }}</div>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;">
+                <div v-if="!course.assigned">
+                  <label style="font-size:13px;color:#444"><input type="checkbox" :checked="selectedRequired[course.id] !== false" @change="setRequired(course.id, $event.target.checked)" /> Obrigatório</label>
+                </div>
+                <div v-else style="color:#888;font-size:13px;padding:6px 10px;border-radius:8px;background:#f4f6fb">
+                  Adicionado <span v-if="course.required">(Obrigatório)</span><span v-else>(Opcional)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-actions" style="margin-top:16px;">
+            <button @click="closeAddCoursesModal" class="btn-secondary">Cancelar</button>
+            <button @click="addSelectedCourses" :disabled="addingCourses || selectedCourseIds.length===0" class="btn-primary">{{ addingCourses ? 'Adicionando...' : 'Adicionar Selecionados' }}</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { stageService } from '@/services/stageService';
 import { peopleService } from '@/services/peopleService';
+import { classService } from '@/services/classService';
+import { courseService } from '@/services/courseService';
 import ConfirmDialog from '@/components/ConfirmDialog.vue';
 
 export default {
@@ -246,12 +374,14 @@ export default {
     const confirmDialog = ref();
 
     const showAddCandidateModal = ref(false);
+    const showAddCandidatesModal = ref(false); // combined modal: import + manual add
     const addingCandidate = ref(false);
     const candidateError = ref(null);
 
     const searchPeopleQuery = ref('');
     const showSearchResults = ref(false);
     const selectedPerson = ref(null);
+    const searchContainerRef = ref(null);
 
     const showImportModal = ref(false);
     const importing = ref(false);
@@ -352,7 +482,12 @@ export default {
           notes: newCandidate.value.notes
         });
         await loadStageDetails();
-        closeAddCandidateModal();
+        // If we were opened via the combined modal, close the combined modal so the header/button becomes visible
+        if (showAddCandidatesModal.value) {
+          closeAddCandidatesModal();
+        } else {
+          closeAddCandidateModal();
+        }
       } catch (err) {
         candidateError.value = 'Erro ao adicionar candidato: ' + (err.response?.data?.message || err.message);
       } finally {
@@ -403,9 +538,14 @@ export default {
         
         importSuccess.value = true;
         importSuccessMessage.value = successMessage;
-        
+
         // Recarrega a lista de candidatos
         await loadStageDetails();
+
+        // If opened as combined modal, close it so the header button appears
+        if (showAddCandidatesModal.value) {
+          closeAddCandidatesModal();
+        }
       } catch (err) {
         importError.value = 'Erro ao importar arquivo: ' + (err.response?.data?.message || err.message);
       } finally {
@@ -431,6 +571,125 @@ export default {
       if (fileInput.value) {
         fileInput.value.value = '';
       }
+    };
+
+    // ── Modal: Adicionar Cursos (nivelamento) ─────────────────────────────────
+    const showAddCoursesModal = ref(false);
+    const modalCourses = ref([]);
+    const loadingModalCourses = ref(false);
+    const addingCourses = ref(false);
+    const selectedCourseIds = ref([]);
+    const selectedRequired = ref({});
+    const selectedCourseExcelFile = ref(null);
+    const importingCourseExcel = ref(false);
+    const courseExcelImportError = ref(null);
+    const courseExcelImportSuccess = ref('');
+
+    const openAddCoursesModal = async () => {
+      showAddCoursesModal.value = true;
+      await loadModalCourses();
+    };
+
+    const loadModalCourses = async () => {
+      loadingModalCourses.value = true;
+      try {
+        const all = await courseService.getAll().catch(() => []);
+        const assignments = await courseService.getAssignmentsByClassId(classId.value).catch(() => []);
+        modalCourses.value = (Array.isArray(all) ? all : []).map(c => {
+          const a = (assignments || []).find(x => x.course?.id === c.id);
+          return {
+            id: c.id,
+            name: c.name,
+            description: c.description,
+            knowledgeArea: c.knowledgeArea?.name,
+            assigned: !!a,
+            required: a ? a.required : true
+          };
+        });
+        modalCourses.value.forEach(c => {
+          if (c.assigned) selectedRequired.value[c.id] = c.required;
+          else if (selectedRequired.value[c.id] === undefined) selectedRequired.value[c.id] = true;
+        });
+      } catch (err) {
+        console.error('Erro ao carregar cursos para modal:', err);
+        modalCourses.value = [];
+      } finally {
+        loadingModalCourses.value = false;
+      }
+    };
+
+    const toggleCourseSelection = (courseId, checked) => {
+      const idx = selectedCourseIds.value.indexOf(courseId);
+      if (checked) {
+        if (idx === -1) selectedCourseIds.value.push(courseId);
+      } else {
+        if (idx !== -1) selectedCourseIds.value.splice(idx, 1);
+      }
+    };
+
+    const setRequired = (courseId, checked) => {
+      selectedRequired.value[courseId] = checked;
+    };
+
+    const handleCourseExcelFileChange = (event) => {
+      const file = event.target.files[0];
+      selectedCourseExcelFile.value = file || null;
+      courseExcelImportError.value = null;
+      courseExcelImportSuccess.value = '';
+    };
+
+    const importCoursesExcelToClass = async () => {
+      if (!classId.value || !selectedCourseExcelFile.value) return;
+      importingCourseExcel.value = true;
+      courseExcelImportError.value = null;
+      courseExcelImportSuccess.value = '';
+      try {
+        const formData = new FormData();
+        formData.append('file', selectedCourseExcelFile.value);
+        const result = await courseService.importCoursesToClassFromExcel(classId.value, formData);
+        courseExcelImportSuccess.value =
+          `Processadas: ${result.totalProcessed}. ` +
+          `Cursos criados: ${result.createdCourses}. ` +
+          `Cursos adicionados à turma: ${result.assignedCourses}. ` +
+          `Já adicionados: ${result.alreadyAssigned}. ` +
+          `Ignoradas: ${result.skippedRows}.`;
+        await loadModalCourses();
+      } catch (err) {
+        courseExcelImportError.value = 'Erro ao importar cursos: ' + (err.response?.data?.message || err.message);
+      } finally {
+        importingCourseExcel.value = false;
+      }
+    };
+
+    const addSelectedCourses = async () => {
+      if (!classId.value) return;
+      if (!selectedCourseIds.value.length) return;
+      addingCourses.value = true;
+      try {
+        await Promise.all(selectedCourseIds.value.map(id => {
+          const req = selectedRequired.value[id] === undefined ? true : !!selectedRequired.value[id];
+          return courseService.assignCourseToClass(id, classId.value, req);
+        }));
+        await loadStageDetails();
+        await loadModalCourses();
+        selectedCourseIds.value = [];
+        showAddCoursesModal.value = false;
+      } catch (err) {
+        console.error('Erro ao adicionar cursos:', err);
+        alert('Erro ao adicionar cursos: ' + (err.response?.data?.message || err.message));
+      } finally {
+        addingCourses.value = false;
+      }
+    };
+
+    const closeAddCoursesModal = () => {
+      showAddCoursesModal.value = false;
+      selectedCourseIds.value = [];
+      selectedRequired.value = {};
+      selectedCourseExcelFile.value = null;
+      importingCourseExcel.value = false;
+      courseExcelImportError.value = null;
+      courseExcelImportSuccess.value = '';
     };
 
     const updateCandidateStatus = async (candidateId, newStatus) => {
@@ -471,6 +730,13 @@ export default {
       showSearchResults.value = false;
     };
 
+    const closeAddCandidatesModal = () => {
+      showAddCandidatesModal.value = false;
+      // reset inner states
+      closeAddCandidateModal();
+      closeImportModal();
+    };
+
     const getStatusClass = (status) => {
       const statusMap = {
         'APROVADO': 'status-approved',
@@ -488,8 +754,65 @@ export default {
       router.back();
     };
 
-    onMounted(() => {
-      loadStageDetails();
+    const openCourses = async () => {
+      if (!classId.value) return;
+      let pid = programId.value;
+      if (!pid) {
+        try {
+          const cls = await classService.getById(classId.value);
+          pid = cls?.program?.id ?? cls?.programId;
+        } catch (err) {
+          console.error('Erro ao obter programId:', err);
+        }
+      }
+
+      if (!pid) {
+        console.warn('programId não encontrado para a turma', classId.value);
+        return;
+      }
+
+      router.push({ name: 'ClassCourses', params: { programId: String(pid), classId: String(classId.value) } });
+    };
+
+    const normalizeName = (str) => (str || '').normalize('NFD').replace(/\p{Diacritic}/gu, '').toUpperCase();
+
+    const displayStageName = (name) => {
+      if (!name) return '';
+      const normalized = normalizeName(name);
+      if (normalized === 'SELECAO') return 'SELEÇÃO';
+      if (normalized === 'IMERSAO') return 'IMERSÃO';
+      return name;
+    };
+
+    const isNivelamento = computed(() => normalizeName(stageData.value?.name) === 'NIVELAMENTO');
+
+    const handleDocumentClick = (e) => {
+      try {
+        // If the click is inside any .search-container, keep results open
+        const containers = document.querySelectorAll('.search-container');
+        let clickedInside = false;
+        containers.forEach(c => {
+          if (c.contains(e.target)) clickedInside = true;
+        });
+        if (!clickedInside) {
+          showSearchResults.value = false;
+        }
+      } catch (err) {
+        // ignore
+      }
+    };
+
+    onMounted(async () => {
+      // use pointerdown to catch outside clicks earlier
+      document.addEventListener('pointerdown', handleDocumentClick);
+      await loadStageDetails();
+      if (route.query && (route.query.openAdd === 'true' || route.query.openAdd === true)) {
+        showAddCandidatesModal.value = true;
+      }
+    });
+
+    onBeforeUnmount(() => {
+      document.removeEventListener('pointerdown', handleDocumentClick);
     });
 
     return {
@@ -499,6 +822,8 @@ export default {
       error,
       confirmDialog,
       showAddCandidateModal,
+      showAddCandidatesModal,
+      searchContainerRef,
       addingCandidate,
       candidateError,
       newCandidate,
@@ -516,6 +841,16 @@ export default {
       duplicatePeopleNames,
       selectedFile,
       fileInput,
+      showAddCoursesModal,
+      modalCourses,
+      loadingModalCourses,
+      selectedCourseIds,
+      selectedRequired,
+      addingCourses,
+      selectedCourseExcelFile,
+      importingCourseExcel,
+      courseExcelImportError,
+      courseExcelImportSuccess,
       handleSearchInput,
       selectPerson,
       clearSelection,
@@ -523,17 +858,28 @@ export default {
       getPeopleEmail,
       getPeopleCPF,
       addCandidate,
+      toggleCourseSelection,
+      setRequired,
+      handleCourseExcelFileChange,
+      importCoursesExcelToClass,
+      addSelectedCourses,
+      closeAddCoursesModal,
+      openAddCoursesModal,
       updateCandidateStatus,
       updateCandidateNotes,
       removeCandidate,
       closeAddCandidateModal,
+      closeAddCandidatesModal,
       handleFileChange,
       importExcel,
       closeSuccessAlert,
       closeImportModal,
       getStatusClass,
       formatDate,
-      goBack
+      openCourses,
+      goBack,
+      displayStageName,
+      isNivelamento
     };
   }
 };

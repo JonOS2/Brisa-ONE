@@ -41,7 +41,7 @@
         <div v-else class="stages-grid">
           <div v-for="stage in stages" :key="stage.id" class="stage-card" @click="goToStageDetails(stage)">
             <div class="stage-card-header">
-              <h3>{{ stage.name }}</h3>
+              <h3>{{ displayStageName(stage.name) }}</h3>
               <span class="candidates-count">{{ getStageCandidatesCount(stage.id) }} candidatos</span>
             </div>
             <p v-if="stage.description" class="stage-description">{{ stage.description }}</p>
@@ -270,14 +270,29 @@ export default {
     };
 
     const goToStageDetails = (stage) => {
+      // Normalize name (remove diacritics) for comparison
+      const normalized = (stage.name || '').normalize('NFD').replace(/\p{Diacritic}/gu, '').toUpperCase();
+      const openForAdd = normalized === 'SELECAO' || normalized === 'NIVELAMENTO';
+
+      const query = openForAdd ? { openAdd: 'true' } : {};
+
       router.push({ 
         name: 'StageDetails', 
         params: { 
           programId: programId.value,
           classId: classId.value,
           stageId: stage.id 
-        } 
+        },
+        query
       });
+    };
+
+    const displayStageName = (name) => {
+      if (!name) return '';
+      const normalized = name.normalize('NFD').replace(/\p{Diacritic}/gu, '').toUpperCase();
+      if (normalized === 'SELECAO') return 'SELEÇÃO';
+      if (normalized === 'IMERSAO') return 'IMERSÃO';
+      return name;
     };
 
     const closeCreateStageModal = () => {
@@ -320,6 +335,7 @@ export default {
       updateStage,
       closeEditStageModal,
       goToStageDetails,
+      displayStageName,
       closeCreateStageModal,
       formatDate,
       goBack

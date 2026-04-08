@@ -38,5 +38,20 @@ public class ClassModel {
     // a turma que tem o local
     
 
+    @Column(name = "default_selection_capacity")
+    private Integer defaultSelectionCapacity = 350;
+
+    @Column(name = "default_leveling_capacity")
+    private Integer defaultLevelingCapacity = 250;
+
+    @Column(name = "default_immersion_capacity")
+    private Integer defaultImmersionCapacity = 50;
+
+    @Column(name = "immersion_team_size")
+    private Integer immersionTeamSize = 5;
+
+    @Column(name = "qtd_vagas")
+    private Integer qtdVagas;
+
 
 }

@@ -12,6 +12,7 @@ import ClassDetailsView from '@/views/ClassDetailsView.vue';
 import StageDetailsView from '@/views/StageDetailsView.vue';
 import InstitutionsView from '@/views/InstitutionsView.vue';
 import LogsView from '@/views/LogsView.vue';
+import CoursesView from '@/views/CoursesView.vue';
 
 const routes = [
   {
@@ -58,6 +59,12 @@ const routes = [
     path: '/programs',
     name: 'Programs',
     component: ProgramsView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/courses',
+    name: 'Courses',
+    component: CoursesView,
     meta: { requiresAuth: true }
   },
   {

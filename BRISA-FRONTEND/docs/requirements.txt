@@ -1,0 +1,495 @@
+--- PAGE 1 ---
+BRISA
+Sistema de Gestão Acadêmica
+Confidencial — Uso Interno BRISA / UFAL
+Analytics, Gráficos e Roadmap de Melhorias
+ Documento técnico baseado no backend existente e no escopo oficial do projeto
+Parceiro
+UFAL — Residência em TIC
+Empresa
+BRISA — Inovar e Criar Valor
+Contato
+Paulo Foina · paulo.foina@brisabr.com.br
+Data
+26 de March de 2026
+Versão
+1.0 — Documento Inicial
+
+
+--- PAGE 2 ---
+BRISA — Sistema de Gestão Acadêmica
+Analytics & Melhorias
+BRISA — Documento de Analytics e Roadmap de Melhorias
+Pág. 2
+1. Introdução
+Este documento consolida a análise completa de analytics para o Sistema de Gestão Acadêmica BRISA,
+cruzando três fontes de informação:
+ O backend Spring Boot existente (models JPA, repositórios e serviços mapeados)
+ 
+ O escopo oficial do projeto — Pré-proposta de Projetos de Imersão (UFAL)
+ 
+ As necessidades de insight identificadas para gestores, coordenadores e financiadores
+ 
+O objetivo central é definir quais gráficos e relatórios são estratégicos, mapeando o que já é possível
+construir com os dados existentes, o que depende de campos adicionais e o que representa novas
+funcionalidades a implementar.
+O programa BRISA acompanha a vida acadêmica dos alunos desde a inscrição inicial até dois anos após
+a formatura, gerenciando programas, turmas, cursos, etapas de seleção, provas, grupos de projeto e
+progressão de carreira — um ecossistema com alto potencial analítico ainda subutilizado.
+
+
+--- PAGE 3 ---
+BRISA — Sistema de Gestão Acadêmica
+Analytics & Melhorias
+BRISA — Documento de Analytics e Roadmap de Melhorias
+Pág. 3
+2. Mapa Completo de Analytics
+Organizado em seis eixos temáticos, cada um cobrindo um aspecto diferente da jornada acadêmica e
+institucional.
+2.1 Progressão de Cursos
+ Model principal: CourseProgressionModel — status, completionPercentage, date, lastAccess
+PROGRESSÃO DE CURSOS — Gráficos e Insights
+● Linha temporal: Conclusões por dia/semana/mês — revela picos sazonais e melhor momento para lembretes
+● Funil: Não iniciado → Em andamento → Concluído — identifica onde os alunos param
+● Barras ranqueadas: Taxa de conclusão por curso — cursos com média < 40% precisam de revisão de conteúdo
+● Heatmap dia × hora: Horários de acesso (lastAccess) — base para notificações no momento certo
+2.2 Matrículas e Desempenho
+ Model principal: EnrollmentModel — enrollmentDate, completionDate, grade, status
+MATRÍCULAS — Gráficos e Insights
+● Linha com comparação: Novas matrículas por mês — monitora crescimento e sazonalidade
+● Histograma: Distribuição de notas (grade) — diagnóstico de calibragem do curso
+● Barras empilhadas: Status por turma (Realizado / Em andamento / Não-realizado) — comparativo
+● Box plot: Tempo até conclusão (completionDate − enrollmentDate) — detecta turmas com ritmo atípico
+2.3 Seleção — Etapas e Candidatos
+ Models: StageModel + StageCandidateModel — status (APROVADO/REPROVADO), createdAt
+SELEÇÃO — Gráficos e Insights
+● Funil por etapa: Taxa de aprovação por etapa da turma — identifica o gargalo do processo seletivo
+● Linha temporal: Candidatos adicionados por período (createdAt) — importações vs inserções manuais
+● Barra comparativa: Aprovados vs reprovados por turma — compara rigor entre turmas
+● Scatter: Candidatos por etapa × taxa de aprovação — detecta etapas com critérios mal calibrados
+2.4 Progressão de Carreira dos Egressos
+ Model: CareerProgressionModel — surveyDate, status, company, position
+CARREIRA — Gráficos e Insights
+
+
+--- PAGE 4 ---
+BRISA — Sistema de Gestão Acadêmica
+Analytics & Melhorias
+BRISA — Documento de Analytics e Roadmap de Melhorias
+Pág. 4
+● Linha dual: Empregados vs desempregados ao longo do tempo — principal prova de impacto social
+● Barras horizontais: Empresas que mais contratam egressos — guia estratégia de parcerias
+● Treemap: Cargos mais frequentes — revela se egressos estão em funções técnicas ou administrativas
+● KPI com tendência: Taxa de empregabilidade por turma — indicador-chave para Softex/MCTI
+2.5 Provas e Desempenho Acadêmico
+ Models: ExamAnswerModel + ExamQuestionModel — is_correct, pointsEarned, subject (KnowledgeArea)
+PROVAS — Gráficos e Insights
+● Heatmap questão × aluno: Mapa de acertos — identifica questões difíceis para todos (coluna vermelha)
+● Barras por área: Taxa de acerto por KnowledgeArea — lacunas globais de aprendizado por área
+● Histograma de pontos: Distribuição de pontuação por aluno — diagnóstico de calibragem da prova
+● Linha de evolução: Desempenho entre provas — identifica alunos com queda sistemática
+2.6 Uso do Sistema (Operadores)
+ Model: SystemLogModel — action (LogAction enum), userId, ipAddress, createdAt
+USO DO SISTEMA — Gráficos e Insights
+● Barras por tipo: Volume de ações por LogAction — revela funcionalidades mais e menos usadas
+● Linha temporal: Atividade diária do sistema — picos indicam eventos ou incidentes
+● Tabela ranqueada: Usuários mais ativos — base para identificar power users ou uso indevido
+● Heatmap: Horários de uso por dia — planejar manutenções fora do horário de pico
+
+
+--- PAGE 5 ---
+BRISA — Sistema de Gestão Acadêmica
+Analytics & Melhorias
+BRISA — Documento de Analytics e Roadmap de Melhorias
+Pág. 5
+3. Relatórios Solicitados no Escopo
+A pré-proposta define cinco relatórios obrigatórios. Abaixo o status de cada um com base nos dados
+disponíveis.
+Legenda de Status:
+ ✓ Possível hoje
+Dados já existem no backend, apenas requer criação da query e endpoint
+ ~ Parcial
+Dados parcialmente disponíveis; falta algum campo ou JOIN adicional
+ ✗ Requer campo
+ novo
+Campo ou tabela não existe no backend atual; precisa ser implementado
+3.1 Status da Turma
+Quantidade de alunos que concluíram de 1 ao máximo de cursos — tabela e gráfico de barras.
+Gráfico / Relatório
+ Status
+Fonte no escopo
+Campos-chave
+Histograma: alunos × qtd de cursos concluídos
+ ✓ Possível hoje
+Status da Turma (pág. 3)
+status,
+people_id,
+course_id
+Comparativo de conclusão entre turmas
+ ✓ Possível hoje
+Status da Turma (pág. 3)
+class_id,
+completion_%
+% alunos com todos os cursos concluídos
+ ~ Parcial
+Status da Turma (pág. 3)
+class_courses:
+faltante
+Evolução de conclusões ao longo da turma
+ ✓ Possível hoje
+Status da Turma (pág. 3)
+date, status,
+class_id
+3.2 Resumo da Prova
+Por sexo e cota, distribuição de notas, top 15 questões mais e menos acertadas.
+Gráfico / Relatório
+ Status
+Fonte no escopo
+Campos-chave
+Distribuição de alunos por nota (histograma)
+ ✓ Possível hoje
+Resumo da Prova (pág. 3)
+points_earned,
+people_id
+Top 15 questões mais/menos acertadas
+ ✓ Possível hoje
+Resumo da Prova (pág. 3)
+exam_question_id,
+is_correct
+Participantes por sexo (pizza/barras)
+ ✓ Possível hoje
+Resumo da Prova (pág. 3)
+gender, people_id
+Participantes por cota e acertos
+✗ Requer campo novo
+Resumo da Prova (pág. 3)
+FALTA: cota em
+PeopleModel
+3.3 Relação de Aprovados
+Fórmula: nota + cursos × pontos + pontos/cidade. Cotas parametrizáveis. Desempate por idade.
+
+
+--- PAGE 6 ---
+BRISA — Sistema de Gestão Acadêmica
+Analytics & Melhorias
+BRISA — Documento de Analytics e Roadmap de Melhorias
+Pág. 6
+Gráfico / Relatório
+ Status
+Fonte no escopo
+Campos-chave
+Ranking de aprovados com pontuação composta
+ ~ Parcial
+Aprovados (pág. 3)
+FALTA:
+frequencia,
+pts_cidade
+Funil de vagas por cota com aprovados
+✗ Requer campo novo
+Aprovados (pág. 3)
+FALTA: cota,
+config cotas
+Desempate por idade (birth_date)
+ ✓ Possível hoje
+Aprovados (pág. 3)
+birth_date em
+PeopleModel
+Pontos por cidade atendida
+✗ Requer campo novo
+Aprovados (pág. 3)
+FALTA: city_point
+s_config
+3.4 Evolução dos Egressos
+Empregados/desempregados por tipo de cargo e tempo de conclusão após o programa.
+Gráfico / Relatório
+ Status
+Fonte no escopo
+Campos-chave
+Linha dual: empregados vs desempregados
+ ✓ Possível hoje
+Egressos (pág. 3)
+survey_date,
+status
+Distribuição por tipo de cargo (position)
+ ✓ Possível hoje
+Egressos (pág. 3)
+position, status
+Tempo até emprego após conclusão
+ ~ Parcial
+Egressos (pág. 3)
+completion_date
+pode ser nulo
+Cidades com maior quantidade de empregados
+ ✓ Possível hoje
+Egressos (pág. 3)
+city, status,
+people_id
+
+
+--- PAGE 7 ---
+BRISA — Sistema de Gestão Acadêmica
+Analytics & Melhorias
+BRISA — Documento de Analytics e Roadmap de Melhorias
+Pág. 7
+4. Lacunas Identificadas no Backend
+O cruzamento entre o escopo e os models JPA revelou lacunas que precisam ser endereçadas antes dos
+relatórios mais críticos.
+4.1 Campos Faltantes em Models Existentes
+Campos mencionados no escopo que não existem em nenhum model atual:
+Model afetado
+Campo/Tabela faltante
+Impacto nos relatórios
+PeopleModel
+cota (enum:
+ampla_concorrencia, pcd,
+raca_cor)
+Bloqueia: Resumo da Prova por cota, Relação de Aprovados
+PeopleModel
+tipo_cota (detalhamento da
+cota)
+Bloqueia: distribuição das cotas no perfil da prova
+EnrollmentModel
+frequencia (Double — % de
+presença)
+Bloqueia: pontuação de aprovação (nota + frequência)
+ProgramModel
+valor_programa (BigDecimal)
+Bloqueia: KPI de custo por aluno, relatório Softex/MCTI
+ProgramModel
+entidade_fomento +
+coordenador_geral
+Mencionado no cadastro de programas do escopo
+ClassModel
+qtd_vagas (Integer)
+Mencionado no escopo — cadastro de turma
+4.2 Tabelas/Relacionamentos Faltantes
+Model afetado
+Campo/Tabela faltante
+Impacto nos relatórios
+ClassModel ↔
+CourseModel
+Tabela class_courses
+(class_id, course_id,
+obrigatorio)
+Bloqueia: % de cursos obrigatórios concluídos por aluno
+Configuração global
+Tabela city_points_config
+(cidade, pontos)
+Bloqueia: pontuação por cidade na Relação de Aprovados
+Configuração global
+Tabela cota_config
+(tipo_cota, vagas,
+programa_id)
+Bloqueia: vagas por cota parametrizável
+ExamModel
+Relação exam ↔ class (qual
+turma fez qual prova)
+Bloqueia: relatórios de prova filtrados por turma
+4.3 Inconsistências Identificadas
+ completionDate pode ser nulo — o cálculo de 'tempo até emprego' fica comprometido. Recomenda-se
+ preenchimento automático quando status muda para 'Realizado'.
+ CourseModel não possui data_inclusao, presente no escopo mas ausente no model.
+ 
+
+--- PAGE 8 ---
+BRISA — Sistema de Gestão Acadêmica
+Analytics & Melhorias
+BRISA — Documento de Analytics e Roadmap de Melhorias
+Pág. 8
+ ProgramAddendumModel está bem estruturado, mas ProgramModel não tem valor_programa — o valor
+ do contrato principal não está registrado.
+ Os templates de e-mail (email-verification.html e reset-password.html) ainda referenciam 'Duel Shop' —
+ precisam ser atualizados urgentemente.
+
+
+--- PAGE 9 ---
+BRISA — Sistema de Gestão Acadêmica
+Analytics & Melhorias
+BRISA — Documento de Analytics e Roadmap de Melhorias
+Pág. 9
+5. Queries de Referência
+Queries SQL base para os relatórios que já podem ser construídos com os dados existentes.
+5.1 Funil de Status dos Cursos por Turma
+-- Funil de conclusão de cursos por turma
+SELECT c.code AS turma, cp.status, COUNT(*) AS total
+FROM course_progressions cp
+JOIN enrollments e ON cp.people_id = e.people_id
+JOIN classes c ON e.class_id = c.id
+GROUP BY c.code, cp.status ORDER BY c.code, cp.status;
+5.2 Conclusões Semanais (Linha Temporal)
+-- Conclusões por semana
+SELECT DATE_TRUNC('week', date) AS semana, COUNT(*) AS conclusoes
+FROM course_progressions
+WHERE status = 'concluído'
+GROUP BY semana ORDER BY semana;
+5.3 Taxa de Empregabilidade por Turma
+-- Taxa de empregabilidade dos egressos por turma
+SELECT c.code AS turma,
+ROUND(100.0 * SUM(CASE WHEN cp.status = 'empregado' THEN 1 ELSE 0 END)
+/ COUNT(*), 1) AS pct_empregados,
+COUNT(*) AS total_egressos
+FROM career_progressions cp
+JOIN enrollments e ON cp.people_id = e.people_id
+JOIN classes c ON e.class_id = c.id
+GROUP BY c.code ORDER BY pct_empregados DESC;
+5.4 Heatmap de Horários de Acesso
+-- Heatmap: dia da semana × hora de acesso dos alunos
+SELECT EXTRACT(DOW FROM last_access) AS dia_semana,
+EXTRACT(HOUR FROM last_access) AS hora,
+COUNT(*) AS acessos
+FROM course_progressions
+
+
+--- PAGE 10 ---
+BRISA — Sistema de Gestão Acadêmica
+Analytics & Melhorias
+BRISA — Documento de Analytics e Roadmap de Melhorias
+Pág. 10
+WHERE last_access IS NOT NULL
+GROUP BY dia_semana, hora ORDER BY dia_semana, hora;
+5.5 Top 15 Questões com Mais Erros
+-- Questões com maior taxa de erro na prova
+SELECT eq.question_number, ka.name AS area,
+ROUND(100.0 * SUM(CASE WHEN ea.is_correct THEN 0 ELSE 1 END)
+/ COUNT(*), 1) AS pct_erro
+FROM exam_answers ea
+JOIN exam_questions eq ON ea.exam_question_id = eq.id
+JOIN knowledge_areas ka ON eq.subject_id = ka.id
+GROUP BY eq.question_number, ka.name
+ORDER BY pct_erro DESC LIMIT 15;
+
+
+--- PAGE 11 ---
+BRISA — Sistema de Gestão Acadêmica
+Analytics & Melhorias
+BRISA — Documento de Analytics e Roadmap de Melhorias
+Pág. 11
+6. Roadmap de Implementação
+Três fases priorizando relatórios imediatos, correções de backend e funcionalidades avançadas.
+Fase
+Entregável
+ Prioridade
+ Esforço
+Fase 1 — Imediato
+Dashboard: funil de cursos por turma
+(CourseProgressionModel)
+ Alta
+ 2–3 dias
+Fase 1 — Imediato
+Relatório: Conclusões ao longo do tempo (linha temporal)
+ Alta
+ 1–2 dias
+Fase 1 — Imediato
+Relatório: Evolução dos egressos por cargo
+(CareerProgressionModel)
+ Alta
+ 2–3 dias
+Fase 1 — Imediato
+Relatório: Top 15 questões acertos/erros
+(ExamAnswerModel)
+ Alta
+ 2–3 dias
+Fase 1 — Imediato
+Heatmap: horários de acesso dos alunos (lastAccess)
+ Alta
+ 1–2 dias
+Fase 1 — Imediato
+Dashboard: atividade do sistema (SystemLogModel — zero
+backend)
+ Média
+ 1 dia
+Fase 2 — Backend
+Adicionar campo 'cota' e 'tipo_cota' em PeopleModel
+ Alta
+ 3–4 horas
+Fase 2 — Backend
+Adicionar campo 'frequencia' em EnrollmentModel
+ Alta
+ 2–3 horas
+Fase 2 — Backend
+Adicionar campos financeiros em ProgramModel (valor,
+entidade)
+ Alta
+ 2–3 horas
+Fase 2 — Backend
+Criar tabela class_courses (turma ↔ cursos previstos)
+ Alta
+ 4–6 horas
+Fase 2 — Backend
+Criar tabelas de configuração (city_points, cota_config)
+ Média
+ 4–6 horas
+Fase 2 — Backend
+Corrigir templates de e-mail (remover referências 'Duel
+Shop')
+ Média
+ 1 hora
+Fase 3 — Avançado
+Relação de aprovados com fórmula composta (nota +
+cursos + cidade + cotas)
+ Alta
+ 1–2
+semanas
+Fase 3 — Avançado
+Mapa geográfico: turmas e alunos por estado/cidade
+ Média
+ 3–4 dias
+Fase 3 — Avançado
+Análise financeira: custo por aluno formado por turma
+ Média
+ 2–3 dias
+Fase 3 — Avançado
+Endpoint /api/analytics/* dedicado com queries otimizadas
+ Alta
+ 1–2
+semanas
+Fase 3 — Avançado
+Exportação de relatórios em PDF/Excel pelo próprio sistema
+ Baixa
+ 1–2
+semanas
+
+
+--- PAGE 12 ---
+BRISA — Sistema de Gestão Acadêmica
+Analytics & Melhorias
+BRISA — Documento de Analytics e Roadmap de Melhorias
+Pág. 12
+7. Resumo Executivo
+O que já é possível hoje
+Dos cinco relatórios obrigatórios do escopo, partes de quatro podem ser construídas sem modificar o
+backend:
+ Status da Turma: histograma, comparativo entre turmas e linha temporal — todos possíveis
+ imediatamente.
+ Resumo da Prova: distribuição por nota, top-15 questões, breakdown por sexo — possíveis. Só cota
+ falta.
+ Evolução dos Egressos: linha temporal, por cargo, por cidade — completamente possível hoje.
+ 
+ Heatmap de horários, funil de seleção, atividade do sistema — possíveis imediatamente.
+ 
+Prioridades de Backend
+Os quatro campos mais críticos a adicionar, em ordem de impacto:
+ cota em PeopleModel — desbloqueia toda a lógica de cotas dos relatórios de prova e seleção.
+ 
+ frequencia em EnrollmentModel — completa a fórmula da Relação de Aprovados.
+ 
+ class_courses (nova tabela) — permite calcular '% de conclusão' por aluno corretamente.
+ 
+ valor_programa em ProgramModel — habilita análise financeira e KPI de custo por aluno.
+ 
+Impacto Esperado
+Com o roadmap completo, o BRISA passará de um sistema de registro para uma plataforma de
+inteligência acadêmica capaz de:
+ Fornecer evidências quantitativas do impacto social para Softex, MCTI e Governo Federal.
+ 
+ Permitir intervenções proativas: identificar alunos em risco antes do abandono do curso.
+ 
+ Otimizar o processo seletivo com dados históricos de aprovação por etapa.
+ 
+ Comparar desempenho entre turmas, programas e instituições parceiras.
+ 
+ Automatizar a Relação de Aprovados com a fórmula composta definida no escopo.
+ 
+ Documento gerado em 26 de March de 2026 — BRISA Sistema de Gestão Acadêmica v1.0
+
+

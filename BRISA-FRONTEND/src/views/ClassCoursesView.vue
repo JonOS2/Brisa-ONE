@@ -14,6 +14,9 @@
           {{ classData.location.state }} · {{ classData.location.acronym }}
         </span>
       </div>
+      <button class="btn-import-progressions" @click="showProgressionImportModal = true">
+        Importar Progressões (Excel)
+      </button>
     </div>
 
     <!-- Loading -->
@@ -115,9 +118,44 @@
             </div>
           </div>
 
+          <div class="course-actions">
+            <button v-if="course.assigned" class="btn-remove" @click.stop="removeCourse(course)">Remover</button>
+            <button v-else class="btn-add" @click.stop="assignCourse(course)">Adicionar</button>
+          </div>
+
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2" class="arrow-icon">
             <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
           </svg>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="showProgressionImportModal" class="modal-overlay" @click="closeProgressionImportModal">
+      <div class="modal-content" @click.stop>
+        <h2>Importar Progressões por Excel</h2>
+        <p class="modal-hint">Formato esperado: Nome do curso | CPF | Nota | Progresso</p>
+
+        <div class="upload-area">
+          <input
+            type="file"
+            accept=".xlsx,.xls"
+            @change="handleProgressionFileChange"
+          />
+          <p v-if="progressionImportFile">{{ progressionImportFile.name }}</p>
+        </div>
+
+        <div v-if="progressionImportError" class="alert-error">{{ progressionImportError }}</div>
+        <div v-if="progressionImportSuccess" class="alert-success">{{ progressionImportSuccess }}</div>
+
+        <div class="modal-actions">
+          <button class="btn-cancel" @click="closeProgressionImportModal">Cancelar</button>
+          <button
+            class="btn-send"
+            :disabled="importingProgressions || !progressionImportFile"
+            @click="importProgressionsExcel"
+          >
+            {{ importingProgressions ? 'Importando...' : 'Importar' }}
+          </button>
         </div>
       </div>
     </div>
@@ -139,7 +177,14 @@ export default {
     const classData = ref({});
     const courses = ref([]);
     const progressions = ref([]);
+    const assignments = ref([]);
+    const assignedCourseIds = ref([]);
     const loading = ref(true);
+    const showProgressionImportModal = ref(false);
+    const progressionImportFile = ref(null);
+    const importingProgressions = ref(false);
+    const progressionImportError = ref(null);
+    const progressionImportSuccess = ref('');
 
     const classId = computed(() => route.params.classId);
     const programId = computed(() => route.params.programId);
@@ -147,18 +192,13 @@ export default {
     // Monta os itens de curso com estatísticas calculadas
     const courseItems = computed(() => {
       if (courses.value.length === 0) {
-        // dados demo
-        return [
-          { id: 1, name: 'Engenharia de Software', knowledgeArea: 'Computação', required: true,  completionPct: 78, pctNotStarted: 10, pctInProgress: 12, pctCompleted: 78 },
-          { id: 2, name: 'Banco de Dados',          knowledgeArea: 'Computação', required: true,  completionPct: 45, pctNotStarted: 30, pctInProgress: 25, pctCompleted: 45 },
-          { id: 3, name: 'UX/UI Design',            knowledgeArea: 'Design',     required: false, completionPct: 20, pctNotStarted: 60, pctInProgress: 20, pctCompleted: 20 },
-          { id: 4, name: 'Gestão de Projetos',      knowledgeArea: 'Gestão',     required: false, completionPct: 95, pctNotStarted: 0,  pctInProgress: 5,  pctCompleted: 95 },
-        ];
+        return [];
       }
 
       return courses.value.map(course => {
         const courseProgressions = progressions.value.filter(p => p.course?.id === course.id);
         const total = courseProgressions.length || 1;
+        const assignment = assignments.value.find(a => a.course?.id === course.id);
 
         const notStarted  = courseProgressions.filter(p => p.status === 'não iniciado').length;
         const inProgress  = courseProgressions.filter(p => p.status === 'em andamento').length;
@@ -172,11 +212,12 @@ export default {
           id: course.id,
           name: course.name,
           knowledgeArea: course.knowledgeArea?.name,
-          required: true,
+          required: assignment ? assignment.required !== false : true,
           completionPct: avgCompletion,
           pctNotStarted:  Math.round((notStarted / total) * 100),
           pctInProgress:  Math.round((inProgress / total) * 100),
           pctCompleted:   Math.round((completed  / total) * 100),
+          assigned: assignedCourseIds.value.includes(course.id),
         };
       });
     });
@@ -201,17 +242,52 @@ export default {
       });
     };
 
+    const assignCourse = async (course) => {
+      try {
+        loading.value = true;
+        await courseService.assignCourseToClass(course.id, classId.value, true);
+        await loadData();
+      } catch (err) {
+        console.error('Erro ao atribuir curso:', err);
+      } finally {
+        loading.value = false;
+      }
+    };
+
+    const removeCourse = async (course) => {
+      try {
+        loading.value = true;
+        await courseService.removeCourseFromClass(course.id, classId.value);
+        await loadData();
+      } catch (err) {
+        console.error('Erro ao remover curso:', err);
+      } finally {
+        loading.value = false;
+      }
+    };
+
     const loadData = async () => {
       loading.value = true;
       try {
-        const [cls, allCourses, progs] = await Promise.all([
-          classService.getById(classId.value),
-          courseService.getAll(),
-          courseService.getProgressionsByClassId(classId.value).catch(() => [])
-        ]);
+        const cls = await classService.getById(classId.value);
+        const asgs = await courseService.getAssignmentsByClassId(classId.value).catch(() => []);
+        const progs = await courseService.getProgressionsByClassId(classId.value).catch(() => []);
+
         classData.value = cls || {};
-        courses.value = Array.isArray(allCourses) ? allCourses : [];
+        assignments.value = Array.isArray(asgs) ? asgs : [];
         progressions.value = Array.isArray(progs) ? progs : [];
+
+        // Cursos atribuídos à turma (a partir das assignments persistidas)
+        const assignedIds = Array.from(new Set(assignments.value.map(a => a.course?.id).filter(Boolean)));
+        assignedCourseIds.value = assignedIds;
+
+        if (assignedIds.length > 0) {
+          const allCourses = await courseService.getAll();
+          courses.value = Array.isArray(allCourses) ? allCourses.filter(c => assignedIds.includes(c.id)) : [];
+        } else {
+          courses.value = [];
+        }
+
       } catch (err) {
         console.error('Erro ao carregar cursos:', err);
       } finally {
@@ -219,12 +295,61 @@ export default {
       }
     };
 
+    const handleProgressionFileChange = (event) => {
+      const file = event.target.files[0];
+      progressionImportFile.value = file || null;
+      progressionImportError.value = null;
+      progressionImportSuccess.value = '';
+    };
+
+    const importProgressionsExcel = async () => {
+      if (!progressionImportFile.value) return;
+      importingProgressions.value = true;
+      progressionImportError.value = null;
+      progressionImportSuccess.value = '';
+
+      try {
+        const formData = new FormData();
+        formData.append('file', progressionImportFile.value);
+        const result = await courseService.importProgressionsFromExcel(classId.value, formData);
+
+        progressionImportSuccess.value =
+          `Processadas: ${result.totalProcessed}. ` +
+          `Criadas: ${result.createdProgressions}. ` +
+          `Atualizadas: ${result.updatedProgressions}. ` +
+          `Notas atualizadas: ${result.updatedGrades}. ` +
+          `Ignoradas: ${result.skippedRows}.`;
+
+        await loadData();
+      } catch (err) {
+        progressionImportError.value = 'Erro ao importar progressões: ' + (err.response?.data?.message || err.message);
+      } finally {
+        importingProgressions.value = false;
+      }
+    };
+
+    const closeProgressionImportModal = () => {
+      showProgressionImportModal.value = false;
+      progressionImportFile.value = null;
+      progressionImportError.value = null;
+      progressionImportSuccess.value = '';
+    };
+
     onMounted(loadData);
 
     return {
       router, classData, loading,
       courseItems, courseStats,
-      getCompletionColor, goToCourse
+      getCompletionColor, goToCourse,
+      assignCourse, removeCourse,
+      showProgressionImportModal,
+      progressionImportFile,
+      importingProgressions,
+      progressionImportError,
+      progressionImportSuccess,
+      handleProgressionFileChange,
+      importProgressionsExcel,
+      closeProgressionImportModal
     };
   }
 };
@@ -244,8 +369,10 @@ export default {
   display: flex;
   align-items: center;
   gap: 16px;
+  justify-content: space-between;
   margin-bottom: 28px;
 }
+.header-info { display: flex; align-items: center; gap: 12px; flex: 1; }
 .btn-back {
   display: flex;
   align-items: center;
@@ -261,7 +388,6 @@ export default {
   transition: background 0.2s;
 }
 .btn-back:hover { background: #f0f6ff; }
-.header-info { display: flex; align-items: center; gap: 12px; }
 .page-title { font-size: 24px; font-weight: 700; color: #1F285F; margin: 0; }
 .header-badge {
   background: #1F285F;
@@ -271,6 +397,17 @@ export default {
   font-size: 13px;
   font-weight: 600;
 }
+.btn-import-progressions {
+  background: #1F285F;
+  color: #fff;
+  border: 1px solid #1F285F;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.btn-import-progressions:hover { background: #2f3d8f; }
 
 /* Loading */
 .loading-state {
@@ -415,6 +552,107 @@ export default {
 
 .arrow-icon { flex-shrink: 0; margin-left: 12px; }
 .no-data { text-align: center; color: #aaa; padding: 48px; font-size: 14px; }
+
+.course-actions { display: flex; gap: 8px; align-items: center; margin-right: 8px; }
+.btn-add, .btn-remove {
+  background: #fff; border: 1px solid #c8d8ee; color: #1F285F; padding: 8px 10px; border-radius: 8px; font-weight: 700; cursor: pointer;
+}
+.btn-add:hover { background: #f0fbff; }
+.btn-remove { border-color: #f5d2d2; color: #b71c1c; }
+.btn-remove:hover { background: #fff5f5; }
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 14px;
+  width: 520px;
+  max-width: 94vw;
+  padding: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content h2 {
+  margin: 0 0 8px 0;
+  color: #1F285F;
+  font-size: 20px;
+}
+
+.modal-hint {
+  margin: 0 0 16px 0;
+  color: #666;
+  font-size: 13px;
+}
+
+.upload-area {
+  border: 2px dashed #d8e1ee;
+  border-radius: 12px;
+  padding: 18px;
+  background: #f8fbff;
+}
+
+.upload-area p {
+  margin: 10px 0 0;
+  color: #1F285F;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.alert-error {
+  background: #fdf0ef;
+  color: #c0392b;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-top: 12px;
+  font-size: 13px;
+}
+
+.alert-success {
+  background: #edfaf3;
+  color: #1e8449;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-top: 12px;
+  font-size: 13px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.btn-cancel {
+  background: #fff;
+  color: #555;
+  border: 1px solid #cfd9e8;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.btn-send {
+  background: #1F285F;
+  color: #fff;
+  border: 1px solid #1F285F;
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.btn-send:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 
 @media (max-width: 900px) {
   .summary-cards { grid-template-columns: repeat(2, 1fr); }

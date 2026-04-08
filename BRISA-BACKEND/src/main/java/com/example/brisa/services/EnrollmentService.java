@@ -23,6 +23,7 @@ public class EnrollmentService {
     private final PeopleRepository peopleRepository;
     private final ClassRepository classRepository;
     private final AcademicRoleRepository academicRoleRepository;
+    
 
     public List<EnrollmentModel> findAll() {
         return enrollmentRepository.findAll();
@@ -64,7 +65,10 @@ public class EnrollmentService {
             enrollment.setAcademicRole(role);
         }
         
-        return enrollmentRepository.save(enrollment);
+        EnrollmentModel saved = enrollmentRepository.save(enrollment);
+
+        // Backfill removed: não criamos progressões automaticamente ao matricular.
+        return saved;
     }
 
     @Transactional
