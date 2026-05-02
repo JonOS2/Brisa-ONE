@@ -10,15 +10,6 @@
       
       <ul class="nav-menu">
         <li>
-          <router-link to="/home" :class="{ active: $route.path === '/home' }">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-              <polyline points="9 22 9 12 15 12 15 22"></polyline>
-            </svg>
-            Início
-          </router-link>
-        </li>
-        <li>
           <router-link to="/dashboard" :class="{ active: $route.path === '/dashboard' }">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M3 21v-4"></path>
@@ -27,7 +18,16 @@
               <path d="M21 21v-6"></path>
               <path d="M3 21h18"></path>
             </svg>
-            Dashboards
+            Dashboard
+          </router-link>
+        </li>
+        <li>
+          <router-link to="/programs" :class="{ active: $route.path === '/programs' }">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+            </svg>
+            Programas
           </router-link>
         </li>
         <li>
@@ -42,23 +42,12 @@
           </router-link>
         </li>
         <li>
-          <router-link to="/institutions" :class="{ active: $route.path === '/institutions' }">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 21V8l9-5 9 5v13"></path>
-              <path d="M9 21V12h6v9"></path>
-              <path d="M7 21v-4"></path>
-              <path d="M17 21v-4"></path>
-            </svg>
-            Instituições
-          </router-link>
-        </li>
-        <li>
-          <router-link to="/programs" :class="{ active: $route.path.startsWith('/programs') }">
+          <router-link to="/programs/register" :class="{ active: $route.path === '/programs/register' }">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
-              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
             </svg>
-            Programas
+            Cadastro
           </router-link>
         </li>
         <li>
@@ -67,19 +56,7 @@
               <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
               <path d="M22 6.5V17.5A2.5 2.5 0 0 1 19.5 20H6.5A2.5 2.5 0 0 1 4 17.5V6.5A2.5 2.5 0 0 1 6.5 4H19.5A2.5 2.5 0 0 1 22 6.5Z"></path>
             </svg>
-            Cursos
-          </router-link>
-        </li>
-        <li>
-          <router-link to="/logs" :class="{ active: $route.path === '/logs' }">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-              <line x1="16" y1="13" x2="8" y2="13"></line>
-              <line x1="16" y1="17" x2="8" y2="17"></line>
-              <polyline points="10 9 9 9 8 9"></polyline>
-            </svg>
-            Logs do Sistema
+            Painel
           </router-link>
         </li>
       </ul>
@@ -176,7 +153,7 @@ export default {
   padding: 0;
   display: flex;
   align-items: center;
-  gap: 0;
+  gap: 8px;
   flex: 1;
   justify-content: center;
 }
