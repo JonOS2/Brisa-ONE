@@ -370,6 +370,90 @@
        </div>
     </div>
 
+    <!-- MODAL: Adicionar Novo Curso (Aba 4) -->
+    <div 
+      v-if="showNewCourseModal" 
+      class="modal-overlay" 
+      @click="closeNewCourseModal"
+    >
+       <div class="modal-content" @click.stop>
+          <div class="modal-header">
+             <div>
+               <h3>Adicionar Novo Curso</h3>
+               <p class="modal-subtitle">Cadastre um novo curso para a etapa de nivelamento</p>
+             </div>
+             <button class="btn-close-modal" @click="closeNewCourseModal">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+             </button>
+          </div>
+          
+          <div class="modal-body">
+             <!-- Linha 1: Proporção 3:1 para melhor uso do espaço -->
+             <div class="form-row" style="display: grid; grid-template-columns: 3fr 1fr; gap: 16px; margin-bottom: 16px;">
+               <div class="form-group relative" style="margin-bottom: 0;">
+                 <label>Nome do Curso <span class="required">*</span></label>
+                 <input 
+                   v-model="newCourseForm.name" 
+                   @input="newCourseFormError = false"
+                   @keydown.enter="$event.target.blur()" 
+                   type="text" 
+                   placeholder="Ex: Lógica de Programação II" 
+                   :class="['form-input', { 'input-error': newCourseFormError }]"
+                 />
+                 <span v-if="newCourseFormError" class="error-text">
+                   O nome do curso não pode ficar vazio.
+                 </span>
+               </div>
+               <div class="form-group" style="margin-bottom: 0;">
+                 <label>Carga Horária</label>
+                 <input 
+                   v-model="newCourseForm.hours" 
+                   @keydown.enter="$event.target.blur()" 
+                   type="text" 
+                   placeholder="Ex: 40h" 
+                   class="form-input"
+                 />
+               </div>
+             </div>
+
+             <!-- Linha 2: Flexbox para espaçamento simétrico dos toggles e alinhamento do Status à direita -->
+             <div class="form-row" style="display: flex; align-items: flex-start; gap: 32px; margin-bottom: 0;">
+               <div class="form-group" style="margin-bottom: 0;">
+                 <label>Obrigatório?</label>
+                 <label class="toggle-switch" style="margin-top: 4px;">
+                   <input type="checkbox" v-model="newCourseForm.required" class="toggle-input">
+                   <span class="toggle-slider"></span>
+                 </label>
+               </div>
+               
+               <div class="form-group" style="margin-bottom: 0;">
+                 <label>Pontua na Nota?</label>
+                 <label class="toggle-switch" style="margin-top: 4px;">
+                   <input type="checkbox" v-model="newCourseForm.scores" class="toggle-input">
+                   <span class="toggle-slider"></span>
+                 </label>
+               </div>
+
+               <div class="form-group" style="margin-bottom: 0; margin-left: auto; width: 140px;">
+                 <label>Status</label>
+                 <select v-model="newCourseForm.status" class="form-input form-select">
+                   <option value="Ativo">Ativo</option>
+                   <option value="Inativo">Inativo</option>
+                 </select>
+               </div>
+             </div>
+          </div>
+
+          <div class="modal-footer">
+             <button class="btn-footer-back" @click="closeNewCourseModal">Cancelar</button>
+             <button class="btn-footer-continue" @click="saveNewCourse">Adicionar Curso</button>
+          </div>
+       </div>
+    </div>
+
     <!-- 
       =======================================================================
       CABEÇALHO DA PÁGINA FIXO
@@ -397,30 +481,13 @@
           <div v-for="(title, index) in stepTitles" :key="index">
             <div :class="['step', { active: currentStep === index + 1, completed: currentStep > index + 1 }]" @click="goToStep(index + 1)">
                <div :class="['step-icon', { outline: currentStep < index + 1 }]">
+                  <!-- Ícone Padrão de Documento para todas as etapas -->
                   <svg v-if="currentStep > index + 1" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="20 6 9 17 4 12"></polyline>
                   </svg>
                   <svg v-else xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    
-                    <!-- Etapa 0 - Inscrição -->
-                    <circle v-if="index === 2" cx="12" cy="7" r="4"></circle>
-                    <path v-if="index === 2" d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                    
-                    <!-- Dados do Programa -->
-                    <path v-else-if="index === 0" d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                    <polyline v-else-if="index===0" points="14 2 14 8 20 8"></polyline>
-
-                    <!-- ============================================================== -->
-                    <!-- NOVO ÍCONE: ESTRUTURA DAS ETAPAS (Organograma Hierárquico)     -->
-                    <!-- ============================================================== -->
-                    <rect v-else-if="index === 1" x="9" y="3" width="6" height="6" rx="1.5"></rect>
-                    <rect v-else-if="index === 1" x="3" y="15" width="6" height="6" rx="1.5"></rect>
-                    <rect v-else-if="index === 1" x="15" y="15" width="6" height="6" rx="1.5"></rect>
-                    <path v-else-if="index === 1" d="M12 9v3m-6 3v-3h12v3"></path>
-                    <!-- ============================================================== -->
-                  
-                    <!-- Etapas de 1 em diante (Ícone de documento default) -->
-                    <path v-else d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
                   </svg>
                </div>
                <div class="step-label">
@@ -835,7 +902,7 @@
         </div>
 
         <!-- ========================================== -->
-        <!-- VIEW DA ETAPA 3: ETAPA 0 - INSCRIÇÃO       -->
+        <!-- VIEW DA ETAPA 3: ETAPA 0 - INSC REINSCRIÇÃO-->
         <!-- ========================================== -->
         <div v-else-if="currentStep === 3" class="step-container">
           
@@ -1135,6 +1202,411 @@
         </div>
 
         <!-- ========================================== -->
+        <!-- VIEW DA ETAPA 4: ETAPA 1 - NIVELAMENTO     -->
+        <!-- ========================================== -->
+        <div v-else-if="currentStep === 4" class="step-container">
+          
+          <div class="step-header">
+             <h2>Etapa 1 — Nivelamento</h2>
+             <p>Configure os cursos, avaliações e critérios de aprovação</p>
+          </div>
+
+          <!-- CARD 1: Configuração Geral -->
+          <div class="card-section">
+             <div class="section-title">
+                <h3>Configuração Geral</h3>
+                <p>Dados principais da etapa de nivelamento</p>
+             </div>
+             
+             <div class="form-row two-cols">
+               <div class="form-group">
+                 <label>Nome da Etapa</label>
+                 <input v-model="nivelamentoForm.title" type="text" class="form-input"/>
+               </div>
+               <div class="form-group">
+                 <label>Modalidade</label>
+                 <select v-model="nivelamentoForm.modality" class="form-input form-select">
+                   <option value="Online">Online</option>
+                   <option value="Presencial">Presencial</option>
+                   <option value="Híbrida">Híbrida</option>
+                   <option value="Remota Assíncrona">Remota Assíncrona</option>
+                 </select>
+               </div>
+             </div>
+
+             <div class="form-row three-cols-special">
+               <div class="form-group">
+                 <label>Carga Horária Total</label>
+                 <input v-model="nivelamentoForm.workload" type="text" class="form-input"/>
+               </div>
+               
+               <div class="form-group relative">
+                 <label>Data de Início</label>
+                 <div class="date-input-wrapper">
+                   <input v-model="displayDates.nivStart" @input="parseDateInput('nivStart')" type="text" placeholder="dd/mm/aaaa" class="form-input" maxlength="10"/>
+                   <svg @click="openDatePicker('nivStart')" class="date-icon cursor-pointer" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                 </div>
+                 <div v-if="activeDatePicker === 'nivStart'" class="custom-calendar">
+                    <div class="calendar-header">
+                       <button type="button" class="cal-btn" @click.stop="prevMonth">‹</button>
+                       <span>{{ monthNames[calendarDate.getMonth()] }} {{ calendarDate.getFullYear() }}</span>
+                       <button type="button" class="cal-btn" @click.stop="nextMonth">›</button>
+                    </div>
+                    <div class="calendar-grid">
+                       <span v-for="d in weekDays" :key="d" class="cal-weekday">{{ d }}</span>
+                       <span v-for="(day, idx) in calendarDays" :key="idx" :class="['cal-day', { 'empty': !day, 'selected': isSelectedDay('nivStart', day), 'today': isToday(day) }]" @click.stop="selectDate(day)">{{ day }}</span>
+                    </div>
+                 </div>
+               </div>
+               
+               <div class="form-group relative">
+                 <label>Data de Fim</label>
+                 <div class="date-input-wrapper">
+                   <input v-model="displayDates.nivEnd" @input="parseDateInput('nivEnd')" type="text" placeholder="dd/mm/aaaa" class="form-input" maxlength="10"/>
+                   <svg @click="openDatePicker('nivEnd')" class="date-icon cursor-pointer" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                 </div>
+                 <div v-if="activeDatePicker === 'nivEnd'" class="custom-calendar">
+                    <div class="calendar-header">
+                       <button type="button" class="cal-btn" @click.stop="prevMonth">‹</button>
+                       <span>{{ monthNames[calendarDate.getMonth()] }} {{ calendarDate.getFullYear() }}</span>
+                       <button type="button" class="cal-btn" @click.stop="nextMonth">›</button>
+                    </div>
+                    <div class="calendar-grid">
+                       <span v-for="d in weekDays" :key="d" class="cal-weekday">{{ d }}</span>
+                       <span v-for="(day, idx) in calendarDays" :key="idx" :class="['cal-day', { 'empty': !day, 'selected': isSelectedDay('nivEnd', day), 'today': isToday(day) }]" @click.stop="selectDate(day)">{{ day }}</span>
+                    </div>
+                 </div>
+               </div>
+             </div>
+
+             <div class="form-group" style="margin-bottom: 0;">
+               <label>Plataforma Utilizada</label>
+               <input v-model="nivelamentoForm.platform" type="text" placeholder="Ex: Moodle, Google Classroom..." class="form-input"/>
+             </div>
+          </div>
+
+          <!-- CARD 2: Cursos do Nivelamento -->
+          <div class="card-section">
+             <div class="section-title" style="margin-bottom: 8px;">
+                <h3>Cursos do Nivelamento</h3>
+                <p>Configure os cursos obrigatórios e opcionais</p>
+             </div>
+             
+             <!-- Contadores Dinâmicos -->
+             <div style="font-size: 13px; margin-bottom: 16px;">
+                <span style="color: #0d9488; font-weight: 500;">{{ reqCoursesCount }} obrigatórios</span> 
+                <span style="color: #d1d5db; margin: 0 8px;">|</span> 
+                <span style="color: #6b7280;">{{ optCoursesCount }} opcionais</span>
+             </div>
+
+             <!-- Lista de Cursos (Tabela CSS Grid) -->
+             <div class="course-table">
+                <div class="course-header">
+                   <span>Curso</span>
+                   <span>C.H.</span>
+                   <span>Obrigatório</span>
+                   <span>Pontua</span>
+                   <span>Status</span>
+                </div>
+                
+                <div v-for="(course, idx) in nivelamentoForm.courses" :key="idx" class="course-row">
+                   <span class="course-name">{{ course.name }}</span>
+                   <span class="course-hours">{{ course.hours }}</span>
+                   
+                   <label class="toggle-switch">
+                     <input type="checkbox" v-model="course.required" class="toggle-input">
+                     <span class="toggle-slider"></span>
+                   </label>
+                   
+                   <label class="toggle-switch">
+                     <input type="checkbox" v-model="course.scores" class="toggle-input">
+                     <span class="toggle-slider"></span>
+                   </label>
+                   
+                   <div>
+                     <span class="badge-active">{{ course.status }}</span>
+                   </div>
+                </div>
+             </div>
+             
+             <button class="btn-dashed-add" style="margin-top: 16px;" @click="openNewCourseModal">
+               <span>+</span> Adicionar Novo Curso
+             </button>
+          </div>
+
+          <!-- CARD 3: Regra de Conclusão -->
+          <div class="card-section">
+             <div class="section-title">
+                <h3>Regra de Conclusão dos Cursos</h3>
+                <p>Defina quando um curso é considerado concluído</p>
+             </div>
+             
+             <div class="list-item-row toggle-row-simple">
+               <span class="list-item-title">Exigir conclusão de atividades</span>
+               <label class="toggle-switch">
+                 <input type="checkbox" v-model="nivelamentoForm.completionRules.requireActivities" class="toggle-input">
+                 <span class="toggle-slider"></span>
+               </label>
+             </div>
+             
+             <div class="list-item-row toggle-row-simple" :style="nivelamentoForm.completionRules.requireMinScore ? 'border-bottom: none; padding-bottom: 8px;' : ''">
+               <span class="list-item-title">Exigir acerto mínimo em exercícios</span>
+               <label class="toggle-switch">
+                 <input type="checkbox" v-model="nivelamentoForm.completionRules.requireMinScore" class="toggle-input">
+                 <span class="toggle-slider"></span>
+               </label>
+             </div>
+             <!-- Input que aparece condicionalmente -->
+             <div v-if="nivelamentoForm.completionRules.requireMinScore" class="form-group" style="margin-top: 0; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6;">
+               <input v-model="nivelamentoForm.completionRules.minScoreValue" type="text" class="form-input" style="background-color: #f9fafb;"/>
+             </div>
+
+             <div class="list-item-row toggle-row-simple" style="margin-bottom: 0; border: none; padding-bottom: 0; margin-top: 16px;">
+               <span class="list-item-title">Exigir avaliação final do curso</span>
+               <label class="toggle-switch">
+                 <input type="checkbox" v-model="nivelamentoForm.completionRules.requireFinalEval" class="toggle-input">
+                 <span class="toggle-slider"></span>
+               </label>
+             </div>
+          </div>
+
+          <!-- CARD 4: Prova Final -->
+          <div class="card-section">
+             <div class="section-title">
+                <h3>Prova Final</h3>
+                <p>Configuração da avaliação final da etapa</p>
+             </div>
+             
+             <!-- Caixa destacada verde claro com o toggle principal -->
+             <div class="green-toggle-box">
+                <span class="list-item-title" style="color: #065f46;">Habilitar prova final</span>
+                <label class="toggle-switch">
+                  <input type="checkbox" v-model="nivelamentoForm.finalExam.active" class="toggle-input">
+                  <span class="toggle-slider"></span>
+                </label>
+             </div>
+             
+             <div class="form-row three-cols-special" style="margin-top: 24px; grid-template-columns: 1.5fr 1fr 1fr;">
+               <div class="form-group relative">
+                 <label>Data</label>
+                 <div class="date-input-wrapper">
+                   <input v-model="displayDates.nivExamDate" @input="parseDateInput('nivExamDate')" type="text" placeholder="dd/mm/aaaa" class="form-input" maxlength="10" :disabled="!nivelamentoForm.finalExam.active"/>
+                   <svg v-if="nivelamentoForm.finalExam.active" @click="openDatePicker('nivExamDate')" class="date-icon cursor-pointer" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                 </div>
+                 <div v-if="activeDatePicker === 'nivExamDate'" class="custom-calendar">
+                    <div class="calendar-header">
+                       <button type="button" class="cal-btn" @click.stop="prevMonth">‹</button>
+                       <span>{{ monthNames[calendarDate.getMonth()] }} {{ calendarDate.getFullYear() }}</span>
+                       <button type="button" class="cal-btn" @click.stop="nextMonth">›</button>
+                    </div>
+                    <div class="calendar-grid">
+                       <span v-for="d in weekDays" :key="d" class="cal-weekday">{{ d }}</span>
+                       <span v-for="(day, idx) in calendarDays" :key="idx" :class="['cal-day', { 'empty': !day, 'selected': isSelectedDay('nivExamDate', day), 'today': isToday(day) }]" @click.stop="selectDate(day)">{{ day }}</span>
+                    </div>
+                 </div>
+               </div>
+               
+               <div class="form-group relative">
+                 <label>Horário</label>
+                 <input 
+                   v-model="nivelamentoForm.finalExam.time" 
+                   @input="parseTimeInput"
+                   type="text" 
+                   placeholder="00:00" 
+                   maxlength="5"
+                   class="form-input" 
+                   :disabled="!nivelamentoForm.finalExam.active"
+                 />
+               </div>
+
+               <div class="form-group">
+                 <label>Duração (minutos)</label>
+                 <input v-model="nivelamentoForm.finalExam.duration" type="number" class="form-input" :disabled="!nivelamentoForm.finalExam.active"/>
+               </div>
+             </div>
+
+             <div class="form-row two-cols">
+               <div class="form-group">
+                 <label>Quantidade de Questões</label>
+                 <input v-model="nivelamentoForm.finalExam.questionsCount" type="number" class="form-input" :disabled="!nivelamentoForm.finalExam.active"/>
+               </div>
+               <div class="form-group">
+                 <label>Tipo</label>
+                 <select v-model="nivelamentoForm.finalExam.type" class="form-input form-select" :disabled="!nivelamentoForm.finalExam.active">
+                   <option value="Múltipla Escolha">Múltipla Escolha</option>
+                   <option value="Dissertativa">Dissertativa</option>
+                 </select>
+               </div>
+             </div>
+
+             <div class="list-item-row toggle-row-simple" style="border: none; padding: 0 0 16px 0;">
+               <span class="list-item-title">Questões apresentadas sequencialmente</span>
+               <label class="toggle-switch">
+                 <input type="checkbox" v-model="nivelamentoForm.finalExam.sequential" class="toggle-input" :disabled="!nivelamentoForm.finalExam.active">
+                 <span class="toggle-slider"></span>
+               </label>
+             </div>
+             
+             <div class="list-item-row toggle-row-simple" style="border: none; padding: 0 0 16px 0;">
+               <span class="list-item-title">Permitir voltar em questões anteriores</span>
+               <label class="toggle-switch">
+                 <input type="checkbox" v-model="nivelamentoForm.finalExam.allowBack" class="toggle-input" :disabled="!nivelamentoForm.finalExam.active">
+                 <span class="toggle-slider"></span>
+               </label>
+             </div>
+
+             <div class="list-item-row toggle-row-simple" style="margin-bottom: 0; border: none; padding: 0;">
+               <span class="list-item-title">Botão enviar obrigatório ao finalizar</span>
+               <label class="toggle-switch">
+                 <input type="checkbox" v-model="nivelamentoForm.finalExam.mandatorySubmit" class="toggle-input" :disabled="!nivelamentoForm.finalExam.active">
+                 <span class="toggle-slider"></span>
+               </label>
+             </div>
+          </div>
+
+          <!-- CARD 5: Cálculo da Nota e Aprovação -->
+          <div class="card-section" style="border: 1px solid #a7f3d0;"> <!-- Borda verdinha sugerida no design -->
+             <div class="section-title">
+                <h3 style="color: #0f172a;">Cálculo da Nota e Aprovação</h3>
+                <p>Configure a fórmula de pontuação e critérios de classificação</p>
+             </div>
+             
+             <!-- Box Escuro da Fórmula -->
+             <div class="formula-box">
+               <span class="formula-label">Fórmula de Cálculo</span>
+               <div class="formula-text">
+                 Nota Final = (Nota Prova × {{ nivelamentoForm.grading.examWeight }}%) + (Cursos Opcionais × {{ nivelamentoForm.grading.optionalWeight }}%) + Bônus Localidade
+               </div>
+             </div>
+             
+             <!-- Range Sliders -->
+             <div class="form-group" style="margin-bottom: 24px;">
+               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                 <label style="margin: 0;">Pontuação Máxima da Prova (%)</label>
+                 <div style="display: flex; align-items: center; gap: 6px;">
+                   <input type="number" v-model="nivelamentoForm.grading.examWeight" class="quota-input" style="color: #0d9488; font-weight: 600; padding: 4px 8px; width: 60px; text-align: center;" min="0" max="100" />
+                   <span style="font-size: 13px; color: #0d9488; font-weight: 500;">%</span>
+                 </div>
+               </div>
+                <input 
+                  type="number" 
+                  v-model="nivelamentoForm.grading.examWeight" 
+                  @keydown.enter="$event.target.blur()" 
+                  class="quota-input" 
+                  style="color: #0d9488; font-weight: 500; padding: 4px 8px; width: 60px; text-align: center;" 
+                  min="0" max="100" 
+                />
+             </div>
+
+             <div class="form-group" style="margin-bottom: 24px;">
+               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                 <label style="margin: 0;">Pontos por Cursos Não Obrigatórios (%)</label>
+                 <div style="display: flex; align-items: center; gap: 6px;">
+                   <input type="number" v-model="nivelamentoForm.grading.optionalWeight" class="quota-input" style="color: #0d9488; font-weight: 600; padding: 4px 8px; width: 60px; text-align: center;" min="0" max="100" />
+                   <span style="font-size: 13px; color: #0d9488; font-weight: 500;">%</span>
+                 </div>
+               </div>
+               <input 
+                 type="range" 
+                 v-model="nivelamentoForm.grading.optionalWeight" 
+                 class="form-range" 
+                 min="0" max="100"
+                 :style="{ background: `linear-gradient(to right, #1e1b4b ${nivelamentoForm.grading.optionalWeight}%, #e5e7eb ${nivelamentoForm.grading.optionalWeight}%)` }"
+               >
+             </div>
+
+             <div class="form-group">
+               <label>Bônus por Localidade/Residência</label>
+               <input v-model="nivelamentoForm.grading.bonusLocation" type="number" class="form-input"/>
+             </div>
+
+             <div class="form-group" style="margin-bottom: 32px;">
+               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                 <label style="margin: 0;">Nota Mínima para Aprovação</label>
+                 <div style="display: flex; align-items: center; gap: 6px;">
+                   <input type="number" v-model="nivelamentoForm.grading.minPassingScore" class="quota-input" style="color: #0d9488; font-weight: 600; padding: 4px 8px; width: 60px; text-align: center;" min="0" max="100" />
+                   <span style="font-size: 13px; color: #0d9488; font-weight: 500;">pontos</span>
+                 </div>
+               </div>
+               <input 
+                 type="range" 
+                 v-model="nivelamentoForm.grading.minPassingScore" 
+                 class="form-range" 
+                 min="0" max="100"
+                 :style="{ background: `linear-gradient(to right, #1e1b4b ${nivelamentoForm.grading.minPassingScore}%, #e5e7eb ${nivelamentoForm.grading.minPassingScore}%)` }"
+               >
+             </div>
+
+             <div class="list-item-row toggle-row-simple">
+               <span class="list-item-title">Regra de corte: % da maior nota da turma</span>
+               <label class="toggle-switch">
+                 <input type="checkbox" v-model="nivelamentoForm.grading.cutOffRule" class="toggle-input">
+                 <span class="toggle-slider"></span>
+               </label>
+             </div>
+             
+             <div class="form-group">
+               <label>Quantidade de Aprovados para Próxima Etapa</label>
+               <input v-model="nivelamentoForm.grading.approvedCount" type="number" class="form-input"/>
+             </div>
+
+             <div class="list-item-row toggle-row-simple" style="border: none; padding: 0 0 16px 0;">
+               <span class="list-item-title">Gerar lista preliminar</span>
+               <label class="toggle-switch">
+                 <input type="checkbox" v-model="nivelamentoForm.grading.generatePrelimList" class="toggle-input">
+                 <span class="toggle-slider"></span>
+               </label>
+             </div>
+             
+             <div class="list-item-row toggle-row-simple" style="border: none; padding: 0 0 16px 0;">
+               <span class="list-item-title">Permitir recurso</span>
+               <label class="toggle-switch">
+                 <input type="checkbox" v-model="nivelamentoForm.grading.allowAppeals" class="toggle-input">
+                 <span class="toggle-slider"></span>
+               </label>
+             </div>
+
+             <div class="list-item-row toggle-row-simple" style="margin-bottom: 0; border: none; padding: 0;">
+               <span class="list-item-title">Gerar lista final</span>
+               <label class="toggle-switch">
+                 <input type="checkbox" v-model="nivelamentoForm.grading.generateFinalList" class="toggle-input">
+                 <span class="toggle-slider"></span>
+               </label>
+             </div>
+          </div>
+
+          <!-- CARD 6: Certificação -->
+          <div class="card-section">
+             <div class="section-title">
+                <h3>Certificação</h3>
+                <p>Configure a emissão de certificados</p>
+             </div>
+             
+             <div class="green-toggle-box" style="margin-bottom: 24px;">
+                <span class="list-item-title" style="color: #065f46;">Emitir certificado</span>
+                <label class="toggle-switch">
+                  <input type="checkbox" v-model="nivelamentoForm.certification.active" class="toggle-input">
+                  <span class="toggle-slider"></span>
+                </label>
+             </div>
+
+             <div class="form-group">
+               <label>Critério para Certificação</label>
+               <select v-model="nivelamentoForm.certification.criteria" class="form-input form-select" :disabled="!nivelamentoForm.certification.active">
+                 <option value="Aprovação na etapa">Aprovação na etapa</option>
+                 <option value="Conclusão dos cursos">Conclusão dos cursos</option>
+               </select>
+             </div>
+
+             <div class="form-group" style="margin-bottom: 0;">
+               <label>Texto Padrão do Certificado</label>
+               <textarea v-model="nivelamentoForm.certification.defaultText" placeholder="Ex: Certificamos que concluiu com aproveitamento..." class="form-textarea" rows="2" :disabled="!nivelamentoForm.certification.active"></textarea>
+             </div>
+          </div>
+
+        </div>
+
+        <!-- ========================================== -->
         <!-- PLACEHOLDER TEMPORÁRIO PARA OUTRAS ETAPAS  -->
         <!-- ========================================== -->
         <div v-else class="step-container">
@@ -1238,10 +1710,10 @@ export default {
       // String que armazena o último horário de alteração (HH:MM)
       lastUpdatedTime: '', 
       
-      // Navegação da página (1 a 6)
-      currentStep: 3, 
+      // Navegação da página (1 a 6) - Iniciando na etapa 4 (Nivelamento) para facilitar seu teste
+      currentStep: 4, 
       
-      // TEXTOS DA BARRA LATERAL (Isso que fez ela sumir!)
+      // TEXTOS DA BARRA LATERAL
       stepTitles: ['Dados do Programa', 'Estrutura das Etapas', 'Etapa 0 — Inscrição', 'Etapa 1 — Nivelamento', 'Etapa 2 — Imersão', 'Revisão Final'],
       stepDescs: ['Informações gerais', 'Definição do fluxo', 'Formulário e elegibilidade', 'Cursos e avaliação', 'Projetos e benefícios', 'Validar e publicar'],
       
@@ -1270,6 +1742,9 @@ export default {
         endDate: '', 
         inscStart: '', // Data customizada extra para aba 3
         inscEnd: '',   // Data customizada extra para aba 3
+        nivStart: '',  // Data customizada para aba 4 (Nivelamento Inicio)
+        nivEnd: '',    // Data customizada para aba 4 (Nivelamento Fim)
+        nivExamDate: '', // Data customizada para aba 4 (Nivelamento Prova)
         status: 'Rascunho', 
         observations: '' 
       },
@@ -1287,7 +1762,6 @@ export default {
         requireLinkedin: false,
         requireCPF: true,
         singleRegistration: true,
-        // Array com os campos do formulário e seus status (Required true/false reflete a chavinha On/Off)
         fields: [
           { name: 'Nome completo', required: true },
           { name: 'E-mail', required: true },
@@ -1301,31 +1775,71 @@ export default {
           { name: 'Instituição de ensino', required: false },
           { name: 'Grau de escolaridade', required: true },
         ],
-        // Array com os documentos e seus tipos aceitos
         documents: [
           { name: 'Documento de identidade', types: 'PDF, JPG', required: true },
           { name: 'CPF', types: 'PDF, JPG', required: true },
           { name: 'Comprovante de escolaridade', types: 'PDF', required: true },
         ],
-        // Configurações e limites de Cotas
-        quotas: {
-          ampla: 50,
-          pcd: 10,
-          negros: 30,
-          mulheres: 0,
-          age45: 10,
-          singleQuota: true,
-          revertUnfilled: true
+        quotas: { ampla: 50, pcd: 10, negros: 30, mulheres: 0, age45: 10, singleQuota: true, revertUnfilled: true },
+        classification: { active: true, count: 250, criteria: 'Ordem de inscrição', tiebreaker: '', waitlist: true, allowAppeals: true, appealDeadline: '' }
+      },
+
+      // ==========================================
+      // OBJETO: Formulário de Nivelamento (Aba 4)
+      // ==========================================
+      nivelamentoForm: {
+        title: 'Nivelamento',
+        modality: 'Remota Assíncrona',
+        workload: '172h',
+        platform: '',
+        // Array com os cursos extraídos do mockup
+        courses: [
+          { name: 'Introdução à plataforma', hours: '2h', required: true, scores: false, status: 'Ativo' },
+          { name: 'Lógica de programação', hours: '40h', required: true, scores: true, status: 'Ativo' },
+          { name: 'Programação Python', hours: '60h', required: true, scores: true, status: 'Ativo' },
+          { name: 'Organização de computadores', hours: '30h', required: true, scores: true, status: 'Ativo' },
+          { name: 'Banco de dados', hours: '40h', required: true, scores: true, status: 'Ativo' },
+          { name: 'Empreendedorismo e gerência de projetos', hours: '20h', required: false, scores: true, status: 'Ativo' },
+          { name: 'Desenvolvimento mobile', hours: '30h', required: false, scores: true, status: 'Ativo' },
+          { name: 'Business Intelligence', hours: '25h', required: false, scores: true, status: 'Ativo' },
+          { name: 'Big Data', hours: '30h', required: false, scores: true, status: 'Ativo' },
+          { name: 'Inteligência Artificial', hours: '35h', required: false, scores: true, status: 'Ativo' },
+          { name: 'IoT', hours: '20h', required: false, scores: true, status: 'Ativo' },
+          { name: 'Engenharia de Requisitos', hours: '15h', required: false, scores: true, status: 'Ativo' },
+          { name: 'Treinamento de IA', hours: '25h', required: false, scores: true, status: 'Ativo' },
+          { name: 'UI/UX', hours: '30h', required: false, scores: true, status: 'Ativo' },
+        ],
+        completionRules: {
+          requireActivities: true,
+          requireMinScore: true,
+          minScoreValue: '70',
+          requireFinalEval: true
         },
-        // Variáveis do bloco verde de Classificação
-        classification: {
+        finalExam: {
           active: true,
-          count: 250,
-          criteria: 'Ordem de inscrição',
-          tiebreaker: '',
-          waitlist: true,
+          time: '',
+          duration: 120,
+          questionsCount: 50,
+          type: 'Múltipla Escolha',
+          sequential: true,
+          allowBack: false,
+          mandatorySubmit: true
+        },
+        grading: {
+          examWeight: 70,
+          optionalWeight: 30,
+          bonusLocation: 5,
+          minPassingScore: 50,
+          cutOffRule: false,
+          approvedCount: 50,
+          generatePrelimList: true,
           allowAppeals: true,
-          appealDeadline: ''
+          generateFinalList: true
+        },
+        certification: {
+          active: true,
+          criteria: 'Aprovação na etapa',
+          defaultText: ''
         }
       },
       
@@ -1360,36 +1874,40 @@ export default {
       
       // Variáveis do Novo Modal de Adicionar Campo Personalizado
       showCustomFieldModal: false,
-      customFieldFormError: false, // FLAG PARA EXIBIR ERRO SE VAZIO
-      customFieldForm: {
-        name: '',
-        type: 'text',
-        required: true
-      },
+      customFieldFormError: false, 
+      customFieldForm: { name: '', type: 'text', required: true },
 
       // Variáveis do Novo Modal de Adicionar Documento Personalizado
       showCustomDocumentModal: false,
-      customDocumentFormError: false, // Flag de erro do campo Nome (Vazio)
-      customDocumentTypeError: false, // Flag de erro de Seleção (Nenhum tipo)
-      customDocumentForm: {
-        name: '',
-        types: ['PDF'], // Array contendo as seleções iniciais (Padrão PDF)
-        required: true
-      },
-      // Array com os tipos de documentos disponíveis para clique (Pills)
+      customDocumentFormError: false, 
+      customDocumentTypeError: false, 
+      customDocumentForm: { name: '', types: ['PDF'], required: true },
       availableDocTypes: ['PDF', 'DOCX', 'JPG', 'PNG', 'XLSX', 'ZIP'],
+
+      // Variáveis do Novo Modal de Adicionar Curso Personalizado (Aba 4)
+      showNewCourseModal: false,
+      newCourseFormError: false,
+      newCourseForm: {
+        name: '',
+        hours: '',
+        required: false,
+        scores: true,
+        status: 'Ativo'
+      },
 
       // Array que guarda todas as etapas (Aba 2)
       stageList: [], 
       
       // Dicionário visual para os campos de data (exibe como dd/mm/aaaa)
-      // Ampliado para comportar datas da Aba 3
       displayDates: { 
         publishDate: '', 
         startDate: '', 
         endDate: '',
         inscStart: '',
-        inscEnd: ''
+        inscEnd: '',
+        nivStart: '',     // Adicionado para Aba 4
+        nivEnd: '',       // Adicionado para Aba 4
+        nivExamDate: ''   // Adicionado para Aba 4
       }, 
       
       // Identifica qual dos campos de calendário está aberto no momento
@@ -1423,33 +1941,36 @@ export default {
     'formData.publishDate'(val) { this.displayDates.publishDate = this.formatDateDisplay(val); },
     'formData.startDate'(val) { this.displayDates.startDate = this.formatDateDisplay(val); },
     'formData.endDate'(val) { this.displayDates.endDate = this.formatDateDisplay(val); },
+    
     // Sincroniza formatações de data da Aba 3
     'formData.inscStart'(val) { this.displayDates.inscStart = this.formatDateDisplay(val); },
     'formData.inscEnd'(val) { this.displayDates.inscEnd = this.formatDateDisplay(val); },
+
+    // Sincroniza formatações de data da Aba 4 (Nivelamento)
+    'formData.nivStart'(val) { this.displayDates.nivStart = this.formatDateDisplay(val); },
+    'formData.nivEnd'(val) { this.displayDates.nivEnd = this.formatDateDisplay(val); },
+    'formData.nivExamDate'(val) { this.displayDates.nivExamDate = this.formatDateDisplay(val); },
     
     // Escuta qualquer mudança profunda no formulário de dados e atualiza a hora
-    formData: {
-      handler() { this.updateLastModifiedTime(); },
-      deep: true 
-    },
-    
-    // Escuta qualquer mudança profunda no formulário da Aba 3
-    inscriptionForm: {
-      handler() { this.updateLastModifiedTime(); },
-      deep: true 
-    },
-
-    // Escuta qualquer mudança profunda na lista de etapas (Aba 2) e atualiza a hora
-    stageList: {
-      handler() { this.updateLastModifiedTime(); },
-      deep: true
-    }
+    formData: { handler() { this.updateLastModifiedTime(); }, deep: true },
+    inscriptionForm: { handler() { this.updateLastModifiedTime(); }, deep: true },
+    nivelamentoForm: { handler() { this.updateLastModifiedTime(); }, deep: true },
+    stageList: { handler() { this.updateLastModifiedTime(); }, deep: true }
   },
   
   /**
    * Propriedades Computadas (Reativas e Cacheadas)
    */
   computed: {
+    // Contagem de cursos obrigatórios da Aba 4
+    reqCoursesCount() {
+      return this.nivelamentoForm.courses.filter(c => c.required).length;
+    },
+    // Contagem de cursos opcionais da Aba 4
+    optCoursesCount() {
+      return this.nivelamentoForm.courses.filter(c => !c.required).length;
+    },
+
     // Retorna true caso o e-mail não bata com a Regex padrão. Retorna false se estiver vazio.
     isEmailInvalid() {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -1690,22 +2211,15 @@ export default {
     },
 
     // ----------------------------------------------------------------------
-    // LÓGICA DO MODAL: ADICIONAR DOCUMENTO PERSONALIZADO (NOVO)
+    // LÓGICA DO MODAL: ADICIONAR DOCUMENTO PERSONALIZADO
     // ----------------------------------------------------------------------
-    // Lógica para clicar e selecionar os tipos de arquivos nas "pílulas" do array
     toggleDocType(type) {
-      // Encontra a posição do item no array
       const index = this.customDocumentForm.types.indexOf(type);
-      
       if (index > -1) {
-        // Se existir, remove
         this.customDocumentForm.types.splice(index, 1);
       } else {
-        // Se não existir, adiciona
         this.customDocumentForm.types.push(type);
       }
-      
-      // Ao clicar para arrumar, limpa o alerta de erro visual (se houvesse)
       this.customDocumentTypeError = false;
     },
 
@@ -1715,14 +2229,12 @@ export default {
     
     closeCustomDocumentModal() {
       this.showCustomDocumentModal = false;
-      this.customDocumentFormError = false; // Zera erro
-      this.customDocumentTypeError = false; // Zera erro
-      // Reseta o formulário mantendo apenas PDF como default no array para não ficar tudo vazio
+      this.customDocumentFormError = false; 
+      this.customDocumentTypeError = false; 
       this.customDocumentForm = { name: '', types: ['PDF'], required: true };
     },
     
     saveCustomDocument() {
-      // Dispara validação visual e interrompe a função se os campos estiverem vazios
       if (!this.customDocumentForm.name.trim()) {
         this.customDocumentFormError = true;
       }
@@ -1730,11 +2242,8 @@ export default {
         this.customDocumentTypeError = true;
       }
       
-      // Se tiver erro ativado em qualquer um deles, não segue salvando.
       if (this.customDocumentFormError || this.customDocumentTypeError) return;
       
-      // Empurra o novo documento se passar pela validação! 
-      // O join converte nosso array ['PDF', 'DOCX'] em uma String plana separada por vírgula 'PDF, DOCX'
       this.inscriptionForm.documents.push({
         name: this.customDocumentForm.name,
         types: this.customDocumentForm.types.join(', '),
@@ -1742,6 +2251,39 @@ export default {
       });
       
       this.closeCustomDocumentModal();
+    },
+
+    // ----------------------------------------------------------------------
+    // LÓGICA DO MODAL: ADICIONAR NOVO CURSO (ABA 4)
+    // ----------------------------------------------------------------------
+    openNewCourseModal() {
+      this.showNewCourseModal = true;
+    },
+    
+    closeNewCourseModal() {
+      this.showNewCourseModal = false;
+      this.newCourseFormError = false; // Reseta erro visual
+      // Reseta o formulário para o padrão limpo quando o modal fechar
+      this.newCourseForm = { name: '', hours: '', required: false, scores: true, status: 'Ativo' };
+    },
+    
+    saveNewCourse() {
+      // Impede salvar curso sem nome e ativa o estilo de erro visual
+      if (!this.newCourseForm.name.trim()) {
+        this.newCourseFormError = true;
+        return;
+      }
+      
+      // Empurra o novo objeto para a matriz courses do nivelamentoForm
+      this.nivelamentoForm.courses.push({
+        name: this.newCourseForm.name,
+        hours: this.newCourseForm.hours || '0h', // Se deixar vazio, salva como '0h'
+        required: this.newCourseForm.required,
+        scores: this.newCourseForm.scores,
+        status: this.newCourseForm.status
+      });
+      
+      this.closeNewCourseModal();
     },
     
     // ----------------------------------------------------------------------
@@ -1856,6 +2398,34 @@ export default {
         // Se deletar ou tiver incompleto, apaga no sistema principal
         this.formData[f] = ''; 
       }
+    },
+
+    // ----------------------------------------------------------------------
+    // NOVA LÓGICA DE MÁSCARA PARA HORÁRIO (HH:MM)
+    // ----------------------------------------------------------------------
+    parseTimeInput() {
+      // Limpa letras e caracteres especiais
+      let v = this.nivelamentoForm.finalExam.time.replace(/\D/g, ''); 
+      
+      // Regras para horas (não pode ser maior que 23)
+      if (v.length >= 2) { 
+        let h = parseInt(v.substring(0, 2)); 
+        if (h > 23) v = '23' + v.substring(2); 
+      }
+      
+      // Regras para minutos (não pode ser maior que 59)
+      if (v.length >= 4) { 
+        let m = parseInt(v.substring(2, 4)); 
+        if (m > 59) v = v.substring(0, 2) + '59'; 
+      }
+      
+      // Injeta os dois pontos (:) no meio da string
+      let fmt = v; 
+      if (v.length > 2) {
+        fmt = v.substring(0, 2) + ':' + v.substring(2, 4); 
+      }
+      
+      this.nivelamentoForm.finalExam.time = fmt;
     },
     
     isSelectedDay(f, d) { 
@@ -1989,10 +2559,10 @@ export default {
   display: flex; 
   /* Alinha tudo centralizado de pé */
   align-items: center; 
-  /* Espaçamento entre as linhas internas */
+  /* Espaçamento entre as lines internas */
   gap: 14px; 
   /* Cria uma bolha protetora invisível para o clique */
-  padding: 14px; 
+  padding: 16px; 
   /* Arredonda essas bolhas visuais */
   border-radius: 8px; 
   /* Garante o cursor de mão mostrando clicabilidade */
@@ -2018,8 +2588,8 @@ export default {
 /* Bolinha redonda e colorida contendo os números */
 .step-icon { 
   /* Altura e largura cravados com proporção */
-  width: 32px; 
-  height: 32px; 
+  width: 36px; 
+  height: 36px; 
   /* Torna um círculo perfeito de fato (50%) */
   border-radius: 50%; 
   /* Sistema Flex pra centralizar com exatidão o número dentro do círculo */
@@ -2060,7 +2630,7 @@ export default {
 /* Texto 1 (Principal) do link na barra lateral */
 .step-title { 
   /* Tamanho de leitura limpa */
-  font-size: 13px; 
+  font-size: 14px; 
   /* Leve peso para destacar o título */
   font-weight: 500; 
   /* Cor cinza escura para leitura */
@@ -2079,7 +2649,7 @@ export default {
 /* Texto 2 (Subtítulo/Descrição) do Link na barra lateral */
 .step-desc { 
   /* Texto menorzinho */
-  font-size: 12px; 
+  font-size: 13px; 
   /* Cinza médio */
   color: #6b7280; 
   /* Transição suave de cor */
@@ -2101,8 +2671,8 @@ export default {
   height: 16px; 
   /* Cor cinza claro linha lápis */
   background-color: #e5e7eb; 
-  /* Empurrado em 30px até alinhar esteticamente com o centro das bolinhas */
-  margin-left: 30px; 
+  /* Empurrado em 32px até alinhar esteticamente com o centro das bolinhas */
+  margin-left: 32px; 
 }
 
 /* Oculta e customiza scrollbars de abas laterais Webkit Based navegadores (Chrome/Edge) */
@@ -2151,7 +2721,7 @@ export default {
 /* Título em destaque do centro H2 (Ex: "Dados Gerais") */
 .step-header h2 { 
   /* Tamanho grande H2 */
-  font-size: 18px; 
+  font-size: 20px; 
   /* Cor padrão azul escuro */
   color: #1a233a; 
   /* Afasta apenas o fundo (bottom) levemente da descrição p */
@@ -2165,7 +2735,7 @@ export default {
   /* Cinza de texto descritivo */
   color: #6b7280; 
   /* Tamanho amigável de ler */
-  font-size: 13px; 
+  font-size: 14px; 
 }
 
 /* 
@@ -2195,7 +2765,7 @@ export default {
 /* Texto do Título H3 do Card Branco */
 .section-title h3 { 
   /* Tamanho um pouco menor que H2, denotando hierarquia secundária */
-  font-size: 15px; 
+  font-size: 17px; 
   /* Font ligeiramente visível mas sem peso excessivo */
   font-weight: 600; 
   /* Azul escuro */
@@ -2207,7 +2777,7 @@ export default {
 /* Texto P descritivo do card branco */
 .section-title p { 
   /* Mesma classe base de P */
-  font-size: 13px; 
+  font-size: 15px; 
   /* Cinza clássico descritivo */
   color: #6b7280; 
   /* Reseta margin padrão navegador */
@@ -2259,7 +2829,7 @@ export default {
   /* Força a ser uma linha independente pra empurrar o campo p/ baixo */
   display: block; 
   /* Tamanho base padrão 13 */
-  font-size: 13px; 
+  font-size: 14px; 
   /* Leve peso no font-weight para diferenciar da string digitada */
   font-weight: 500; 
   /* Separa do input field abaixo dele */
@@ -2290,7 +2860,7 @@ export default {
   /* Garante mesma familia padrao do body pra evitar que input puxe serifas soltas do Windows/Mac */
   font-family: inherit; 
   /* Mesma fonte descritiva pra n estourar layouts */
-  font-size: 13px; 
+  font-size: 14px; 
   /* Cor texto inserido */
   color: #1a233a; 
   /* Adiciona lentidão pro hover e color focus em 0.2s de animação */
@@ -3190,14 +3760,14 @@ export default {
 
 /* Estilo do Titulo Resumo lateral the Box Widget Card in sidebar area right   */
 .summary-sidebar h3 { 
-  font-size: 15px; 
+  font-size: 16px; 
   margin: 0 0 4px 0; 
   color: #1a233a; 
 }
 
 /* Descricao subtitulo Lateral. Italico the FontStyle */
 .summary-desc { 
-  font-size: 12px; 
+  font-size: 13px; 
   color: #9ca3af; 
   margin: 0 0 24px 0; 
   font-style: italic; 
@@ -3211,7 +3781,7 @@ export default {
 /* Rotulos Titulo menor descritivo the gray visual string color UI */
 .summary-label { 
   display: block; 
-  font-size: 12px; 
+  font-size: 13px; 
   color: #6b7280; 
   margin-bottom: 8px; 
 }
@@ -3250,27 +3820,27 @@ export default {
 /* Headers do timeline flow name of phase ex (h4 = Triagem Text phase title flow base UI side ) */
 .timeline-content h4 { 
   margin: 0 0 2px 0; 
-  font-size: 13px; 
+  font-size: 14px; 
   color: #1a233a; 
 }
 
 /* Descs do timeline flow info string Text phase title flow  */
 .timeline-content p { 
   margin: 0 0 4px 0; 
-  font-size: 12px; 
+  font-size: 13px; 
   color: #6b7280; 
 }
 
 /* Tag Padrão the Span q diz "Vagas Ilimitadas / Vagas 250 numbers" em cor de azuzinho limpo font blue string color base     */
 .timeline-tag { 
-  font-size: 11px; 
-  color: #000000; 
+  font-size: 12px; 
+  color: #01579b; 
 }
 
 /* Traço Mágico The Line the visual the UX vertical the draw visual gray color The cinza claríssimo que the Liga the bolinha e base top 0 na Bolinha base top  1 e de novo the draw until etc... na Vertical Y CSS Draw Object UI Component the link step system .   */
 .timeline-line { 
   /* O Tracinho fino the w */
-  width: 1px; 
+  width: 1.5px; 
   height: 24px; 
   /* Cor e draw the gray visual CSS background the paint line draw */
   background-color: #e5e7eb; 
@@ -3284,7 +3854,7 @@ export default {
 .summary-footer { 
   /* Empura the bottom of sidebar to down respiro the text string away the flow component  */
   margin-top: 40px; 
-  font-size: 11px; 
+  font-size: 12px; 
   color: #9ca3af; 
 }
 
@@ -3392,14 +3962,14 @@ COMPONENTE: LISTA DE ITENS (Formulário de Inscrição / Documentos)
 
 .list-item-title { 
   /* Texto do campo (ex: Nome completo, CPF, etc) */
-  font-size: 13px; 
+  font-size: 14px; 
   color: #1a233a; 
   font-weight: 500; 
 }
 
 .list-item-sub { 
   /* Subtexto usado abaixo dos documentos (ex: Tipos aceitos: PDF) */
-  font-size: 11px; 
+  font-size: 12px; 
   color: #6b7280; 
   margin-top: 4px; 
 }
@@ -3423,7 +3993,7 @@ COMPONENTE: LISTA DE ITENS (Formulário de Inscrição / Documentos)
   border: 1px dashed #d1d5db; 
   color: #1a233a; 
   border-radius: 8px; 
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer; 
   margin-top: 8px;
@@ -3437,7 +4007,7 @@ COMPONENTE: LISTA DE ITENS (Formulário de Inscrição / Documentos)
 
 /* 
 -----------------------------
-COMPONENTE: COTAS (Imagem 4)
+COMPONENTE: COTAS E CLASSIFICAÇÃO (Imagem 4)
 -----------------------------
 */
 .quota-row { 
@@ -3464,7 +4034,7 @@ COMPONENTE: COTAS (Imagem 4)
   border: 1px solid transparent;
   background-color: #f3f4f6;
   border-radius: 6px;
-  font-size: 13px;
+  font-size: 14px;
   color: #1a233a;
   transition: all 0.2s;
 }
@@ -3478,16 +4048,11 @@ COMPONENTE: COTAS (Imagem 4)
 
 .quota-symbol { 
   /* Símbolo % ao lado da caixinha */
-  font-size: 13px; 
+  font-size: 14px; 
   color: #6b7280; 
   font-weight: 500;
 }
 
-/* 
------------------------------
-COMPONENTE: CAIXA VERDE DA CLASSIFICAÇÃO (Imagem 4)
------------------------------
-*/
 .green-toggle-box { 
   /* A caixa que liga/desliga todo o sistema de aprovação para a próxima fase */
   display: flex; 
@@ -3543,6 +4108,128 @@ COMPONENTE: PILLS DE SELEÇÃO MÚLTIPLA (Tipos de Documento)
   background-color: #e1f5fe;
   border-color: #0288d1;
   color: #01579b;
+}
+
+/* 
+=======================================================================
+16. ESTILOS EXCLUSIVOS DA ETAPA 4 (NIVELAMENTO, TABELAS E SLIDERS)
+=======================================================================
+*/
+
+/* 
+-----------------------------
+COMPONENTE: TABELA DE CURSOS
+-----------------------------
+*/
+.course-table {
+  display: flex;
+  flex-direction: column;
+}
+
+.course-header {
+  display: grid;
+  /* Configuração responsiva das colunas (Nome cresce 2x mais que as outras) */
+  grid-template-columns: 2.5fr 1fr 1fr 1fr 1fr;
+  padding: 8px 16px;
+  font-size: 13px;
+  color: #6b7280;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.course-row {
+  display: grid;
+  grid-template-columns: 2.5fr 1fr 1fr 1fr 1fr;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 14px;
+}
+
+.course-row:last-child {
+  border-bottom: none;
+}
+
+.course-name {
+  color: #1a233a;
+  font-weight: 500;
+}
+
+.course-hours {
+  color: #6b7280;
+}
+
+/* Badge verde de Status (Ativo) */
+.badge-active {
+  background-color: #dcfce7;
+  color: #065f46;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+/* 
+-----------------------------
+COMPONENTE: SLIDER CUSTOMIZADO E CAIXA DE FÓRMULA
+-----------------------------
+*/
+.form-range {
+  /* Reseta a aparência feia nativa do browser */
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  /* O Vue.js sobrepõe o background com um inline-style dinâmico, mas colocamos uma fallback base aqui */
+  background: #e5e7eb;
+  border-radius: 4px;
+  outline: none;
+  transition: opacity .2s;
+}
+
+/* A "Bolinha" do Slider puxando no Safari/Chrome */
+.form-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: white;
+  border: 3px solid #1e1b4b; /* Azul escuro corporativo */
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* A "Bolinha" do Slider puxando no Firefox */
+.form-range::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: white;
+  border: 3px solid #1e1b4b;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Caixa Escura (Navy Box) de Fórmulas Matemáticas */
+.formula-box {
+  background-color: #0f172a;
+  border-radius: 8px;
+  padding: 16px;
+  color: white;
+  margin-bottom: 24px;
+}
+
+.formula-label {
+  font-size: 12px;
+  color: #94a3b8;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.formula-text {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 /* The Fim the final e End The Todas The Settings configuration rules CSS Variables and ID Classes from this view UI File e das The Configurações e style scope base do View Geral Component UI  - Fim VUE FRAMEWORK STYLE ENGINE  END  */
