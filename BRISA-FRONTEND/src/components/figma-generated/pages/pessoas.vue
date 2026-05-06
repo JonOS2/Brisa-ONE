@@ -4,7 +4,6 @@
       <section class="page-header-card">
         <div class="page-header-top">
           <div>
-            <p class="eyebrow">Cadastro</p>
             <h1>Pessoas</h1>
             <p class="subtitle">
               Gerencie todas as pessoas cadastradas no sistema e acompanhe seus vínculos com programas e etapas.
@@ -21,7 +20,7 @@
               Modelo de planilha
             </button>
 
-            <button type="button" class="ghost-btn ghost-btn-strong" @click="showCreateModal = true">
+            <button type="button" class="ghost-btn" @click="showCreateModal = true">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                 <circle cx="8.5" cy="7" r="4"></circle>
@@ -45,38 +44,50 @@
         <div class="stats-grid">
           <article class="stat-card stat-card-primary">
             <div class="stat-label">Total de Pessoas</div>
-            <div class="stat-value">{{ formatNumber(totalPeople) }}</div>
+            <div class="stat-row stat-row-single">
+              <div class="stat-value">{{ formatNumber(totalPeople) }}</div>
+            </div>
             <div class="stat-note">Pessoas cadastradas</div>
           </article>
 
           <article class="stat-card stat-card-success">
             <div class="stat-label">Pessoas Ativas</div>
-            <div class="stat-value">{{ formatNumber(activePeopleCount) }}</div>
-            <div class="stat-note">{{ activePeopleRate }}% do total</div>
+            <div class="stat-row">
+              <div class="stat-value">{{ formatNumber(activePeopleCount) }}</div>
+              <div class="stat-trend">+{{ activePeopleRate }}%</div>
+            </div>
           </article>
 
           <article class="stat-card stat-card-info">
             <div class="stat-label">Em Programas Ativos</div>
-            <div class="stat-value">{{ formatNumber(activeProgramsCount) }}</div>
-            <div class="stat-note">Vínculos com programas em andamento</div>
+            <div class="stat-row">
+              <div class="stat-value">{{ formatNumber(activeProgramsCount) }}</div>
+              <div class="stat-trend">+15%</div>
+            </div>
           </article>
 
           <article class="stat-card stat-card-warning">
             <div class="stat-label">Em Nivelamento</div>
-            <div class="stat-value">{{ formatNumber(levelingCount) }}</div>
-            <div class="stat-note">Candidatos em nivelamento</div>
+            <div class="stat-row">
+              <div class="stat-value">{{ formatNumber(levelingCount) }}</div>
+              <div class="stat-trend">+5%</div>
+            </div>
           </article>
 
           <article class="stat-card stat-card-primary-soft">
             <div class="stat-label">Em Imersão</div>
-            <div class="stat-value">{{ formatNumber(immersionCount) }}</div>
-            <div class="stat-note">Candidatos em imersão</div>
+            <div class="stat-row">
+              <div class="stat-value">{{ formatNumber(immersionCount) }}</div>
+              <div class="stat-trend">+3%</div>
+            </div>
           </article>
 
           <article class="stat-card stat-card-teal">
             <div class="stat-label">Novos Cadastros (30d)</div>
-            <div class="stat-value">{{ formatNumber(newRegistrationsCount) }}</div>
-            <div class="stat-note">Criados nos últimos 30 dias</div>
+            <div class="stat-row">
+              <div class="stat-value">{{ formatNumber(newRegistrationsCount) }}</div>
+              <div class="stat-trend">+21%</div>
+            </div>
           </article>
         </div>
       </section>
@@ -110,10 +121,16 @@
             />
           </div>
 
-          <button type="button" class="filters-button" @click="showAdvancedFilters = !showAdvancedFilters">
-            Filtros avançados
-            <span class="filters-badge">{{ advancedFiltersCount }}</span>
-          </button>
+          <div class="filters-actions">
+            <button type="button" class="filters-button" @click="showAdvancedFilters = !showAdvancedFilters">
+              Filtros avançados
+              <span class="filters-badge">{{ advancedFiltersCount }}</span>
+            </button>
+
+            <button type="button" class="search-button" @click="runSearch">
+              Pesquisar
+            </button>
+          </div>
         </div>
 
         <div v-if="showAdvancedFilters" class="advanced-filters">
@@ -135,12 +152,27 @@
           </label>
         </div>
 
-        <div class="table-header">
-          <div>
-            <h2>Lista de pessoas</h2>
-            <p>{{ filteredPeople.length }} resultado(s) | {{ filteredSummary }}</p>
+        <div class="table-toolbar">
+          <div ref="columnsControlRef" class="columns-control">
+            <button
+              type="button"
+              class="columns-button"
+              :class="{ active: showColumnsMenu }"
+              aria-haspopup="menu"
+              :aria-expanded="showColumnsMenu"
+              @click.stop="showColumnsMenu = !showColumnsMenu"
+            >
+              <Columns3 class="columns-icon" :size="16" />
+              Colunas
+            </button>
+
+            <div v-if="showColumnsMenu" class="columns-menu" @click.stop>
+              <label v-for="option in columnOptions" :key="option.key" class="columns-option">
+                <input v-model="visibleColumns[option.key]" type="checkbox" />
+                <span>{{ option.label }}</span>
+              </label>
+            </div>
           </div>
-          <div class="table-page-indicator">Página {{ currentPage }} de {{ totalPages || 1 }}</div>
         </div>
 
         <div v-if="loading" class="state-row">
@@ -175,11 +207,17 @@
                 <th>Nome</th>
                 <th>CPF</th>
                 <th>E-mail</th>
-                <th>Instituição</th>
+                <th v-if="visibleColumns.gender">Gênero</th>
+                <th v-if="visibleColumns.age">Idade</th>
+                <th v-if="visibleColumns.quota">Cota</th>
+                <th v-if="visibleColumns.cityUf">Cidade/UF</th>
+                <th v-if="visibleColumns.institution">Instituição</th>
+                <th v-if="visibleColumns.educationLevel">Tipo de formação</th>
+                <th v-if="visibleColumns.course">Curso</th>
                 <th>Programas</th>
                 <th>Etapa Atual</th>
                 <th>Status</th>
-                <th>Última Atualização</th>
+                <th v-if="visibleColumns.updatedAt">Última atualização</th>
                 <th class="actions-col">Ações</th>
               </tr>
             </thead>
@@ -190,7 +228,6 @@
                     <div class="person-avatar">{{ getInitials(person.name) }}</div>
                     <div class="person-main">
                       <div class="person-name">{{ person.name }}</div>
-                      <div class="person-subtitle">{{ person.address || 'Sem endereço informado' }}</div>
                     </div>
                   </div>
                 </td>
@@ -202,9 +239,29 @@
                   <span v-if="person.email" class="cell-text">{{ person.email }}</span>
                   <span v-else class="muted">-</span>
                 </td>
-                <td>
-                  <span v-if="personMeta(person).institution" class="cell-text">{{ personMeta(person).institution }}</span>
+                <td v-if="visibleColumns.gender">
+                  <span v-if="person.gender" class="cell-text">{{ formatGender(person.gender) }}</span>
                   <span v-else class="muted">-</span>
+                </td>
+                <td v-if="visibleColumns.age">
+                  <span v-if="person.birthDate" class="cell-text">{{ formatAge(person.birthDate) }}</span>
+                  <span v-else class="muted">-</span>
+                </td>
+                <td v-if="visibleColumns.quota">
+                  <span class="cell-text">{{ formatQuota(person) }}</span>
+                </td>
+                <td v-if="visibleColumns.cityUf">
+                  <span class="cell-text">{{ formatCityUf(person) }}</span>
+                </td>
+                <td v-if="visibleColumns.institution">
+                  <span class="cell-text">{{ formatInstitution(person) }}</span>
+                </td>
+                <td v-if="visibleColumns.educationLevel">
+                  <span v-if="person.educationLevel" class="cell-text">{{ person.educationLevel }}</span>
+                  <span v-else class="muted">-</span>
+                </td>
+                <td v-if="visibleColumns.course">
+                  <span class="cell-text">{{ formatCourse(person) }}</span>
                 </td>
                 <td>
                   <div v-if="personMeta(person).programs.length" class="chips">
@@ -222,11 +279,8 @@
                     {{ personMeta(person).status }}
                   </span>
                 </td>
-                <td>
-                  <div class="cell-stack">
-                    <span>{{ formatDateTime(personMeta(person).updatedAt || person.createdAt) }}</span>
-                    <small class="muted">Atualizado na criação</small>
-                  </div>
+                <td v-if="visibleColumns.updatedAt">
+                  <span class="cell-text">{{ formatUpdatedAt(person) }}</span>
                 </td>
                 <td class="actions-col actions-cell">
                   <button type="button" class="icon-btn" title="Visualizar" @click="viewDetails(person)">
@@ -241,18 +295,11 @@
                       <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
                     </svg>
                   </button>
-                  <button type="button" class="icon-btn" title="Histórico" @click="viewHistory(person)">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M3 12a9 9 0 1 0 9-9"></path>
-                      <path d="M3 3v6h6"></path>
-                      <path d="M12 7v5l3 3"></path>
-                    </svg>
-                  </button>
                   <button type="button" class="icon-btn" title="Mais ações" @click="openMoreActions(person)">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="5" r="1"></circle>
                       <circle cx="12" cy="12" r="1"></circle>
-                      <circle cx="19" cy="12" r="1"></circle>
-                      <circle cx="5" cy="12" r="1"></circle>
+                      <circle cx="12" cy="19" r="1"></circle>
                     </svg>
                   </button>
                 </td>
@@ -262,30 +309,30 @@
         </div>
 
         <div v-if="filteredPeople.length > 0 && totalPages > 1" class="pagination-row">
-          <button type="button" class="page-btn" :disabled="currentPage === 1" @click="goToPage(1)">Primeira</button>
-          <button type="button" class="page-btn" :disabled="currentPage === 1" @click="prevPage">Anterior</button>
-
-          <div class="page-numbers">
-            <template v-for="(page, index) in visiblePages" :key="`${page}-${index}`">
-              <span v-if="page === '...'" class="page-ellipsis">...</span>
-              <button
-                v-else
-                type="button"
-                class="page-btn page-btn-number"
-                :class="{ active: page === currentPage }"
-                @click="goToPage(page)"
-              >
-                {{ page }}
-              </button>
-            </template>
+          <div class="pagination-summary">
+            Mostrando {{ pageStart }} a {{ pageEnd }} de {{ filteredPeople.length }} pessoas
           </div>
 
-          <button type="button" class="page-btn" :disabled="currentPage === totalPages" @click="nextPage">Próxima</button>
-          <button type="button" class="page-btn" :disabled="currentPage === totalPages" @click="goToPage(totalPages)">Última</button>
-        </div>
+          <div class="pagination-controls">
+            <button type="button" class="page-btn" :disabled="currentPage === 1" @click="prevPage">Anterior</button>
 
-        <div v-if="filteredPeople.length > 0" class="pagination-footer">
-          Mostrando {{ pageStart }} a {{ pageEnd }} de {{ filteredPeople.length }} pessoas
+            <div class="page-numbers">
+              <template v-for="(page, index) in visiblePages" :key="`${page}-${index}`">
+                <span v-if="page === '...'" class="page-ellipsis">...</span>
+                <button
+                  v-else
+                  type="button"
+                  class="page-btn page-btn-number"
+                  :class="{ active: page === currentPage }"
+                  @click="goToPage(page)"
+                >
+                  {{ page }}
+                </button>
+              </template>
+            </div>
+
+            <button type="button" class="page-btn" :disabled="currentPage === totalPages" @click="nextPage">Próximo</button>
+          </div>
         </div>
       </section>
     </div>
@@ -456,8 +503,9 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
+import { Columns3 } from 'lucide-vue-next';
 import { peopleService } from '@/services/peopleService';
 import { enrollmentService } from '@/services/enrollmentService';
 import { stageService } from '@/services/stageService';
@@ -473,6 +521,28 @@ const searchTerm = ref('');
 const activeTab = ref('active');
 const showAdvancedFilters = ref(false);
 const showTemplateModal = ref(false);
+const showColumnsMenu = ref(false);
+const columnsControlRef = ref(null);
+const visibleColumns = reactive({
+  gender: false,
+  age: false,
+  quota: false,
+  cityUf: false,
+  institution: false,
+  educationLevel: false,
+  course: false,
+  updatedAt: false
+});
+const columnOptions = [
+  { key: 'gender', label: 'Gênero' },
+  { key: 'age', label: 'Idade' },
+  { key: 'quota', label: 'Cota' },
+  { key: 'cityUf', label: 'Cidade/UF' },
+  { key: 'institution', label: 'Instituição' },
+  { key: 'educationLevel', label: 'Tipo de formação' },
+  { key: 'course', label: 'Curso' },
+  { key: 'updatedAt', label: 'Última atualização' }
+];
 const advancedFilters = ref({
   hasCpf: false,
   hasEmail: false,
@@ -523,6 +593,43 @@ const formatDate = (value) => {
   if (Number.isNaN(date.getTime())) return '-';
   return new Intl.DateTimeFormat('pt-BR', { dateStyle: 'short' }).format(date);
 };
+
+const formatAge = (value) => {
+  if (!value) return '-';
+  const birthDate = new Date(value);
+  if (Number.isNaN(birthDate.getTime())) return '-';
+
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age -= 1;
+  }
+
+  return age >= 0 ? String(age) : '-';
+};
+
+const formatGender = (value) => {
+  if (!hasValue(value)) return '-';
+  const normalized = normalize(value);
+  if (['m', 'male', 'masculino'].includes(normalized)) return 'Masculino';
+  if (['f', 'female', 'feminino'].includes(normalized)) return 'Feminino';
+  if (['other', 'outro', 'outros'].includes(normalized)) return 'Outro';
+  return value.toString().trim().charAt(0).toUpperCase() + value.toString().trim().slice(1).toLowerCase();
+};
+
+const formatCityUf = (person) => {
+  const parts = [person.city, person.state].filter(hasValue);
+  return parts.length ? parts.join(' / ') : '-';
+};
+
+const formatInstitution = (person) => personMeta(person).institutions[0] || '-';
+
+const formatCourse = (person) => person.course || person.courseName || '-';
+
+const formatQuota = (person) => person.cota || person.quota || '-';
+
+const formatUpdatedAt = (person) => formatDateTime(personMeta(person).updatedAt || person.createdAt);
 
 const formatCPF = (cpf) => {
   if (!cpf) return '-';
@@ -665,8 +772,7 @@ const activePeopleRate = computed(() => (totalPeople.value ? Math.round((activeP
 const tabs = computed(() => ([
   { value: 'active', label: 'Pessoas Ativas', count: activePeopleCount.value },
   { value: 'programs', label: 'Programas em Andamento', count: activeProgramsCount.value },
-  { value: 'all', label: 'Todas as Pessoas', count: totalPeople.value },
-  { value: 'history', label: 'Histórico', count: stageCandidates.value.length }
+  { value: 'all', label: 'Todas as Pessoas', count: totalPeople.value }
 ]));
 
 const advancedFiltersCount = computed(() => Object.values(advancedFilters.value).filter(Boolean).length);
@@ -767,6 +873,13 @@ const resetFilters = () => {
   searchTerm.value = '';
   activeTab.value = 'active';
   advancedFilters.value = { hasCpf: false, hasEmail: false, completeOnly: false, recentOnly: false };
+  closeColumnsMenu();
+};
+
+const runSearch = () => {
+  currentPage.value = 1;
+  showAdvancedFilters.value = false;
+  closeColumnsMenu();
 };
 
 const loadData = async () => {
@@ -922,6 +1035,18 @@ const closeUploadModal = () => {
   if (fileInput.value) fileInput.value.value = '';
 };
 
+const closeColumnsMenu = () => {
+  showColumnsMenu.value = false;
+};
+
+const handleDocumentClick = (event) => {
+  const control = columnsControlRef.value;
+  if (!control) return;
+  if (!control.contains(event.target)) {
+    closeColumnsMenu();
+  }
+};
+
 watch([searchTerm, activeTab, advancedFilters], () => {
   currentPage.value = 1;
 }, { deep: true });
@@ -934,6 +1059,11 @@ watch(filteredPeople, () => {
 
 onMounted(() => {
   loadData();
+  document.addEventListener('click', handleDocumentClick);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleDocumentClick);
 });
 </script>
 
@@ -1014,14 +1144,14 @@ onMounted(() => {
 
 .ghost-btn,
 .primary-btn {
-  height: 44px;
-  border-radius: 13px;
+  height: 40px;
+  border-radius: 12px;
   border: 1px solid #d1dbe8;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
-  padding: 0 16px;
+  padding: 0 14px;
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
   font-weight: 700;
@@ -1029,10 +1159,6 @@ onMounted(() => {
 
 .ghost-btn {
   background: #fff;
-  color: #51627a;
-}
-
-.ghost-btn-strong {
   color: #13233f;
 }
 
@@ -1040,7 +1166,18 @@ onMounted(() => {
   background: #14b8a6;
   color: #fff;
   border-color: #14b8a6;
-  box-shadow: 0 10px 18px rgba(20, 184, 166, 0.22);
+  box-shadow: 0 8px 16px rgba(20, 184, 166, 0.20);
+}
+
+.ghost-btn:hover {
+  background: #f8fafc;
+  border-color: #cfd9e6;
+}
+
+.primary-btn:hover {
+  background: #0d9488;
+  border-color: #0d9488;
+  box-shadow: 0 12px 20px rgba(13, 148, 136, 0.24);
 }
 
 .ghost-btn:hover,
@@ -1052,55 +1189,57 @@ onMounted(() => {
 }
 
 .stats-grid {
-  margin-top: 16px;
+  margin-top: 14px;
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 12px;
+  gap: 10px;
 }
 
 .stat-card {
   border: 1px solid #dce5ef;
-  border-radius: 16px;
-  background: linear-gradient(180deg, #fff 0%, #fbfcfe 100%);
-  padding: 16px;
-  min-height: 104px;
+  border-radius: 14px;
+  background: #fff;
+  padding: 14px 14px 12px;
+  min-height: 92px;
   position: relative;
   overflow: hidden;
 }
 
-.stat-card::before {
-  content: '';
-  position: absolute;
-  inset: 0 auto auto 0;
-  width: 100%;
-  height: 3px;
-  background: #cfd7e4;
-}
-
-.stat-card-primary::before { background: #9fa9b9; }
-.stat-card-success::before { background: #14b8a6; }
-.stat-card-info::before { background: #4f86ff; }
-.stat-card-warning::before { background: #f0b84d; }
-.stat-card-primary-soft::before { background: #7a95c9; }
-.stat-card-teal::before { background: #1db9a7; }
-
 .stat-label {
   color: #6a7a90;
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.stat-row {
+  margin-top: 8px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.stat-row-single {
+  justify-content: flex-start;
 }
 
 .stat-value {
-  margin-top: 10px;
   color: #13233f;
-  font-size: 30px;
+  font-size: 26px;
   line-height: 1;
   font-weight: 800;
 }
 
-.stat-note {
-  margin-top: 8px;
+.stat-trend {
+  color: #14b8a6;
   font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.stat-note {
+  margin-top: 6px;
+  font-size: 11px;
   color: #8a98ab;
 }
 
@@ -1112,8 +1251,8 @@ onMounted(() => {
 .tabs-bar {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 14px 14px 0;
+  gap: 14px;
+  padding: 14px 18px 0;
   border-bottom: 1px solid #e2eaf2;
   overflow-x: auto;
 }
@@ -1121,11 +1260,11 @@ onMounted(() => {
 .tab-item {
   background: transparent;
   border: 0;
-  padding: 12px 10px 14px;
+  padding: 12px 2px 14px;
   border-bottom: 2px solid transparent;
-  color: #567;
+  color: #5f728d;
   cursor: pointer;
-  font-weight: 700;
+  font-weight: 600;
   white-space: nowrap;
   display: inline-flex;
   align-items: center;
@@ -1133,16 +1272,17 @@ onMounted(() => {
 }
 
 .tab-item.active {
-  color: #14a6a6;
-  border-bottom-color: #14a6a6;
+  color: #0f766e;
+  border-bottom-color: #14b8a6;
 }
 
 .tab-count {
   background: #eef2f7;
-  color: #5f728d;
+  color: #8a98ab;
   border-radius: 999px;
-  padding: 2px 8px;
-  font-size: 12px;
+  padding: 2px 7px;
+  font-size: 11px;
+  font-weight: 700;
 }
 
 .filters-row {
@@ -1155,6 +1295,14 @@ onMounted(() => {
 .search-box {
   position: relative;
   flex: 1;
+  min-width: 0;
+}
+
+.filters-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
 }
 
 .search-icon {
@@ -1198,6 +1346,116 @@ onMounted(() => {
   white-space: nowrap;
 }
 
+.filters-button:hover {
+  background: #f8fafc;
+  border-color: #cfd9e6;
+}
+
+.columns-control {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+}
+
+.search-button {
+  height: 40px;
+  border-radius: 12px;
+  padding: 0 18px;
+  border: 1px solid #14b8a6;
+  background: #14b8a6;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+}
+
+.search-button:hover {
+  background: #0d9488;
+  border-color: #0d9488;
+  box-shadow: 0 10px 18px rgba(13, 148, 136, 0.20);
+}
+
+.columns-button {
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid #d8e1eb;
+  background: #fff;
+  color: #13233f;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.columns-button.active,
+.columns-button:hover {
+  background: #f8fafc;
+  border-color: #cfd9e6;
+}
+
+.columns-icon {
+  flex-shrink: 0;
+}
+
+.columns-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 20;
+  min-width: 256px;
+  padding: 10px 0;
+  border-radius: 11px;
+  border: 1px solid #d8e1eb;
+  background: #fff;
+  box-shadow: 0 14px 26px rgba(15, 23, 42, 0.12);
+}
+
+.columns-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 14px;
+  color: #13233f;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.columns-option:hover {
+  background: #f8fafc;
+}
+
+.columns-option input {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  margin: 0;
+  border: 1px solid #4b5563;
+  border-radius: 2px;
+  background: #fff;
+  flex-shrink: 0;
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.columns-option input:checked {
+  background: #2f3440;
+  border-color: #2f3440;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.columns-option input:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.16);
+  border-color: #14b8a6;
+}
+
+.columns-option span {
+  line-height: 1.2;
+}
+
 .filters-badge {
   min-width: 22px;
   height: 22px;
@@ -1219,6 +1477,13 @@ onMounted(() => {
   padding: 0 14px 14px;
 }
 
+
+.table-toolbar {
+  display: flex;
+  align-items: center;
+  padding: 0 18px 10px;
+}
+
 .filter-check {
   border: 1px solid #e0e8f1;
   border-radius: 12px;
@@ -1229,34 +1494,6 @@ onMounted(() => {
   gap: 10px;
   color: #405069;
   font-size: 13px;
-}
-
-.table-header {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  align-items: flex-end;
-  flex-wrap: wrap;
-  padding: 0 18px 14px;
-}
-
-.table-header h2 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 800;
-  color: #13233f;
-}
-
-.table-header p,
-.table-page-indicator,
-.pagination-footer {
-  color: #6a7a90;
-  font-size: 13px;
-}
-
-.table-page-indicator {
-  font-weight: 700;
-  color: #41546e;
 }
 
 .state-row {
@@ -1279,7 +1516,8 @@ onMounted(() => {
 
 .people-table {
   width: 100%;
-  min-width: 1260px;
+  min-width: 100%;
+  table-layout: auto;
   border-collapse: collapse;
 }
 
@@ -1330,17 +1568,10 @@ onMounted(() => {
   font-weight: 800;
 }
 
-.person-subtitle,
 .cell-text,
 .muted {
   color: #6a7a90;
   font-size: 13px;
-}
-
-.cell-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
 }
 
 .mono {
@@ -1363,15 +1594,15 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  padding: 5px 10px;
-  font-size: 12px;
-  font-weight: 800;
+  padding: 4px 9px;
+  font-size: 11px;
+  font-weight: 700;
   white-space: nowrap;
 }
 
 .chip {
-  background: #e8f0ff;
-  color: #4d74d9;
+  background: #edf3ff;
+  color: #3765e8;
 }
 
 .chip-muted {
@@ -1384,10 +1615,10 @@ onMounted(() => {
   color: #44556c;
 }
 
-.status-pill.status-success { background: #d8f6e9; color: #14915e; }
-.status-pill.status-warning { background: #fceabc; color: #b06c07; }
-.status-pill.status-info { background: #dfeaff; color: #2c63d6; }
-.status-pill.status-pending { background: #f1f5f9; color: #526377; }
+.status-pill.status-success { background: #dcfce7; color: #15803d; }
+.status-pill.status-warning { background: #fef3c7; color: #b45309; }
+.status-pill.status-info { background: #dbeafe; color: #2563eb; }
+.status-pill.status-pending { background: #eef2f7; color: #526377; }
 .status-pill.status-neutral { background: #eef2f7; color: #526377; }
 
 .actions-col,
@@ -1395,18 +1626,29 @@ onMounted(() => {
   text-align: right;
 }
 
+.actions-cell {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
 .icon-btn {
-  width: 34px;
-  height: 34px;
-  border-radius: 11px;
-  border: 1px solid #d8e1eb;
-  background: #fff;
-  color: #5b6c84;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  border: 0;
+  background: transparent;
+  color: #64748b;
   display: inline-grid;
   place-items: center;
   cursor: pointer;
   transition: all 0.2s ease;
-  margin-left: 6px;
+  margin-left: 0;
+}
+
+.icon-btn:hover {
+  background: #f1f5f9;
 }
 
 .pagination-row {
@@ -1415,8 +1657,21 @@ onMounted(() => {
   justify-content: space-between;
   gap: 10px;
   flex-wrap: wrap;
-  padding: 14px 18px 10px;
+  padding: 14px 18px 16px;
   border-top: 1px solid #e2eaf2;
+}
+
+.pagination-summary {
+  color: #6a7a90;
+  font-size: 13px;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-left: auto;
 }
 
 .page-numbers {
@@ -1427,24 +1682,31 @@ onMounted(() => {
 }
 
 .page-btn {
-  height: 34px;
-  padding: 0 12px;
+  height: 32px;
+  padding: 0 11px;
   border-radius: 10px;
   border: 1px solid #d8e1eb;
   background: #fff;
   color: #41546e;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
+.page-btn:hover {
+  background: #f8fafc;
+  border-color: #cfd9e6;
+}
+
 .page-btn-number {
-  min-width: 34px;
+  min-width: 32px;
 }
 
 .page-btn.active {
-  background: #13233f;
-  border-color: #13233f;
-  color: #fff;
+  background: #fff;
+  border-color: #99f6e4;
+  color: #0f766e;
+  box-shadow: inset 0 0 0 1px rgba(20, 184, 166, 0.12);
 }
 
 .page-btn:disabled {
@@ -1455,10 +1717,6 @@ onMounted(() => {
 .page-ellipsis {
   color: #9aa7b8;
   padding: 0 2px;
-}
-
-.pagination-footer {
-  padding: 0 18px 18px;
 }
 
 .spinner {
@@ -1583,7 +1841,7 @@ onMounted(() => {
 
 .primary-btn {
   color: #fff;
-  background: #13233f;
+  background: #14b8a6;
 }
 
 .secondary-btn {
