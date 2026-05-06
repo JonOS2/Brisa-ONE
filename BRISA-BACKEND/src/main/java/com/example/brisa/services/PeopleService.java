@@ -14,12 +14,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 @Service
 @RequiredArgsConstructor
@@ -52,9 +50,19 @@ public class PeopleService {
         people.setCpf(peopleDetails.getCpf());
         people.setEducationLevel(peopleDetails.getEducationLevel());
         people.setAddress(peopleDetails.getAddress());
+        people.setAddressExtra(peopleDetails.getAddressExtra());
         people.setCity(peopleDetails.getCity());
+        people.setState(peopleDetails.getState());
         people.setGender(peopleDetails.getGender());
+        people.setQuotaCategory(peopleDetails.getQuotaCategory());
+        people.setPhone(peopleDetails.getPhone());
+        people.setLinkedin(peopleDetails.getLinkedin());
+        people.setZipCode(peopleDetails.getZipCode());
         people.setBirthDate(peopleDetails.getBirthDate());
+        people.setInstitutionName(peopleDetails.getInstitutionName());
+        people.setCourseName(peopleDetails.getCourseName());
+        people.setEducationStatus(peopleDetails.getEducationStatus());
+        people.setEducationCompletionDate(peopleDetails.getEducationCompletionDate());
         
         return peopleRepository.save(people);
     }

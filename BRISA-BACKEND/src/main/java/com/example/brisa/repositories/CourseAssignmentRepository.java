@@ -24,4 +24,12 @@ public interface CourseAssignmentRepository extends JpaRepository<CourseAssignme
 
     @Query("SELECT ca FROM CourseAssignmentModel ca WHERE ca.course.id = :courseId")
     List<CourseAssignmentModel> findByCourseId(@Param("courseId") Long courseId);
+
+    @Query("""
+        SELECT ca
+        FROM CourseAssignmentModel ca
+        JOIN FETCH ca.course
+        JOIN FETCH ca.classModel
+    """)
+    List<CourseAssignmentModel> findAllWithRelations();
 }

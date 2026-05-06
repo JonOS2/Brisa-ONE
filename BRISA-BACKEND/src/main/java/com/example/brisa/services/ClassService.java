@@ -98,6 +98,29 @@ public class ClassService {
         classModel.setCode(classDetails.getCode());
         classModel.setStartDate(classDetails.getStartDate());
         classModel.setEndDate(classDetails.getEndDate());
+        classModel.setLocality(classDetails.getLocality());
+        classModel.setDefaultSelectionCapacity(classDetails.getDefaultSelectionCapacity());
+        classModel.setDefaultLevelingCapacity(classDetails.getDefaultLevelingCapacity());
+        classModel.setDefaultImmersionCapacity(classDetails.getDefaultImmersionCapacity());
+        classModel.setImmersionTeamSize(classDetails.getImmersionTeamSize());
+        classModel.setQtdVagas(classDetails.getQtdVagas());
+        classModel.setPublicationDate(classDetails.getPublicationDate());
+        classModel.setApplicationStartDate(classDetails.getApplicationStartDate());
+        classModel.setApplicationEndDate(classDetails.getApplicationEndDate());
+        classModel.setLevelingSelectionAnnouncementDate(classDetails.getLevelingSelectionAnnouncementDate());
+        classModel.setLevelingConfirmationStartDate(classDetails.getLevelingConfirmationStartDate());
+        classModel.setLevelingConfirmationEndDate(classDetails.getLevelingConfirmationEndDate());
+        classModel.setLevelingStartDate(classDetails.getLevelingStartDate());
+        classModel.setLevelingEndDate(classDetails.getLevelingEndDate());
+        classModel.setLevelingFinalExamDate(classDetails.getLevelingFinalExamDate());
+        classModel.setImmersionSelectionAnnouncementDate(classDetails.getImmersionSelectionAnnouncementDate());
+        classModel.setImmersionConfirmationStartDate(classDetails.getImmersionConfirmationStartDate());
+        classModel.setImmersionConfirmationEndDate(classDetails.getImmersionConfirmationEndDate());
+        classModel.setImmersionStartDate(classDetails.getImmersionStartDate());
+        classModel.setImmersionEndDate(classDetails.getImmersionEndDate());
+        classModel.setPartialEvaluationDate(classDetails.getPartialEvaluationDate());
+        classModel.setFinalEvaluationDate(classDetails.getFinalEvaluationDate());
+        classModel.setCertificateIssueDate(classDetails.getCertificateIssueDate());
         
         if (classDetails.getProgram() != null && classDetails.getProgram().getId() != null) {
             ProgramModel program = programRepository.findById(classDetails.getProgram().getId())

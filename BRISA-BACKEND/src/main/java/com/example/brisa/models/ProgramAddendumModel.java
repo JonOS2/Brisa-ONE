@@ -34,5 +34,6 @@ public class ProgramAddendumModel {
     @Column(name = "end_date")
     private LocalDate endDate;
 
+    @Column(name = "\"value\"")
     private BigDecimal value;
 }
