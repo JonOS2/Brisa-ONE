@@ -96,7 +96,7 @@
                    Editar
                 </button>
 
-               <button class="btn-stage-action" @click="$emit('duplicate-stage', stage)">
+                <button class="btn-stage-action" @click="$emit('duplicate-stage', stage)">
                   <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                   </svg>
@@ -133,17 +133,22 @@
 
 <script>
 export default {
+  // Nome que identifica este arquivo na árvore de componentes do Vue
   name: 'EstructureProgramRegistrationView',
-  // O componente "filho" recebe do "pai" a lista de etapas e o estado do arrasto
+  
+  // Propriedades (Props): Dados vitais que este componente precisa receber do componente Pai para funcionar
   props: {
+    // A matriz (array) contendo todos os objetos de etapa criados. Renderiza a lista na tela.
     stageList: {
       type: Array,
       required: true
     },
+    // Guarda a posição (index) do item que está sendo segurado e arrastado no momento
     draggedStageIndex: {
       type: Number,
       default: null
     },
+    // Guarda a posição (index) do item sobre o qual o mouse está passando por cima no momento do arrasto
     draggedOverStageIndex: {
       type: Number,
       default: null
@@ -153,5 +158,7 @@ export default {
 </script>
 
 <style scoped>
-/* O CSS Global do Pai fará todo o trabalho perfeitamente. Nenhuma classe extra necessária aqui! */
+/* O CSS Global do Pai fará todo o trabalho perfeitamente. Nenhuma classe extra necessária aqui! 
+  A tag 'scoped' garante que se houvesse algum estilo aqui, ele não vazaria para outras telas.
+*/
 </style>

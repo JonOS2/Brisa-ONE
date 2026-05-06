@@ -247,24 +247,50 @@
 
 <script>
 export default {
+  // Nome do componente Vue
   name: 'DataProgramRegistrationView',
-  // Definindo tudo o que o componente precisa receber do Arquivo Pai
+  
+  // Propriedades (Props): Todos os dados e funções que o Arquivo PAI passa para este Arquivo FILHO
   props: {
+    // Objeto principal com os dados do programa (Nome, vagas, email, parceiros)
     formData: { type: Object, required: true },
+    
+    // Objeto com as datas em formato de visualização "DD/MM/AAAA"
     displayDates: { type: Object, required: true },
+    
+    // String indicando qual calendário está aberto no momento (ex: "publishDate")
     activeDatePicker: { type: String, default: null },
+    
+    // O Objeto Date nativo do JS usado para montar o mês e ano do cabeçalho do calendário
     calendarDate: { type: Date, required: true },
+    
+    // Arrays que contêm os nomes dos dias da semana (Dom, Seg...)
     weekDays: { type: Array, required: true },
+    
+    // Array que contém os nomes dos meses do ano (Janeiro, Fevereiro...)
     monthNames: { type: Array, required: true },
+    
+    // Matriz (Array) com os números do mês, incluindo os espaços vazios iniciais
     calendarDays: { type: Array, required: true },
+    
+    // Booleano indicando se o e-mail digitado passou no teste de validação
     isEmailInvalid: { type: Boolean, required: true },
+    
+    // Texto temporário digitado no input de adicionar parceiro
     newPartnerName: { type: String, required: true },
+    
+    // Função injetada pelo pai para verificar e colorir a data selecionada na matriz
     isSelectedDay: { type: Function, required: true },
+    
+    // Função injetada pelo pai para verificar e destacar o "Dia de hoje" na matriz
     isToday: { type: Function, required: true }
   }
 }
 </script>
 
 <style scoped>
-/* Nenhum estilo precisa ser adicionado aqui, o CSS Global do Pai fará todo o trabalho perfeitamente! */
+/* Como transformamos o CSS do Arquivo Pai em Global, 
+   nenhuma regra visual (cores, bordas, grids) precisa ser duplicada aqui! 
+   Este arquivo pega automaticamente os estilos da aplicação matriz.
+*/
 </style>

@@ -5,11 +5,10 @@
 
     <div v-if="showNewStageModal" class="modal-overlay" @click="closeNewStageModal">
        <div class="modal-content" @click.stop>
+          
           <div class="modal-header">
              <div>
-               <h3>Adicionar Nova Etapa</h3>
-               <p class="modal-subtitle">Configure as informações da nova etapa do processo seletivo</p>
-             </div>
+               <h3>Adicionar Nova Etapa</h3> <p class="modal-subtitle">Configure as informações da nova etapa do processo seletivo</p> </div>
              <button class="btn-close-modal" @click="closeNewStageModal">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -21,8 +20,7 @@
           <div class="modal-body">
              <div class="form-row two-cols">
                <div class="form-group">
-                 <label>Nome da Etapa <span class="required">*</span></label>
-                 <input v-model="newStageForm.title" @keydown.enter="$event.target.blur()" type="text" placeholder="Ex: Entrevista Técnica" class="form-input"/>
+                 <label>Nome da Etapa <span class="required">*</span></label> <input v-model="newStageForm.title" @keydown.enter="$event.target.blur()" type="text" placeholder="Ex: Entrevista Técnica" class="form-input"/>
                </div>
                <div class="form-group">
                  <label>Tipo</label>
@@ -136,8 +134,7 @@
     </div>
 
     <div v-if="showDeleteConfirmModal" class="modal-overlay" @click="cancelDeleteStage">
-       <div class="modal-content modal-sm" @click.stop>
-          <div class="modal-header">
+       <div class="modal-content modal-sm" @click.stop> <div class="modal-header">
              <div>
                <h3>Excluir Etapa</h3>
                <p class="modal-subtitle">Esta ação não poderá ser desfeita.</p>
@@ -179,6 +176,7 @@
                <input v-model="customFieldForm.name" @input="customFieldFormError = false" @keydown.enter="$event.target.blur()" type="text" placeholder="Ex: Link do Portfólio, Gênero, etc." :class="['form-input', { 'input-error': customFieldFormError }]"/>
                <span v-if="customFieldFormError" class="error-text">O campo de Nome não pode ficar vazio.</span>
              </div>
+             
              <div class="form-row two-cols" style="margin-bottom: 0;">
                <div class="form-group" style="margin-bottom: 0;">
                  <label>Tipo de Resposta</label>
@@ -190,6 +188,7 @@
                    <option value="select">Múltipla Escolha</option>
                  </select>
                </div>
+               
                <div class="form-group" style="margin-bottom: 0; display: flex; flex-direction: column; justify-content: center;">
                  <label>Campo Obrigatório?</label>
                  <label class="toggle-switch" style="margin-top: 4px;">
@@ -278,6 +277,7 @@
                  <input v-model="newCourseForm.hours" @keydown.enter="$event.target.blur()" type="text" placeholder="Ex: 40h" class="form-input"/>
                </div>
              </div>
+             
              <div class="form-row" style="display: flex; align-items: flex-start; gap: 32px; margin-bottom: 0;">
                <div class="form-group" style="margin-bottom: 0;">
                  <label>Obrigatório?</label>
@@ -311,9 +311,7 @@
 
     <div class="header">
       <div class="header-left">
-        <h1>Cadastro de Programa</h1>
-        <p class="subtitle">Configure e publique novos editais</p>
-      </div>
+        <h1>Cadastro de Programa</h1> <p class="subtitle">Configure e publique novos editais</p> </div>
     </div>
 
     <div class="registration-container">
@@ -434,6 +432,13 @@
         <RevisionProgramRegistrationView 
           v-else-if="currentStep === 6"
           :currentStep="currentStep"
+          :formData="formData"
+          :stageList="stageList"
+          :inscriptionForm="inscriptionForm"
+          :nivelamentoForm="nivelamentoForm"
+          :displayDates="displayDates"
+          @go-to-step="goToStep"
+          @save-draft="saveDraft"
         />
 
         <div class="form-actions-footer">
@@ -445,6 +450,7 @@
       </div>
 
       <div class="summary-sidebar">
+         
          <div class="sidebar-actions">
             <button class="btn-sidebar-draft" @click="saveDraft">
                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -458,28 +464,30 @@
               {{ isDraftSaved ? 'Rascunho Salvo' : 'Rascunho Não Salvo' }}
             </span>
          </div>
+         
          <h3>Resumo do Edital</h3>
          <p class="summary-desc">Preencha os dados do programa para ver o resumo</p>
+         
          <div class="summary-block">
             <span class="summary-label">Status</span>
             <span class="status-badge outline-badge">Rascunho</span>
          </div>
+         
          <div class="summary-block">
             <span class="summary-label">Etapas do Processo</span>
             <div class="timeline">
                <template v-for="(stage, index) in stageList" :key="stage.id">
                  <div class="timeline-item">
-                    <div class="timeline-number">{{ stage.id }}</div>
-                    <div class="timeline-content">
+                    <div class="timeline-number">{{ stage.id }}</div> <div class="timeline-content">
                        <h4>{{ stage.title }}</h4>
                        <p>{{ stage.modality }}</p>
-                       <span class="timeline-tag">{{ stage.slots }}</span>
-                    </div>
+                       <span class="timeline-tag">{{ stage.slots }}</span> </div>
                  </div>
                  <div v-if="index < stageList.length - 1" class="timeline-line"></div>
                </template>
             </div>
          </div>
+         
          <div class="summary-footer">
             Última atualização: Hoje às {{ lastUpdatedTime }}
          </div>
@@ -490,7 +498,10 @@
 </template>
 
 <script>
-// IMPORTANDO OS ARQUIVOS FILHOS DA PASTA COMPONENTS
+// =======================================================================
+// IMPORTAÇÃO DOS ARQUIVOS COMPONENTIZADOS FILHOS
+// Eles contêm o HTML específico de cada etapa para manter este arquivo limpo
+// =======================================================================
 import DataProgramRegistrationView from './components/DataProgramRegistrationView.vue';
 import EstructureProgramRegistrationView from './components/EstructureProgramRegistrationView.vue';
 import FirstStageProgramRegistrationView from './components/FirstStageProgramRegistrationView.vue';
@@ -499,8 +510,10 @@ import ThirdStageProgramRegistrationView from './components/ThirdStageProgramReg
 import RevisionProgramRegistrationView from './components/RevisionProgramRegistrationView.vue';
 
 export default {
+  // Nome oficial deste componente principal
   name: 'ProgramRegistrationView',
-  // DECLARANDO OS COMPONENTES PARA O VUE RENDERIZAR
+  
+  // Declaração dos componentes para que o Vue permita o uso das tags HTML deles lá em cima
   components: {
     DataProgramRegistrationView,
     EstructureProgramRegistrationView,
@@ -509,39 +522,62 @@ export default {
     ThirdStageProgramRegistrationView,
     RevisionProgramRegistrationView
   },
+  
+  // =======================================================================
+  // ESTADO DA APLICAÇÃO (DATA)
+  // Define todas as variáveis que controlam o comportamento, telas e inputs
+  // =======================================================================
   data() {
     return {
+      // Guarda a última vez que o usuário mexeu em algum form
       lastUpdatedTime: '', 
       
-      // Controladores Principais
-      currentStep: 1, // Voltado para a etapa 1 por padrão
-      isDraftSaved: false, // Nova flag de controle do Rascunho
+      // Controlador principal de abas: Define qual etapa da barra lateral está aberta
+      currentStep: 1, 
       
+      // Variável de controle: Define se as últimas alterações já foram salvas pelo botão
+      isDraftSaved: false, 
+      
+      // Arrays que montam os nomes dos 6 botões da barra lateral esquerda
       stepTitles: ['Dados do Programa', 'Estrutura das Etapas', 'Etapa 0 — Inscrição', 'Etapa 1 — Nivelamento', 'Etapa 2 — Imersão', 'Revisão Final'],
       stepDescs: ['Informações gerais', 'Definição do fluxo', 'Formulário e elegibilidade', 'Cursos e avaliação', 'Projetos e benefícios', 'Validar e publicar'],
+      
+      // Aba 1: Guarda texto temporário digitado no input de adicionar parceiro
       newPartnerName: '', 
+      
+      // Aba 1: Flag que evita disparar erro de email antes do usuário terminar de digitar
       emailTouched: false, 
+      
+      // Aba 2: Variáveis que gerenciam a origem e destino dos cards arrastados (Drag and Drop)
       draggedStageIndex: null,
       draggedOverStageIndex: null,
       
+      // OBJETO ABA 1: Armazena os inputs de texto, selects e datas gerais do edital
       formData: { 
         programName: '', batchName: '', executor: '', objective: '', partners: [], location: '', supportEmail: '', officialWebsite: '', publishDate: '', startDate: '', endDate: '', inscStart: '', inscEnd: '', nivStart: '', nivEnd: '', nivExamDate: '', status: 'Rascunho', observations: '' 
       },
       
+      // OBJETO ABA 3: Configurações do formulário de Inscrição / Triagem / Documentos
       inscriptionForm: {
         title: 'Inscrição', type: 'Inscrição / Triagem', desc: 'Etapa de inscrições e triagem inicial dos candidatos', situation: 'Obrigatória', targetAudience: '', educationReqs: '', requireLinkedin: false, requireCPF: true, singleRegistration: true,
+        // Array de configurações de switch liga/desliga de campos de texto no form
         fields: [
           { name: 'Nome completo', required: true }, { name: 'E-mail', required: true }, { name: 'CPF', required: true }, { name: 'Data de nascimento', required: true }, { name: 'Telefone', required: true }, { name: 'LinkedIn', required: false }, { name: 'Município', required: true }, { name: 'Estado', required: true }, { name: 'Formação', required: true }, { name: 'Instituição de ensino', required: false }, { name: 'Grau de escolaridade', required: true },
         ],
+        // Array com os documentos de upload exigidos do candidato
         documents: [
           { name: 'Documento de identidade', types: 'PDF, JPG', required: true }, { name: 'CPF', types: 'PDF, JPG', required: true }, { name: 'Comprovante de escolaridade', types: 'PDF', required: true },
         ],
+        // Cotas, deficiencias, idade
         quotas: { ampla: 50, pcd: 10, negros: 30, mulheres: 0, age45: 10, singleQuota: true, revertUnfilled: true },
+        // Aprovação e envio para fila de espera/Nivelamento
         classification: { active: true, count: 250, criteria: 'Ordem de inscrição', tiebreaker: '', waitlist: true, allowAppeals: true, appealDeadline: '' }
       },
 
+      // OBJETO ABA 4: Configurações do Nivelamento (Aulas, Cursos e Provas)
       nivelamentoForm: {
         title: 'Nivelamento', modality: 'Remota Assíncrona', workload: '172h', platform: '',
+        // Tabela completa de minicursos listados
         courses: [
           { name: 'Introdução à plataforma', hours: '2h', required: true, scores: false, status: 'Ativo' },
           { name: 'Lógica de programação', hours: '40h', required: true, scores: true, status: 'Ativo' },
@@ -558,59 +594,110 @@ export default {
           { name: 'Treinamento de IA', hours: '25h', required: false, scores: true, status: 'Ativo' },
           { name: 'UI/UX', hours: '30h', required: false, scores: true, status: 'Ativo' },
         ],
+        // Regras lógicas de conclusão (Ex: Tirar mais de 70)
         completionRules: { requireActivities: true, requireMinScore: true, minScoreValue: '70', requireFinalEval: true },
         finalExam: { active: true, time: '', duration: 120, questionsCount: 50, type: 'Múltipla Escolha', sequential: true, allowBack: false, mandatorySubmit: true },
+        // Sliders de pesos e fórmulas de matemática
         grading: { examWeight: 70, optionalWeight: 30, bonusLocation: 5, minPassingScore: 50, cutOffRule: false, approvedCount: 50, generatePrelimList: true, allowAppeals: true, generateFinalList: true },
         certification: { active: true, criteria: 'Aprovação na etapa', defaultText: '' }
       },
       
+      // Controle do Modal: Adicionar Etapa (Aba 2)
       showNewStageModal: false,
       newStageForm: { title: '', type: '', modality: 'Online', durationValue: '', durationUnit: 'dias', slots: '', desc: '' },
       
+      // Controle do Modal: Editar Etapa Existente (Aba 2)
       showEditStageModal: false,
       editStageForm: { id: null, title: '', type: '', modality: 'Online', durationValue: '', durationUnit: 'dias', slots: '', desc: '' },
 
+      // Controle do Modal: Alertar Exclusão de Etapa (Aba 2)
       showDeleteConfirmModal: false,
       stageToDelete: null,
       
+      // Controle do Modal: Injetar Novo Input Field no form do candidato (Aba 3)
       showCustomFieldModal: false,
-      customFieldFormError: false, 
+      customFieldFormError: false, // Flag que acende a borda vermelha de erro
       customFieldForm: { name: '', type: 'text', required: true },
 
+      // Controle do Modal: Injetar Requerimento de Arquivo/Documento (Aba 3)
       showCustomDocumentModal: false,
       customDocumentFormError: false, 
-      customDocumentTypeError: false, 
+      customDocumentTypeError: false, // Flag erro se tentar salvar sem selecionar nenhum PDF, DOC, etc
       customDocumentForm: { name: '', types: ['PDF'], required: true },
-      availableDocTypes: ['PDF', 'DOCX', 'JPG', 'PNG', 'XLSX', 'ZIP'],
+      availableDocTypes: ['PDF', 'DOCX', 'JPG', 'PNG', 'XLSX', 'ZIP'], // Botões de Pills
 
+      // Controle do Modal: Cadastrar novo Curso de Nivelamento (Aba 4)
       showNewCourseModal: false,
       newCourseFormError: false,
       newCourseForm: { name: '', hours: '', required: false, scores: true, status: 'Ativo' },
 
+      // Array que guarda a ordem exata das etapas do fluxo visual da tela (Aba 2)
       stageList: [], 
+      
+      // Dicionário reativo usado para exibir e mascarar as datas formatadas em tela (DD/MM/AAAA) enquanto mantém ISO no BD
       displayDates: { publishDate: '', startDate: '', endDate: '', inscStart: '', inscEnd: '', nivStart: '', nivEnd: '', nivExamDate: '' }, 
-      activeDatePicker: null, 
-      calendarDate: new Date(), 
+      
+      // Variáveis responsáveis pelo motor do Calendário Customizado
+      activeDatePicker: null, // Guarda o nome do campo de data que foi clicado
+      calendarDate: new Date(), // Mês/Ano base que o calendário está mostrando
       weekDays: ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'],
       monthNames: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
     };
   },
   
+  // =======================================================================
+  // LIFECYCLE HOOKS (Ciclo de Vida do Vue)
+  // =======================================================================
   mounted() { 
-    this.restoreDefaultStages(); 
+    // Captura o minuto/hora atual de carregamento
     this.updateLastModifiedTime();
 
-    // NOVA LÓGICA: Verifica se há um rascunho salvo no navegador
+    // =======================================================================
+    // NOVA LÓGICA: CARREGAMENTO DOS DADOS DO RASCUNHO (LOCAL STORAGE)
+    // =======================================================================
     const savedStep = localStorage.getItem('programDraftStep');
     if (savedStep) {
+      // Se achou, abre a tela exatamente na aba em que a pessoa salvou
       this.currentStep = parseInt(savedStep, 10);
       this.isDraftSaved = true;
+
+      // Resgata os formulários salvos e converte de texto (JSON) para objeto novamente
+      const savedFormData = localStorage.getItem('draftFormData');
+      if (savedFormData) this.formData = JSON.parse(savedFormData);
+
+      const savedInscription = localStorage.getItem('draftInscriptionForm');
+      if (savedInscription) this.inscriptionForm = JSON.parse(savedInscription);
+
+      const savedNivelamento = localStorage.getItem('draftNivelamentoForm');
+      if (savedNivelamento) this.nivelamentoForm = JSON.parse(savedNivelamento);
+
+      const savedStageList = localStorage.getItem('draftStageList');
+      if (savedStageList) {
+        this.stageList = JSON.parse(savedStageList);
+      } else {
+        // Fallback: Se não havia etapas na lista, restaura as 3 padrões
+        this.restoreDefaultStages();
+      }
+
+      const savedDisplayDates = localStorage.getItem('draftDisplayDates');
+      if (savedDisplayDates) this.displayDates = JSON.parse(savedDisplayDates);
+
     } else {
+      // Se NÃO achou nenhum rascunho salvo, vai pra tela inicial (Aba 1) e carrega as etapas originais do sistema.
       this.currentStep = 1;
+      this.restoreDefaultStages(); 
     }
   },
   
+  // =======================================================================
+  // WATCHERS (Observadores)
+  // Funções que vigiam e detectam reativamente alterações nos Data Objects
+  // =======================================================================
   watch: {
+    // ---------------------------------------------------------------------
+    // Bloco de Watchers de Datas: Sempre que o sistema/BD (formData) sofrer alteração na data "Y-M-D", 
+    // esse watcher entra em ação e engatilha a função formatDateDisplay pra refazer a visualização em tela para "D/M/Y"
+    // ---------------------------------------------------------------------
     'formData.publishDate'(val) { this.displayDates.publishDate = this.formatDateDisplay(val); },
     'formData.startDate'(val) { this.displayDates.startDate = this.formatDateDisplay(val); },
     'formData.endDate'(val) { this.displayDates.endDate = this.formatDateDisplay(val); },
@@ -620,62 +707,118 @@ export default {
     'formData.nivEnd'(val) { this.displayDates.nivEnd = this.formatDateDisplay(val); },
     'formData.nivExamDate'(val) { this.displayDates.nivExamDate = this.formatDateDisplay(val); },
     
-    // Agora, qualquer digitação nos forms avisa que o rascunho não está salvo
+    // ---------------------------------------------------------------------
+    // Watchers Deep (Profundos): Olham O OBJETO INTEIRO e não apenas um campo.
+    // Qualquer tecla que o usuário digitar nos formulários vai acionar essas funções.
+    // O sistema atualiza o relógio (updateLastModifiedTime) e tira o status de "Rascunho Salvo" (isDraftSaved = false)
+    // ---------------------------------------------------------------------
     formData: { handler() { this.updateLastModifiedTime(); this.isDraftSaved = false; }, deep: true },
     inscriptionForm: { handler() { this.updateLastModifiedTime(); this.isDraftSaved = false; }, deep: true },
     nivelamentoForm: { handler() { this.updateLastModifiedTime(); this.isDraftSaved = false; }, deep: true },
     stageList: { handler() { this.updateLastModifiedTime(); this.isDraftSaved = false; }, deep: true }
   },
   
+  // =======================================================================
+  // COMPUTED PROPERTIES (Propriedades Computadas)
+  // Valores cacheados que só se atualizam quando seus dependentes mudam
+  // =======================================================================
   computed: {
+    // Varre o array de cursos do nivelamento e conta quantos estão com a chave 'required' ligada
     reqCoursesCount() { return this.nivelamentoForm.courses.filter(c => c.required).length; },
+    
+    // Varre o array de cursos do nivelamento e conta quantos NÃO estão com a chave ligada (são opcionais)
     optCoursesCount() { return this.nivelamentoForm.courses.filter(c => !c.required).length; },
+    
+    // Expressão Regular (Regex) que verifica se a string de email contém "@" e "." nos lugares certos
     isEmailInvalid() {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       return this.formData.supportEmail && !emailRegex.test(this.formData.supportEmail);
     },
+    
+    // Mecânica geométrica do Calendário: Calcula quantos "buracos vazios" devem existir antes do dia 1 do mês,
+    // garantindo que os dias da semana encaixem corretamente debaixo da matriz [Dom, Seg, Ter...]
     calendarDays() {
       const year = this.calendarDate.getFullYear();
       const month = this.calendarDate.getMonth();
-      const firstDay = new Date(year, month, 1).getDay(); 
-      const daysInMonth = new Date(year, month + 1, 0).getDate(); 
+      const firstDay = new Date(year, month, 1).getDay(); // Em que dia da semana cai o dia 01
+      const daysInMonth = new Date(year, month + 1, 0).getDate(); // Quantidade exata de dias naquele mês específico
+      
       const days = [];
+      // Injeta campos nulos para empurrar o layout pro dia da semana correto
       for (let i = 0; i < firstDay; i++) { days.push(null); }
+      // Injeta os números numéricos iteráveis normais 
       for (let i = 1; i <= daysInMonth; i++) { days.push(i); }
       return days;
     }
   },
   
+  // =======================================================================
+  // METHODS (Funções ativas da interface)
+  // =======================================================================
   methods: {
+    
+    // Gera a string de hora no formato de relógio 00:00 atual
     updateLastModifiedTime() {
       const now = new Date();
+      // O padStart evita o bug de formatação onde hora "9" vira "9:5" em vez de "09:05"
       const hours = String(now.getHours()).padStart(2, '0');
       const minutes = String(now.getMinutes()).padStart(2, '0');
       this.lastUpdatedTime = `${hours}:${minutes}`;
     },
     
-    // NOVA LÓGICA: Salva a etapa atual no navegador
+    // =======================================================================
+    // NOVA LÓGICA DE SALVAMENTO DE RASCUNHO (MÉTODO ACIONADO PELO BOTÃO)
+    // =======================================================================
     saveDraft() {
+      // 1. Muda a cor da pílula para verde (Rascunho Salvo)
       this.isDraftSaved = true;
+      
+      // 2. Salva a aba atual em que o usuário está navegando
       localStorage.setItem('programDraftStep', this.currentStep.toString());
+      
+      // 3. Converte todos os grandes objetos preenchidos para texto (JSON) e salva no cache do navegador
+      localStorage.setItem('draftFormData', JSON.stringify(this.formData));
+      localStorage.setItem('draftInscriptionForm', JSON.stringify(this.inscriptionForm));
+      localStorage.setItem('draftNivelamentoForm', JSON.stringify(this.nivelamentoForm));
+      localStorage.setItem('draftStageList', JSON.stringify(this.stageList));
+      localStorage.setItem('draftDisplayDates', JSON.stringify(this.displayDates));
     },
 
+    // Funções de pular tela, engatilhadas por botões em tela.
     nextStep() { if (this.currentStep < 6) this.currentStep++; window.scrollTo({ top: 0, behavior: 'smooth' }); },
     prevStep() { if (this.currentStep > 1) this.currentStep--; window.scrollTo({ top: 0, behavior: 'smooth' }); },
     goToStep(num) { this.currentStep = num; window.scrollTo({ top: 0, behavior: 'smooth' }); },
     
-    onDragStart(index, event) { this.draggedStageIndex = index; event.dataTransfer.effectAllowed = 'move'; },
+    // ---------------------------------------------------------------------
+    // SISTEMA DE DRAG & DROP (Arraste de blocos de Etapas no DOM HTML5)
+    // ---------------------------------------------------------------------
+    
+    // Quando o usuário APERTA E SEGURA a alça do card...
+    onDragStart(index, event) { 
+      this.draggedStageIndex = index; // Armazena a memória de quem é a vítima do arraste
+      event.dataTransfer.effectAllowed = 'move'; 
+    },
+    
+    // Permite por override nativo JS/HTML que a tela seja soltável em certas coordenadas
     onDragOver(event) { event.preventDefault(); },
+    
+    // Quando o item arrastado voa por cima da cabeça de um outro card diferente...
     onDragEnter(index) { this.draggedOverStageIndex = index; },
+    
+    // Quando solta o botão do mouse: O array do Vue sofre uma mutação (Splice) reordenando os objetos instantaneamente em tela
     onDrop(index) {
       if (this.draggedStageIndex !== null && this.draggedStageIndex !== index) {
+        // Tira da posição velha e soca no index da posição nova (Target)
         const draggedItem = this.stageList.splice(this.draggedStageIndex, 1)[0];
         this.stageList.splice(index, 0, draggedItem);
       }
       this.onDragEnd();
     },
+    
+    // Limpa a sujeira das variáveis de cache de click
     onDragEnd() { this.draggedStageIndex = null; this.draggedOverStageIndex = null; },
 
+    // Método injetor base do sistema (Reseta o projeto pra abaixar as etapas Inscrição/Niv/Imersão padrões)
     restoreDefaultStages() {
       this.stageList = [
         { id: 0, title: 'Inscrição', type: 'Inscrição / Triagem', desc: 'Etapa de inscrições e triagem inicial dos candidatos', modality: 'Online', duration: '30 dias', slots: 'Ilimitado', isDefault: true },
@@ -684,26 +827,42 @@ export default {
       ];
     },
     
+    // Abre a tela sobreposta para Adição
     openNewStageModal() { this.showNewStageModal = true; },
+    // Fecha a tela e limpa/mata os dados rascunhados soltos por lá (Reset)
     closeNewStageModal() { this.showNewStageModal = false; this.newStageForm = { title: '', type: '', modality: 'Online', durationValue: '', durationUnit: 'dias', slots: '', desc: '' }; },
+    
+    // Confirma envio do card pro sistema.
     saveNewStage() {
-       if(!this.newStageForm.title) return; 
+       if(!this.newStageForm.title) return; // Bloco hard fail se nao tiver nome
+       
+       // Procura na array de etapas qual o maior número de etapa atual para gerar um sequencial +1
        const nextId = this.stageList.length > 0 ? Math.max(...this.stageList.map(s => s.id)) + 1 : 0;
+       
+       // O formulário pede "3" e "dias" separados. O sistema concaceta e vira "3 dias".
        const finalDuration = this.newStageForm.durationValue ? `${this.newStageForm.durationValue} ${this.newStageForm.durationUnit}` : '';
+       
+       // Empurra o objeto pro array reativo (DOM V-FOR renderiza e estufa automaticamente!)
        this.stageList.push({ id: nextId, title: this.newStageForm.title, type: this.newStageForm.type, desc: this.newStageForm.desc, modality: this.newStageForm.modality, duration: finalDuration, slots: this.newStageForm.slots, isDefault: false });
        this.closeNewStageModal();
     },
     
+    // Pega o objeto nativo que foi clicado, quebra as chaves e espelha no modal de Edição para alteração pre-existente
     openEditStageModal(stage) {
        this.editStageForm = { ...stage }; 
        if (stage.duration) {
+          // Operação reversa. Pega a String bruta (15 dias), split no espaço e entrega (15) para caixa numerica e (dias) para select
           const parts = stage.duration.split(' ');
           this.editStageForm.durationValue = parts[0] || '';
           this.editStageForm.durationUnit = parts[1] || 'dias';
        }
        this.showEditStageModal = true;
     },
+    
+    // Fecha Modal de Edit sem salvar
     closeEditStageModal() { this.showEditStageModal = false; },
+    
+    // Salva o Card por cima do mesmo índice ID exato que ele habitava anteriormente no Array de Objetos local (update state base)
     saveEditStage() {
        const index = this.stageList.findIndex(s => s.id === this.editStageForm.id);
        if (index !== -1) {
@@ -713,29 +872,36 @@ export default {
        this.closeEditStageModal();
     },
     
+    // Triggers da Lixeira
     confirmDeleteStage(stage) { this.stageToDelete = stage; this.showDeleteConfirmModal = true; },
     cancelDeleteStage() { this.showDeleteConfirmModal = false; this.stageToDelete = null; },
+    
     executeDeleteStage() {
       if (this.stageToDelete) {
+        // Redefine a lista geral usando filter = Traga pra mim apenas os itens na qual o ID SEJA DIFERENTE do cara da Lixeira atual.
         this.stageList = this.stageList.filter(s => s.id !== this.stageToDelete.id);
         this.cancelDeleteStage();
       }
     },
 
+    // Processo de duplicagem. Clona objeto, gera nova numeração, insere sufixo (Cópia) no nome
     duplicateStage(stage) {
       const nextId = this.stageList.length > 0 ? Math.max(...this.stageList.map(s => s.id)) + 1 : 0;
       const duplicatedStage = { ...stage };
       duplicatedStage.id = nextId;
       duplicatedStage.title = `${stage.title} (Cópia)`; 
-      duplicatedStage.isDefault = false; 
+      duplicatedStage.isDefault = false; // Remove visual Badge de ser stage Padrão base.
+      
       const originalIndex = this.stageList.findIndex(s => s.id === stage.id);
       if (originalIndex !== -1) {
+        // Insere fisicamente exatamente 1 casa abaixo do alvo no DOM layout Array base do Vue render object
         this.stageList.splice(originalIndex + 1, 0, duplicatedStage);
       } else {
         this.stageList.push(duplicatedStage);
       }
     },
 
+    // Aba 3 (Modal Custom field) Toggle, reset n' saves.
     openCustomFieldModal() { this.showCustomFieldModal = true; },
     closeCustomFieldModal() {
       this.showCustomFieldModal = false;
@@ -743,17 +909,20 @@ export default {
       this.customFieldForm = { name: '', type: 'text', required: true };
     },
     saveCustomField() {
-      if (!this.customFieldForm.name.trim()) { this.customFieldFormError = true; return; }
+      if (!this.customFieldForm.name.trim()) { this.customFieldFormError = true; return; } // Valida campo em branco
       this.inscriptionForm.fields.push({ name: this.customFieldForm.name, required: this.customFieldForm.required });
       this.closeCustomFieldModal();
     },
 
+    // Aba 3 (Modal Documentos) Controladores de Pills e Selects.
     toggleDocType(type) {
       const index = this.customDocumentForm.types.indexOf(type);
+      // Lógica de Pill toggle: Se clicou num botão PDF que já tá na lista do form, corta. Se não tiver, poe.
       if (index > -1) { this.customDocumentForm.types.splice(index, 1); } 
       else { this.customDocumentForm.types.push(type); }
       this.customDocumentTypeError = false;
     },
+    
     openCustomDocumentModal() { this.showCustomDocumentModal = true; },
     closeCustomDocumentModal() {
       this.showCustomDocumentModal = false;
@@ -763,12 +932,15 @@ export default {
     },
     saveCustomDocument() {
       if (!this.customDocumentForm.name.trim()) { this.customDocumentFormError = true; }
-      if (this.customDocumentForm.types.length === 0) { this.customDocumentTypeError = true; }
+      if (this.customDocumentForm.types.length === 0) { this.customDocumentTypeError = true; } // Evita erro crash vazio
       if (this.customDocumentFormError || this.customDocumentTypeError) return;
+      
+      // Salva e utiliza função array .JOIN pra colar PDF e XLS em "PDF, XLS" plano string pra tela visual read
       this.inscriptionForm.documents.push({ name: this.customDocumentForm.name, types: this.customDocumentForm.types.join(', '), required: this.customDocumentForm.required });
       this.closeCustomDocumentModal();
     },
 
+    // Aba 4 (Cursos Nivelamento) Modais Controlers
     openNewCourseModal() { this.showNewCourseModal = true; },
     closeNewCourseModal() {
       this.showNewCourseModal = false;
@@ -776,11 +948,12 @@ export default {
       this.newCourseForm = { name: '', hours: '', required: false, scores: true, status: 'Ativo' };
     },
     saveNewCourse() {
-      if (!this.newCourseForm.name.trim()) { this.newCourseFormError = true; return; }
+      if (!this.newCourseForm.name.trim()) { this.newCourseFormError = true; return; } // Barra campos fantasmas
       this.nivelamentoForm.courses.push({ name: this.newCourseForm.name, hours: this.newCourseForm.hours || '0h', required: this.newCourseForm.required, scores: this.newCourseForm.scores, status: this.newCourseForm.status });
       this.closeNewCourseModal();
     },
     
+    // Funções Add/Del de Tag de Entidades Parceiras na Aba 1
     addPartner() { 
       if (this.newPartnerName.trim() && !this.formData.partners.includes(this.newPartnerName.trim())) { 
         this.formData.partners.push(this.newPartnerName.trim()); 
@@ -789,10 +962,15 @@ export default {
     },
     removePartner(idx) { this.formData.partners.splice(idx, 1); },
     
+    // ---------------------------------------------------------------------
+    // SISTEMA MASTER: CALENDÁRIO REACTIVO VUE + MASKS
+    // ---------------------------------------------------------------------
     openDatePicker(f) { 
-        if (this.activeDatePicker === f) { this.closeDatePicker(); return; } 
+        if (this.activeDatePicker === f) { this.closeDatePicker(); return; } // Fecha se clicar 2x seguidas no icone
         this.activeDatePicker = f; 
         const exist = this.formData[f]; 
+        
+        // Mantém a sanidade de abrir a janela no mês que você clicou ao invés de resetar sempre pro "Date.Now" atual no ano.
         if (exist) { 
           const [y, m, d] = exist.split('-'); 
           this.calendarDate = new Date(y, m - 1, d); 
@@ -800,41 +978,60 @@ export default {
           this.calendarDate = new Date(); 
         } 
     },
+    
     closeDatePicker() { this.activeDatePicker = null; },
+    
     selectDate(d) { 
-      if (!d) return; 
+      if (!d) return; // Clique vazio fora de matriz. Ignore.
+      
       const y = this.calendarDate.getFullYear();
       const m = String(this.calendarDate.getMonth() + 1).padStart(2, '0'); 
       const day = String(d).padStart(2, '0'); 
+      
       this.formData[this.activeDatePicker] = `${y}-${m}-${day}`; 
       this.closeDatePicker(); 
     },
+    
     prevMonth() { this.calendarDate = new Date(this.calendarDate.getFullYear(), this.calendarDate.getMonth() - 1, 1); },
     nextMonth() { this.calendarDate = new Date(this.calendarDate.getFullYear(), this.calendarDate.getMonth() + 1, 1); },
+    
     formatDateDisplay(s) { 
       if (!s) return ''; 
       const [y, m, d] = s.split('-'); 
-      return `${d}/${m}/${y}`; 
+      return `${d}/${m}/${y}`; // Inverte String formato BD de YMD pra DMY br.
     },
+    
+    // Máscara customizada que age e injeta traços na digitação literal humana em inputs de form box 10 slots Max
     parseDateInput(f) {
-      let v = this.displayDates[f].replace(/\D/g, ''); 
+      let v = this.displayDates[f].replace(/\D/g, ''); // Limpa qlqer letra, mata tudo que n for digit
+      
+      // Regras de negócio de dias (limita hardcap teto de 01 a 31)
       if (v.length >= 2) { 
         let d = parseInt(v.substring(0, 2)); 
         if (d > 31) v = '31' + v.substring(2); 
         else if (d === 0) v = '01' + v.substring(2); 
       }
+      
+      // Regras de negócio de meses (limita hardcap teto 01 a 12)
       if (v.length >= 4) { 
         let m = parseInt(v.substring(2, 4)); 
         if (m > 12) v = v.substring(0, 2) + '12' + v.substring(4); 
         else if (m === 0) v = v.substring(0, 2) + '01' + v.substring(4); 
       }
+      
+      // Formatação injects das barras visuais "/"
       let fmt = v; 
       if (v.length > 2) fmt = v.substring(0, 2) + '/' + v.substring(2); 
       if (v.length > 4) fmt = fmt.substring(0, 5) + '/' + v.substring(4, 8);
-      this.displayDates[f] = fmt;
+      
+      this.displayDates[f] = fmt; // Retorna pra visual de tela atualizado
+      
+      // Processa a validação fina final
       if (v.length === 8) { 
         const d = v.substring(0, 2); const m = v.substring(2, 4); const y = v.substring(4, 8);
         const obj = new Date(y, m - 1, d); 
+        
+        // Checa com a engine JS base se a data é geometricamente possível no tempo (exclui 30 de Fev por ex)
         if (obj.getFullYear() == y && obj.getMonth() == m - 1 && obj.getDate() == d) { 
           this.formData[f] = `${y}-${m}-${d}`; 
           this.calendarDate = new Date(y, m - 1, d); 
@@ -846,6 +1043,9 @@ export default {
       }
     },
 
+    // ----------------------------------------------------------------------
+    // MÁSCARA PARA HORÁRIO (HH:MM) - Similar a de Date.
+    // ----------------------------------------------------------------------
     parseTimeInput() {
       let v = this.nivelamentoForm.finalExam.time.replace(/\D/g, ''); 
       if (v.length >= 2) { 
@@ -857,15 +1057,19 @@ export default {
         if (m > 59) v = v.substring(0, 2) + '59'; 
       }
       let fmt = v; 
-      if (v.length > 2) { fmt = v.substring(0, 2) + ':' + v.substring(2, 4); }
+      if (v.length > 2) { fmt = v.substring(0, 2) + ':' + v.substring(2, 4); } // Injeta dois pontos divisor clock visual
       this.nivelamentoForm.finalExam.time = fmt;
     },
     
+    // Utilizado pelo Grid System Calendar no HTML pra classBind.
+    // Retorna Boolean se uma casa especifica renderizada for literalmente a data preenchida armazenada em memory slot var Vue. Pinta Azul.
     isSelectedDay(f, d) { 
       if (!d || !this.formData[f]) return false; 
       const [y, m, day] = this.formData[f].split('-'); 
       return Number(y) === this.calendarDate.getFullYear() && Number(m) === this.calendarDate.getMonth() + 1 && Number(day) === d; 
     },
+    
+    // Retorna Bold e Bold Black color pra casa numero se o sistema for Hoje Now System Clock Time nativo da maquina OS
     isToday(day) { 
       const t = new Date(); 
       return day && t.getFullYear() === this.calendarDate.getFullYear() && t.getMonth() === this.calendarDate.getMonth() && t.getDate() === day; 
@@ -875,6 +1079,7 @@ export default {
 </script>
 
 <style>
+/* CSS Global Omitido para economizar espaço - Já foi implementado anteriormente com sucesso! */
 /* Zera as medidas incluindo paddings na largura total para evitar estouros no layout */
 * { 
   box-sizing: border-box; 
@@ -888,7 +1093,6 @@ export default {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
 }
 
-/* Engloba o título principal e subtítulo da página */
 .header { 
   display: flex; 
   justify-content: space-between; 
@@ -1094,7 +1298,7 @@ export default {
   color: #374151; 
 }
 
-.required {
+.required { 
   color: #ef4444; 
 }
 
@@ -1678,7 +1882,6 @@ export default {
   font-weight: 500; 
 }
 
-/* NOVAS CLASSES PARA O BADGE DE RASCUNHO */
 .status-badge { 
   padding: 4px 10px; 
   border-radius: 12px; 
@@ -1888,7 +2091,7 @@ export default {
   border: 1px dashed #d1d5db; 
   color: #1a233a; 
   border-radius: 8px; 
-  font-size: 14px;
+  font-size: 14px; 
   font-weight: 500;
   cursor: pointer; 
   margin-top: 8px;
@@ -2087,4 +2290,3 @@ export default {
   line-height: 1.5;
 }
 </style>
-}

@@ -40,6 +40,7 @@
              <input v-model="displayDates.nivStart" @input="$emit('parse-date-input', 'nivStart')" type="text" placeholder="dd/mm/aaaa" class="form-input" maxlength="10"/>
              <svg @click="$emit('open-date-picker', 'nivStart')" class="date-icon cursor-pointer" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
            </div>
+           
            <div v-if="activeDatePicker === 'nivStart'" class="custom-calendar">
               <div class="calendar-header">
                  <button type="button" class="cal-btn" @click.stop="$emit('prev-month')">‹</button>
@@ -59,6 +60,7 @@
              <input v-model="displayDates.nivEnd" @input="$emit('parse-date-input', 'nivEnd')" type="text" placeholder="dd/mm/aaaa" class="form-input" maxlength="10"/>
              <svg @click="$emit('open-date-picker', 'nivEnd')" class="date-icon cursor-pointer" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
            </div>
+           
            <div v-if="activeDatePicker === 'nivEnd'" class="custom-calendar">
               <div class="calendar-header">
                  <button type="button" class="cal-btn" @click.stop="$emit('prev-month')">‹</button>
@@ -146,6 +148,7 @@
            <span class="toggle-slider"></span>
          </label>
        </div>
+       
        <div v-if="nivelamentoForm.completionRules.requireMinScore" class="form-group" style="margin-top: 0; padding-bottom: 16px; border-bottom: 1px solid #f3f4f6;">
          <input v-model="nivelamentoForm.completionRules.minScoreValue" type="text" class="form-input" style="background-color: #f9fafb;"/>
        </div>
@@ -174,12 +177,14 @@
        </div>
        
        <div class="form-row three-cols-special" style="margin-top: 24px; grid-template-columns: 1.5fr 1fr 1fr;">
+         
          <div class="form-group relative">
            <label>Data</label>
            <div class="date-input-wrapper">
              <input v-model="displayDates.nivExamDate" @input="$emit('parse-date-input', 'nivExamDate')" type="text" placeholder="dd/mm/aaaa" class="form-input" maxlength="10" :disabled="!nivelamentoForm.finalExam.active"/>
              <svg v-if="nivelamentoForm.finalExam.active" @click="$emit('open-date-picker', 'nivExamDate')" class="date-icon cursor-pointer" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
            </div>
+           
            <div v-if="activeDatePicker === 'nivExamDate'" class="custom-calendar">
               <div class="calendar-header">
                  <button type="button" class="cal-btn" @click.stop="$emit('prev-month')">‹</button>
@@ -412,17 +417,33 @@
 
 <script>
 export default {
+  // Nome oficial do componente filho que gerencia a Etapa 1 - Nivelamento
   name: 'SecondStageProgramRegistrationView',
+  
+  // Propriedades (Props) recebidas do componente Pai que são vitais para renderizar e controlar os inputs, modais e cálculos
   props: {
+    // Objeto central do nivelamento que guarda as chaves de Cursos, Prova Final e o motor de Notas (Grading)
     nivelamentoForm: { type: Object, required: true },
+    
+    // Objeto de controle das datas convertidas para o layout visual (DD/MM/AAAA)
     displayDates: { type: Object, required: true },
+    
+    // String que avisa o sistema qual popup de data está com o foco/aberto no momento
     activeDatePicker: { type: String, default: null },
+    
+    // Objeto de Data (Date Javascript) que ancora o Mês e Ano do topo do calendário aberto
     calendarDate: { type: Date, required: true },
+    
+    // Arrays auxiliares em PT-BR para iterar e gerar os layouts da tabela de calendário numérico
     weekDays: { type: Array, required: true },
     monthNames: { type: Array, required: true },
     calendarDays: { type: Array, required: true },
+    
+    // Variáveis pré-calculadas pelo Pai informando os totais estatísticos dos cursos
     reqCoursesCount: { type: Number, required: true },
     optCoursesCount: { type: Number, required: true },
+    
+    // Funções vindas do Pai usadas pelos v-for do calendário para descobrir e pintar o botão/dia correto
     isSelectedDay: { type: Function, required: true },
     isToday: { type: Function, required: true }
   }

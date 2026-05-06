@@ -32,12 +32,14 @@
        </div>
 
        <div class="form-row three-cols-special">
+         
          <div class="form-group relative">
            <label>Início do Período</label>
            <div class="date-input-wrapper">
              <input v-model="displayDates.inscStart" @input="$emit('parse-date-input', 'inscStart')" type="text" placeholder="dd/mm/aaaa" class="form-input" maxlength="10"/>
              <svg @click="$emit('open-date-picker', 'inscStart')" class="date-icon cursor-pointer" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
            </div>
+           
            <div v-if="activeDatePicker === 'inscStart'" class="custom-calendar">
               <div class="calendar-header">
                  <button type="button" class="cal-btn" @click.stop="$emit('prev-month')">‹</button>
@@ -57,6 +59,7 @@
              <input v-model="displayDates.inscEnd" @input="$emit('parse-date-input', 'inscEnd')" type="text" placeholder="dd/mm/aaaa" class="form-input" maxlength="10"/>
              <svg @click="$emit('open-date-picker', 'inscEnd')" class="date-icon cursor-pointer" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
            </div>
+           
            <div v-if="activeDatePicker === 'inscEnd'" class="custom-calendar">
               <div class="calendar-header">
                  <button type="button" class="cal-btn" @click.stop="$emit('prev-month')">‹</button>
@@ -288,16 +291,36 @@
 
 <script>
 export default {
+  // Nome oficial deste componente (Filho do ProgramRegistrationView)
   name: 'FirstStageProgramRegistrationView',
+  
+  // Propriedades (Props): Dados vitais que este componente precisa receber do componente Pai
   props: {
+    // Objeto contendo todos os dados, seleções, toggles e arrays da aba de Inscrição
     inscriptionForm: { type: Object, required: true },
+    
+    // Objeto usado para renderizar as datas de forma amigável (DD/MM/AAAA) sem alterar o valor original ISO
     displayDates: { type: Object, required: true },
+    
+    // String indicando se há algum popup de calendário aberto no momento e em qual campo ele está
     activeDatePicker: { type: String, default: null },
+    
+    // O objeto de Data nativo usado para ancorar o topo do calendário (Mês e Ano visualizados)
     calendarDate: { type: Date, required: true },
+    
+    // Nomes dos dias da semana (Dom, Seg...)
     weekDays: { type: Array, required: true },
+    
+    // Nomes dos meses (Jan, Fev...)
     monthNames: { type: Array, required: true },
+    
+    // Matriz matemática que monta a tabela de dias numéricos exatos de um mês no calendário
     calendarDays: { type: Array, required: true },
+    
+    // Função do Pai usada para verificar se o dia renderizado é o mesmo salvo no form (pinta a bolinha de azul)
     isSelectedDay: { type: Function, required: true },
+    
+    // Função do Pai usada para verificar se o dia renderizado é literalmente "hoje" (pinta o número de negrito)
     isToday: { type: Function, required: true }
   }
 }
