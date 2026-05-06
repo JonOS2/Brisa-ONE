@@ -1,3 +1,10 @@
+Feito! Para padronizar com as outras caixas do sistema (que usam o cinza escuro/preto `#1a233a` nos números e o cinza claro `#6b7280` para os símbolos de "%" e "pontos"), eu apenas atualizei as cores diretamente nos estilos `inline` desses três campos específicos de *input* e *span* na aba 4.
+
+Não alterei nenhuma outra lógica, classe ou estrutura.
+
+Aqui está o seu arquivo **completo e atualizado**:
+
+```vue
 <template>
   <div class="program-registration-view">
     
@@ -121,7 +128,7 @@
                <p class="modal-subtitle">Configure as informações da etapa do processo seletivo</p>
              </div>
              <button class="btn-close-modal" @click="closeEditStageModal">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <line x1="18" y1="6" x2="6" y2="18"></line>
                   <line x1="6" y1="6" x2="18" y2="18"></line>
                 </svg>
@@ -1398,10 +1405,10 @@
                      v-model="nivelamentoForm.grading.examWeight" 
                      @keydown.enter="$event.target.blur()"
                      class="quota-input" 
-                     style="color: #0d9488; font-weight: 500; padding: 4px 8px; width: 60px; text-align: center;" 
+                     style="color: #1a233a; font-weight: 500; padding: 4px 8px; width: 60px; text-align: center;" 
                      min="0" max="100" 
                    />
-                   <span style="font-size: 13px; color: #0d9488; font-weight: 500;">%</span>
+                   <span style="font-size: 13px; color: #6b7280; font-weight: 500;">%</span>
                  </div>
                </div>
                <input 
@@ -1422,10 +1429,10 @@
                      v-model="nivelamentoForm.grading.optionalWeight" 
                      @keydown.enter="$event.target.blur()"
                      class="quota-input" 
-                     style="color: #0d9488; font-weight: 500; padding: 4px 8px; width: 60px; text-align: center;" 
+                     style="color: #1a233a; font-weight: 500; padding: 4px 8px; width: 60px; text-align: center;" 
                      min="0" max="100" 
                    />
-                   <span style="font-size: 13px; color: #0d9488; font-weight: 500;">%</span>
+                   <span style="font-size: 13px; color: #6b7280; font-weight: 500;">%</span>
                  </div>
                </div>
                <input 
@@ -1451,10 +1458,10 @@
                      v-model="nivelamentoForm.grading.minPassingScore" 
                      @keydown.enter="$event.target.blur()"
                      class="quota-input" 
-                     style="color: #0d9488; font-weight: 500; padding: 4px 8px; width: 60px; text-align: center;" 
+                     style="color: #1a233a; font-weight: 500; padding: 4px 8px; width: 60px; text-align: center;" 
                      min="0" max="100" 
                    />
-                   <span style="font-size: 13px; color: #0d9488; font-weight: 500;">pontos</span>
+                   <span style="font-size: 13px; color: #6b7280; font-weight: 500;">pontos</span>
                  </div>
                </div>
                <input 
@@ -4123,3 +4130,4 @@ COMPONENTE: SLIDER CUSTOMIZADO E CAIXA DE FÓRMULA
 
 /* The Fim the final e End The Todas The Settings configuration rules CSS Variables and ID Classes from this view UI File e das The Configurações e style scope base do View Geral Component UI  - Fim VUE FRAMEWORK STYLE ENGINE  END  */
 </style>
+```
