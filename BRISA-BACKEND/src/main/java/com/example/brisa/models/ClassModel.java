@@ -1,5 +1,4 @@
 package com.example.brisa.models;
-import java.time.LocalDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,6 +10,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Data
 @Entity
 @Table(name = "classes")
@@ -20,7 +21,7 @@ public class ClassModel {
     private Long id;
 
     @Column(unique = true)
-    private String code; // Código da Turma
+    private String code;
 
     @ManyToOne
     @JoinColumn(name = "program_id", nullable = false)
@@ -28,15 +29,16 @@ public class ClassModel {
 
     @Column(name = "start_date")
     private LocalDate startDate;
-    
+
     @Column(name = "end_date")
     private LocalDate endDate;
+
+    @Column(name = "locality")
+    private String locality;
 
     @ManyToOne
     @JoinColumn(name = "location_id")
     private InstitutionModel location;
-    // a turma que tem o local
-    
 
     @Column(name = "default_selection_capacity")
     private Integer defaultSelectionCapacity = 350;
@@ -53,5 +55,54 @@ public class ClassModel {
     @Column(name = "qtd_vagas")
     private Integer qtdVagas;
 
+    @Column(name = "publication_date")
+    private LocalDate publicationDate;
 
+    @Column(name = "application_start_date")
+    private LocalDate applicationStartDate;
+
+    @Column(name = "application_end_date")
+    private LocalDate applicationEndDate;
+
+    @Column(name = "leveling_selection_announcement_date")
+    private LocalDate levelingSelectionAnnouncementDate;
+
+    @Column(name = "leveling_confirmation_start_date")
+    private LocalDate levelingConfirmationStartDate;
+
+    @Column(name = "leveling_confirmation_end_date")
+    private LocalDate levelingConfirmationEndDate;
+
+    @Column(name = "leveling_start_date")
+    private LocalDate levelingStartDate;
+
+    @Column(name = "leveling_end_date")
+    private LocalDate levelingEndDate;
+
+    @Column(name = "leveling_final_exam_date")
+    private LocalDate levelingFinalExamDate;
+
+    @Column(name = "immersion_selection_announcement_date")
+    private LocalDate immersionSelectionAnnouncementDate;
+
+    @Column(name = "immersion_confirmation_start_date")
+    private LocalDate immersionConfirmationStartDate;
+
+    @Column(name = "immersion_confirmation_end_date")
+    private LocalDate immersionConfirmationEndDate;
+
+    @Column(name = "immersion_start_date")
+    private LocalDate immersionStartDate;
+
+    @Column(name = "immersion_end_date")
+    private LocalDate immersionEndDate;
+
+    @Column(name = "partial_evaluation_date")
+    private LocalDate partialEvaluationDate;
+
+    @Column(name = "final_evaluation_date")
+    private LocalDate finalEvaluationDate;
+
+    @Column(name = "certificate_issue_date")
+    private LocalDate certificateIssueDate;
 }

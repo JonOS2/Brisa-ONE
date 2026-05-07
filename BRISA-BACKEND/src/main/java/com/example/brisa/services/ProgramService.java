@@ -38,6 +38,13 @@ public class ProgramService {
         program.setContractNumber(programDetails.getContractNumber());
         program.setStartDate(programDetails.getStartDate());
         program.setEndDate(programDetails.getEndDate());
+        program.setTargetAudience(programDetails.getTargetAudience());
+        program.setLevelingModality(programDetails.getLevelingModality());
+        program.setLevelingDuration(programDetails.getLevelingDuration());
+        program.setImmersionDuration(programDetails.getImmersionDuration());
+        program.setImmersionWorkloadHours(programDetails.getImmersionWorkloadHours());
+        program.setQuotaCriteria(programDetails.getQuotaCriteria());
+        program.setEvaluationCriteria(programDetails.getEvaluationCriteria());
         
         return programRepository.save(program);
     }

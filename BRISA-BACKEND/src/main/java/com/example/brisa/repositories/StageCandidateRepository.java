@@ -30,4 +30,14 @@ public interface StageCandidateRepository extends JpaRepository<StageCandidateMo
         WHERE sc.stage.classModel.id = :classId
     """)
     List<StageCandidateModel> findByClassIdWithPeople(@Param("classId") Long classId);
+
+    @Query("""
+        SELECT DISTINCT sc
+        FROM StageCandidateModel sc
+        JOIN FETCH sc.people
+        JOIN FETCH sc.stage st
+        JOIN FETCH st.classModel c
+        JOIN FETCH c.program
+    """)
+    List<StageCandidateModel> findAllWithRelations();
 }

@@ -1,30 +1,31 @@
 package com.example.brisa.models;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import lombok.Data;
+
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.CascadeType;
-import lombok.Data;
 @Data
 @Entity
 @Table(name = "programs")
 public class ProgramModel {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true)
-    private String code; // Código do programa
+    private String code;
 
     private String name;
 
@@ -32,9 +33,30 @@ public class ProgramModel {
 
     @Column(name = "start_date")
     private LocalDate startDate;
-    
+
     @Column(name = "end_date")
     private LocalDate endDate;
+
+    @Column(name = "target_audience", length = 2000)
+    private String targetAudience;
+
+    @Column(name = "leveling_modality")
+    private String levelingModality;
+
+    @Column(name = "leveling_duration")
+    private String levelingDuration;
+
+    @Column(name = "immersion_duration")
+    private String immersionDuration;
+
+    @Column(name = "immersion_workload_hours")
+    private Integer immersionWorkloadHours;
+
+    @Column(name = "quota_criteria", length = 2000)
+    private String quotaCriteria;
+
+    @Column(name = "evaluation_criteria", length = 4000)
+    private String evaluationCriteria;
 
     @OneToMany(mappedBy = "program", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<ProgramInstitutionModel> programInstitutions = new HashSet<>();
@@ -42,4 +64,3 @@ public class ProgramModel {
     @OneToMany(mappedBy = "program", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<ClassModel> classes = new HashSet<>();
 }
-
