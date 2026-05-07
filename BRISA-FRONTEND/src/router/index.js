@@ -8,7 +8,11 @@ import PeopleView from '@/views/PeopleView.vue';
 import PersonDetailsView from '@/views/PersonDetailsView.vue';
 import ProgramsView from '@/views/ProgramsView.vue';
 import ProgramDetailsView from '@/views/ProgramDetailsView.vue';
-import ProgramRegistrationView from '@/views/ProgramRegistrationView.vue';
+
+// 👇 ESTA FOI A ÚNICA LINHA ALTERADA 👇
+// O router agora procura o Arquivo Pai dentro da nova pasta que você criou.
+import ProgramRegistrationView from '@/views/ProgramRegistration/ProgramRegistrationView.vue';
+
 import ClassDetailsView from '@/views/ClassDetailsView.vue';
 import StageDetailsView from '@/views/StageDetailsView.vue';
 import InstitutionsView from '@/views/InstitutionsView.vue';
@@ -62,6 +66,7 @@ const routes = [
     component: ProgramsView,
     meta: { requiresAuth: true }
   },
+  // 👇 A ROTA CONTINUA A MESMA, APONTANDO SÓ PARA O PAI 👇
   {
     path: '/programs/register',
     name: 'ProgramRegistration',
@@ -127,6 +132,5 @@ router.beforeEach((to, from, next) => {
     next();
   }
 });
-
 
 export default router;
