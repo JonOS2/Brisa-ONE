@@ -798,7 +798,7 @@ const templateColumns = [
   'Nome completo',
   'E-mail',
   'CPF',
-  'Data de Nascimento',
+  'Data de Nascimento', 
   'Gênero',
   'Cota',
   'Escolaridade',
