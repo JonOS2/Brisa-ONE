@@ -14,7 +14,7 @@
        </div>
        <div class="alert-content">
           <strong>Estrutura sugerida pelo sistema</strong>
-          <p>O sistema criou automaticamente etapas padrão baseadas em processos seletivos acadêmicos anteriores. Você pode editar, excluir, reordenar ou adicionar novas etapas conforme necessário.</p>
+          <p>O sistema criou automaticamente etapas padrão baseadas em processos seletivos acadêmicos anteriores. Você pode editar, excluir ou adicionar novas etapas conforme necessário.</p>
        </div>
     </div>
 
@@ -23,21 +23,7 @@
          class="stage-card" 
          v-for="(stage, index) in stageList" 
          :key="stage.id"
-         draggable="true"
-         @dragstart="$emit('dragstart', index, $event)"
-         @dragover.prevent="$emit('dragover', $event)"
-         @dragenter.prevent="$emit('dragenter', index)"
-         @drop="$emit('drop', index)"
-         @dragend="$emit('dragend')"
-         :class="{ 'is-dragged': draggedStageIndex === index, 'is-dragover': draggedOverStageIndex === index }"
        >
-          
-          <div class="stage-drag-handle">
-             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-               <circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="5" r="1"></circle><circle cx="9" cy="19" r="1"></circle>
-               <circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="5" r="1"></circle><circle cx="15" cy="19" r="1"></circle>
-             </svg>
-          </div>
           
           <div class="stage-body">
              
@@ -142,16 +128,6 @@ export default {
     stageList: {
       type: Array,
       required: true
-    },
-    // Guarda a posição (index) do item que está sendo segurado e arrastado no momento
-    draggedStageIndex: {
-      type: Number,
-      default: null
-    },
-    // Guarda a posição (index) do item sobre o qual o mouse está passando por cima no momento do arrasto
-    draggedOverStageIndex: {
-      type: Number,
-      default: null
     }
   }
 }
