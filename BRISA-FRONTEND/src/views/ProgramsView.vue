@@ -1,30 +1,31 @@
 <template>
   <div class="programs-view">
-    <div class="header">
-      <div class="header-left">
-        <h1>Programas</h1>
-        <p class="subtitle">Gerenciar programas e turmas</p>
+    <section class="page-header-card">
+      <div class="page-header-top">
+        <div>
+          <h1>Programas</h1>
+          <p class="subtitle">Gerencie os programas cadastrados, acompanhe suas turmas, etapas e andamento geral.</p>
+        </div>
+        <div class="top-actions">
+          <button type="button" class="ghost-btn" @click="showNewClassModal = true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14"></path>
+              <path d="M12 5v14"></path>
+            </svg>
+            Nova turma
+          </button>
+          <button type="button" class="primary-btn" @click="showCreateModal = true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14"></path>
+              <path d="M12 5v14"></path>
+            </svg>
+            Novo programa
+          </button>
+        </div>
       </div>
-      <div class="header-actions">
-        <button @click="showCreateModal = true" class="btn-create">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-          </svg>
-          Cadastrar
-        </button>
-        <button @click="showUploadModal = true" class="btn-import">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-            <polyline points="17 8 12 3 7 8"></polyline>
-            <line x1="12" y1="3" x2="12" y2="15"></line>
-          </svg>
-          Importar
-        </button>
-      </div>
-    </div>
+    </section>
     <div class="search-container">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
         stroke="currentColor" stroke-width="2" class="search-icon">
@@ -230,6 +231,7 @@ export default {
     const searchTerm = ref('');
     const showUploadModal = ref(false);
     const showCreateModal = ref(false);
+    const showNewClassModal = ref(false);
     const selectedFile = ref(null);
     const uploading = ref(false);
     const uploadError = ref(null);
@@ -411,6 +413,7 @@ export default {
       filteredPrograms,
       showUploadModal,
       showCreateModal,
+      showNewClassModal,
       selectedFile,
       uploading,
       uploadError,

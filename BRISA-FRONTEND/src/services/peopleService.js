@@ -28,6 +28,24 @@ export const peopleService = {
     }
   },
 
+  async createLink(payload) {
+    try {
+      const response = await api.post('/people/link', payload);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  async getReferenceData() {
+    try {
+      const response = await api.get('/people/reference-data');
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
   async update(id, peopleData) {
     try {
       const response = await api.put(`/people/${id}`, peopleData);

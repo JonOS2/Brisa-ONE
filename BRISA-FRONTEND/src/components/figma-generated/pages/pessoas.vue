@@ -54,7 +54,7 @@
             <div class="stat-label">Pessoas Ativas</div>
             <div class="stat-row">
               <div class="stat-value">{{ formatNumber(activePeopleCount) }}</div>
-              <div class="stat-trend">+{{ activePeopleRate }}%</div>
+              <div class="stat-trend">{{ formatTrend(activePeopleTrend) }}</div>
             </div>
           </article>
 
@@ -62,7 +62,7 @@
             <div class="stat-label">Em Programas Ativos</div>
             <div class="stat-row">
               <div class="stat-value">{{ formatNumber(activeProgramsCount) }}</div>
-              <div class="stat-trend">+15%</div>
+              <div class="stat-trend">{{ formatTrend(activeProgramsTrend) }}</div>
             </div>
           </article>
 
@@ -70,7 +70,7 @@
             <div class="stat-label">Em Nivelamento</div>
             <div class="stat-row">
               <div class="stat-value">{{ formatNumber(levelingCount) }}</div>
-              <div class="stat-trend">+5%</div>
+              <div class="stat-trend">{{ formatTrend(levelingTrend) }}</div>
             </div>
           </article>
 
@@ -78,7 +78,7 @@
             <div class="stat-label">Em Imersão</div>
             <div class="stat-row">
               <div class="stat-value">{{ formatNumber(immersionCount) }}</div>
-              <div class="stat-trend">+3%</div>
+              <div class="stat-trend">{{ formatTrend(immersionTrend) }}</div>
             </div>
           </article>
 
@@ -86,7 +86,7 @@
             <div class="stat-label">Novos Cadastros (30d)</div>
             <div class="stat-row">
               <div class="stat-value">{{ formatNumber(newRegistrationsCount) }}</div>
-              <div class="stat-trend">+21%</div>
+              <div class="stat-trend">{{ formatTrend(newRegistrationsTrend) }}</div>
             </div>
           </article>
         </div>
@@ -338,149 +338,378 @@
     </div>
 
     <div v-if="showUploadModal" class="modal-overlay" @click="closeUploadModal">
-      <div class="modal-card" @click.stop>
-        <h2>Importar Pessoas via Excel</h2>
-        <div
-          class="upload-area"
-          :class="{ 'drag-over': isDragging, 'has-file': selectedFile }"
-          @dragover.prevent="handleDragOver"
-          @dragleave.prevent="handleDragLeave"
-          @drop.prevent="handleDrop"
-          @click="fileInput.click()"
-        >
-          <input type="file" @change="handleFileSelect" accept=".xlsx,.xls,.csv" ref="fileInput" class="hidden-input" />
-          <div class="upload-icon-wrap">
-            <svg v-if="!selectedFile" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="upload-icon">
-              <polyline points="16 16 12 12 8 16"></polyline>
-              <line x1="12" y1="12" x2="12" y2="21"></line>
-              <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
-            </svg>
-            <svg v-else xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="upload-icon upload-icon-ok">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-              <polyline points="9 15 11 17 15 13"></polyline>
-            </svg>
+      <div class="modal-card modal-card-large upload-modal" @click.stop>
+        <div class="modal-head">
+          <div>
+            <h2>Submeter planilha de alunos</h2>
+            <p class="modal-subtitle">Envie uma planilha com os dados dos alunos e revise a prévia antes de confirmar o cadastro.</p>
           </div>
-          <div class="upload-text">
-            <p v-if="!selectedFile" class="upload-main-text">
-              <span v-if="isDragging">Solte o arquivo aqui</span>
-              <span v-else>Solte aqui ou <span class="upload-link">selecione o arquivo</span></span>
-            </p>
-            <p v-else class="upload-main-text file-name">{{ selectedFile.name }}</p>
-            <p class="upload-sub-text">{{ selectedFile ? 'Clique para trocar o arquivo' : 'Formatos aceitos: .xlsx, .xls, .csv' }}</p>
-          </div>
-        </div>
-        <div class="modal-actions">
-          <button type="button" class="secondary-btn" @click="closeUploadModal">Cancelar</button>
-          <button type="button" class="primary-btn" :disabled="!selectedFile || uploading" @click="uploadFile">
-            {{ uploading ? 'Enviando...' : 'Enviar' }}
+          <button type="button" class="modal-close" @click="closeUploadModal" aria-label="Fechar">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
           </button>
         </div>
-        <div v-if="uploadError" class="alert alert-error">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"></circle>
-            <line x1="12" y1="8" x2="12" y2="12"></line>
-            <line x1="12" y1="16" x2="12.01" y2="16"></line>
-          </svg>
-          {{ uploadError }}
-        </div>
-        <div v-if="uploadSuccess" class="alert alert-success">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-            <polyline points="22 4 12 14.01 9 11.01"></polyline>
-          </svg>
-          {{ uploadSuccess }}
-        </div>
-        <div v-if="uploadResult && uploadResult.alreadyExists > 0" class="alert alert-warning">
-          <div class="alert-warning-head">
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
-              <line x1="12" y1="9" x2="12" y2="13"></line>
-              <line x1="12" y1="17" x2="12.01" y2="17"></line>
-            </svg>
-            <div>
-              <strong>{{ uploadResult.alreadyExists }} pessoa(s) já existente(s)</strong>
-              <p>As seguintes pessoas já estão cadastradas no sistema:</p>
-            </div>
-          </div>
-          <div class="duplicate-list">
-            <div v-for="(person, index) in uploadResult.duplicatePersons" :key="index" class="duplicate-item">
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
+
+        <div class="modal-body upload-body">
+          <div
+            class="upload-area upload-area-large"
+            :class="{ 'drag-over': isDragging, 'has-file': selectedFile }"
+            @dragover.prevent="handleDragOver"
+            @dragleave.prevent="handleDragLeave"
+            @drop.prevent="handleDrop"
+            @click="fileInput.click()"
+          >
+            <input type="file" @change="handleFileSelect" accept=".xlsx,.xls,.csv" ref="fileInput" class="hidden-input" />
+            <div class="upload-icon-wrap">
+              <svg v-if="!selectedFile" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="upload-icon">
+                <polyline points="16 16 12 12 8 16"></polyline>
+                <line x1="12" y1="12" x2="12" y2="21"></line>
+                <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path>
               </svg>
-              {{ person }}
+              <svg v-else xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="upload-icon upload-icon-ok">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <polyline points="9 15 11 17 15 13"></polyline>
+              </svg>
             </div>
+            <div class="upload-text">
+              <p class="upload-main-text">{{ selectedFile ? selectedFile.name : 'Arraste a planilha aqui ou clique para selecionar' }}</p>
+              <p class="upload-sub-text">{{ selectedFile ? 'Clique para trocar o arquivo' : 'Formatos aceitos: .xlsx, .csv' }}</p>
+            </div>
+            <button type="button" class="secondary-btn upload-select-btn" @click.stop="fileInput.click()">Selecionar arquivo</button>
           </div>
-        </div>
-      </div>
-    </div>
 
-    <div v-if="showCreateModal" class="modal-overlay" @click="closeCreateModal">
-      <div class="modal-card modal-card-large" @click.stop>
-        <h2>Nova Pessoa</h2>
-        <form class="create-form" @submit.prevent="handleCreate">
-          <div class="form-grid">
-            <div class="form-group full-width">
-              <label>Nome Completo *</label>
-              <input v-model="createForm.name" type="text" placeholder="Digite o nome completo" required />
-            </div>
+          <div class="upload-destination">
+            <div class="form-grid upload-grid">
+              <div class="form-group">
+                <label>Programa de destino *</label>
+                <select v-model="uploadForm.programaId">
+                  <option value="" disabled>Selecione</option>
+                  <option v-for="programa in programOptions" :key="programa.id" :value="programa.id">{{ programa.label }}</option>
+                </select>
+              </div>
 
-            <div class="form-group">
-              <label>E-mail *</label>
-              <input v-model="createForm.email" type="email" placeholder="email@exemplo.com" required />
-            </div>
+              <div class="form-group">
+                <label>Turma de destino *</label>
+                <select v-model="uploadForm.turmaId">
+                  <option value="" disabled>Selecione</option>
+                  <option v-for="turma in classOptions" :key="turma.id" :value="turma.id">{{ turma.label }}</option>
+                </select>
+              </div>
 
-            <div class="form-group">
-              <label>CPF *</label>
-              <input v-model="createForm.cpf" type="text" placeholder="000.000.000-00" @input="formatCPFInput" required />
-            </div>
+              <div class="form-group">
+                <label>Etapa inicial *</label>
+                <select v-model="uploadForm.etapaId" :disabled="!uploadForm.turmaId || uploadStageLoading">
+                  <option value="" disabled>Selecione</option>
+                  <option v-for="etapa in uploadStageOptions" :key="etapa.id" :value="etapa.id">{{ etapa.label }}</option>
+                </select>
+              </div>
 
-            <div class="form-group">
-              <label>Data de Nascimento</label>
-              <input v-model="createForm.birthDate" type="date" />
-            </div>
-
-            <div class="form-group">
-              <label>Gênero</label>
-              <select v-model="createForm.gender">
-                <option value="">Selecione</option>
-                <option value="Masculino">Masculino</option>
-                <option value="Feminino">Feminino</option>
-                <option value="Outro">Outro</option>
-                <option value="Prefiro não informar">Prefiro não informar</option>
-              </select>
-            </div>
-
-            <div class="form-group full-width">
-              <label>Nível de Escolaridade</label>
-              <input v-model="createForm.educationLevel" type="text" placeholder="Ex: Ensino Superior Completo" />
-            </div>
-
-            <div class="form-group full-width">
-              <label>Endereço</label>
-              <input v-model="createForm.address" type="text" placeholder="Rua, número, bairro" />
-            </div>
-
-            <div class="form-group">
-              <label>Cidade</label>
-              <input v-model="createForm.city" type="text" placeholder="Cidade - UF" />
+              <div class="form-group">
+                <label>Status inicial *</label>
+                <select v-model="uploadForm.statusInicial">
+                  <option value="" disabled>Selecione</option>
+                  <option v-for="status in statusOptions" :key="status" :value="status">{{ status }}</option>
+                </select>
+              </div>
             </div>
           </div>
 
-          <div v-if="createError" class="alert alert-error">
+          <div v-if="uploadError" class="alert alert-error">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="10"></circle>
               <line x1="12" y1="8" x2="12" y2="12"></line>
               <line x1="12" y1="16" x2="12.01" y2="16"></line>
             </svg>
-            {{ createError }}
+            {{ uploadError }}
+          </div>
+          <div v-if="uploadSuccess" class="alert alert-success">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+              <polyline points="22 4 12 14.01 9 11.01"></polyline>
+            </svg>
+            {{ uploadSuccess }}
+          </div>
+          <div v-if="uploadStageError" class="alert alert-error">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            {{ uploadStageError }}
+          </div>
+
+          <div v-if="uploadResult" class="summary-grid">
+            <div class="summary-card summary-blue">
+              <div class="summary-label">Total de linhas</div>
+              <div class="summary-value">{{ uploadTotalCount }}</div>
+            </div>
+            <div class="summary-card summary-green">
+              <div class="summary-label">Novos cadastros</div>
+              <div class="summary-value">{{ uploadNewCount }}</div>
+            </div>
+            <div class="summary-card summary-amber">
+              <div class="summary-label">Já existentes</div>
+              <div class="summary-value">{{ uploadExistingCount }}</div>
+            </div>
+            <div class="summary-card summary-red">
+              <div class="summary-label">Alertas</div>
+              <div class="summary-value">{{ uploadAlertCount }}</div>
+            </div>
+          </div>
+
+          <div v-if="uploadResult" class="upload-tabs">
+            <button type="button" class="upload-tab" :class="{ active: uploadTab === 'novos' }" @click="uploadTab = 'novos'">
+              Novos cadastros ({{ uploadNewCount }})
+            </button>
+            <button type="button" class="upload-tab" :class="{ active: uploadTab === 'existentes' }" @click="uploadTab = 'existentes'">
+              Já cadastrados ({{ uploadExistingCount }})
+            </button>
+          </div>
+
+          <div v-if="uploadResult" class="upload-table">
+            <table v-if="uploadTab === 'novos'" class="upload-table-el">
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>CPF</th>
+                  <th>E-mail</th>
+                  <th>Cota</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-if="!uploadTableRows.length">
+                  <td colspan="5" class="upload-empty">Nenhum novo cadastro encontrado.</td>
+                </tr>
+                <tr v-for="(row, index) in uploadTableRows" :key="`novo-${index}`">
+                  <td>{{ row.name || '-' }}</td>
+                  <td>{{ formatCPF(row.cpf) }}</td>
+                  <td>{{ row.email || '-' }}</td>
+                  <td>{{ row.cota || '-' }}</td>
+                  <td><span class="upload-badge upload-badge-success">{{ row.status || 'Pronto' }}</span></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <table v-else class="upload-table-el">
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>CPF</th>
+                  <th>E-mail</th>
+                  <th>Alerta</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-if="!uploadTableRows.length">
+                  <td colspan="4" class="upload-empty">Nenhum cadastro existente encontrado.</td>
+                </tr>
+                <tr v-for="(row, index) in uploadTableRows" :key="`existente-${index}`">
+                  <td>{{ row.name || '-' }}</td>
+                  <td>{{ formatCPF(row.cpf) }}</td>
+                  <td>{{ row.email || '-' }}</td>
+                  <td><span class="upload-badge upload-badge-warning">{{ row.issue || 'Pessoa já cadastrada' }}</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="modal-actions upload-footer">
+          <button type="button" class="secondary-btn modal-secondary" @click="closeUploadModal">Cancelar</button>
+          <button type="button" class="secondary-btn" :disabled="!uploadResult || (!uploadExistingCount && !uploadAlertCount)" @click="downloadInconsistenciesReport">
+            Baixar relatório de inconsistências
+          </button>
+          <button type="button" class="primary-btn" :disabled="uploadDisabled" @click="uploadFile">
+            {{ uploading ? 'Enviando...' : 'Confirmar importação' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="showCreateModal" class="modal-overlay" @click="closeCreateModal">
+      <div class="modal-card modal-card-large create-modal" @click.stop>
+        <div class="modal-head">
+          <div>
+            <h2>Cadastrar nova pessoa</h2>
+            <p class="modal-subtitle">Preencha os dados pessoais, acadêmicos e o vínculo inicial da pessoa com um programa/turma.</p>
+          </div>
+          <button type="button" class="modal-close" @click="closeCreateModal" aria-label="Fechar">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <form class="create-form" @submit.prevent="handleCreate">
+          <div class="modal-body">
+            <div class="modal-section">
+              <h3 class="modal-section-title">Vínculo com programa/turma</h3>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>Programa *</label>
+                  <select v-model="createForm.programaId">
+                    <option value="" disabled>Selecione</option>
+                    <option v-for="programa in programOptions" :key="programa.id" :value="programa.id">{{ programa.label }}</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label>Turma *</label>
+                  <select v-model="createForm.turmaId" required>
+                    <option value="" disabled>Selecione</option>
+                    <option v-for="turma in classOptions" :key="turma.id" :value="turma.id">{{ turma.label }}</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label>Etapa inicial *</label>
+                  <select v-model="createForm.etapaId" :disabled="!createForm.turmaId || stageLoading" required>
+                    <option value="" disabled>Selecione</option>
+                    <option v-for="etapa in stageOptions" :key="etapa.id" :value="etapa.id">{{ etapa.label }}</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label>Status inicial</label>
+                  <select v-model="createForm.statusInicial">
+                    <option value="" disabled>Selecione</option>
+                    <option v-for="status in statusOptions" :key="status" :value="status">{{ status }}</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div class="modal-section">
+              <h3 class="modal-section-title">Dados pessoais</h3>
+              <div class="form-grid">
+                <div class="form-group full-width">
+                  <label>Nome do aluno *</label>
+                  <input v-model="createForm.nome" type="text" placeholder="Digite o nome completo" required />
+                </div>
+
+                <div class="form-group">
+                  <label>Data de nascimento *</label>
+                  <input v-model="createForm.dataNascimento" type="date" required />
+                </div>
+
+                <div class="form-group">
+                  <label>Gênero</label>
+                  <select v-model="createForm.genero">
+                    <option value="" disabled>Selecione</option>
+                    <option v-for="genero in genderOptions" :key="genero" :value="genero">{{ genero }}</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label>Cota *</label>
+                  <select v-model="createForm.cota">
+                    <option value="" disabled>Selecione</option>
+                    <option v-for="cota in quotaOptions" :key="cota" :value="cota">{{ cota }}</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label>CPF *</label>
+                  <input v-model="createForm.cpf" type="text" placeholder="000.000.000-00" @input="formatCPFInput" required />
+                </div>
+
+                <div class="form-group">
+                  <label>E-mail *</label>
+                  <input v-model="createForm.email" type="email" placeholder="email@exemplo.com" required />
+                </div>
+
+                <div class="form-group">
+                  <label>Telefone</label>
+                  <input v-model="createForm.telefone" type="text" placeholder="(00) 00000-0000" />
+                </div>
+
+                <div class="form-group">
+                  <label>Estado de residência</label>
+                  <select v-model="createForm.estado">
+                    <option value="" disabled>Selecione</option>
+                    <option v-for="estado in stateOptions" :key="estado" :value="estado">{{ estado }}</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label>Cidade de residência</label>
+                  <input v-model="createForm.cidade" type="text" placeholder="Cidade" />
+                </div>
+              </div>
+            </div>
+
+            <div class="modal-section">
+              <h3 class="modal-section-title">Dados acadêmicos</h3>
+              <div class="form-grid">
+                <div class="form-group full-width">
+                  <label>Tipo de formação</label>
+                  <select v-model="createForm.tipoFormacao">
+                    <option value="" disabled>Selecione</option>
+                    <option v-for="tipo in educationTypeOptions" :key="tipo" :value="tipo">{{ tipo }}</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label>Instituição</label>
+                  <input v-model="createForm.instituicao" type="text" placeholder="Instituição" />
+                </div>
+
+                <div class="form-group">
+                  <label>Curso</label>
+                  <input v-model="createForm.curso" type="text" placeholder="Curso" />
+                </div>
+
+                <div class="form-group">
+                  <label>Status da formação</label>
+                  <select v-model="createForm.statusFormacao">
+                    <option value="" disabled>Selecione</option>
+                    <option v-for="status in educationStatusOptions" :key="status" :value="status">{{ status }}</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label>Data de conclusão</label>
+                  <input v-model="createForm.dataConclusao" type="date" />
+                </div>
+              </div>
+            </div>
+
+            <div v-if="referenceError" class="alert alert-error">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              {{ referenceError }}
+            </div>
+
+            <div v-if="stageError" class="alert alert-error">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              {{ stageError }}
+            </div>
+
+            <div v-if="createError" class="alert alert-error">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              {{ createError }}
+            </div>
           </div>
 
           <div class="modal-actions">
-            <button type="button" class="secondary-btn" @click="closeCreateModal">Cancelar</button>
-            <button type="submit" class="primary-btn" :disabled="creating || !createForm.name || !createForm.email || createForm.cpf.replace(/\D/g, '').length !== 11">
-              {{ creating ? 'Criando...' : 'Criar Pessoa' }}
+            <button type="button" class="secondary-btn modal-secondary" @click="closeCreateModal">Cancelar</button>
+            <button type="submit" class="primary-btn" :disabled="createDisabled">
+              {{ creating ? 'Cadastrando...' : 'Cadastrar pessoa' }}
             </button>
           </div>
         </form>
@@ -489,13 +718,24 @@
 
     <div v-if="showTemplateModal" class="modal-overlay" @click="showTemplateModal = false">
       <div class="modal-card modal-card-small" @click.stop>
-        <h2>Modelo de planilha</h2>
-        <p class="template-text">O download do modelo em Excel ainda não estava disponível. Por enquanto, a tela gera um arquivo CSV com as colunas base para importação.</p>
-        <div class="template-preview">
-          <code>nome,email,cpf,educationLevel,address,city,gender,birthDate</code>
+        <div class="modal-head">
+          <h2>Modelo de planilha de alunos</h2>
+          <button type="button" class="modal-close" @click="showTemplateModal = false" aria-label="Fechar">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
         </div>
-        <div class="modal-actions">
-          <button type="button" class="secondary-btn" @click="showTemplateModal = false">Fechar</button>
+        <p class="template-text">Baixe um arquivo modelo com todas as colunas necessárias para cadastro e vínculo dos alunos ao programa.</p>
+        <div class="template-columns">
+          <div class="template-columns-title">Colunas principais:</div>
+          <ul class="template-columns-list">
+            <li v-for="column in templateColumns" :key="column">{{ column }}</li>
+          </ul>
+        </div>
+        <div class="modal-actions template-actions">
+          <button type="button" class="primary-btn" @click="downloadTemplateXlsx">Baixar modelo .xlsx</button>
         </div>
       </div>
     </div>
@@ -506,6 +746,7 @@
 import { computed, onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { Columns3 } from 'lucide-vue-next';
+import * as XLSX from 'xlsx';
 import { peopleService } from '@/services/peopleService';
 import { enrollmentService } from '@/services/enrollmentService';
 import { stageService } from '@/services/stageService';
@@ -543,6 +784,35 @@ const columnOptions = [
   { key: 'course', label: 'Curso' },
   { key: 'updatedAt', label: 'Última atualização' }
 ];
+const templateColumns = [
+  'Nome',
+  'Data de nascimento',
+  'Estado',
+  'Instituição',
+  'CPF',
+  'Gênero',
+  'Cidade',
+  'Curso',
+  'E-mail',
+  'Cota',
+  'Tipo de formação',
+  'Status da formação'
+];
+const fallbackStatusOptions = ['Ativa', 'Pendente', 'Concluída', 'Reprovada', 'Desclassificada'];
+const fallbackQuotaOptions = ['Ampla Concorrência', 'PCD/Neurodivergente', 'Negro/Pardo', 'Mulher', '45+'];
+const fallbackGenderOptions = ['Feminino', 'Masculino', 'Outro', 'Não informado'];
+const fixedEducationTypeOptions = [
+  'Engenharia de Computação, Ciência da Computação ou outros cursos relacionados a TIC',
+  'Outros cursos de ciências exatas ou tecnológicos',
+  'Técnico na área de exatas concluído',
+  'Engenharia (exceto de Software/Computação)'
+];
+const fallbackEducationStatusOptions = ['Cursando', 'Concluído', 'Trancado', 'Não informado'];
+const fallbackStateOptions = [
+  'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA',
+  'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN',
+  'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
+];
 const advancedFilters = ref({
   hasCpf: false,
   hasEmail: false,
@@ -552,6 +822,28 @@ const advancedFilters = ref({
 
 const showUploadModal = ref(false);
 const showCreateModal = ref(false);
+const referenceData = ref(null);
+const referenceLoading = ref(false);
+const referenceError = ref(null);
+const classStageOptions = ref([]);
+const stageLoading = ref(false);
+const stageError = ref(null);
+const uploadForm = ref({
+  programaId: '',
+  turmaId: '',
+  etapaId: '',
+  statusInicial: ''
+});
+const uploadStageOptions = ref([]);
+const uploadStageLoading = ref(false);
+const uploadStageError = ref(null);
+const uploadTab = ref('novos');
+const uploadPreview = ref({
+  rows: [],
+  newRows: [],
+  existingRows: [],
+  alertRows: []
+});
 const selectedFile = ref(null);
 const uploading = ref(false);
 const uploadError = ref(null);
@@ -563,20 +855,75 @@ const currentPage = ref(1);
 const itemsPerPage = 12;
 
 const createForm = ref({
-  name: '',
-  email: '',
+  programaId: '',
+  turmaId: '',
+  etapaId: '',
+  statusInicial: '',
+  nome: '',
+  dataNascimento: '',
+  genero: '',
+  cota: '',
   cpf: '',
-  birthDate: '',
-  gender: '',
-  educationLevel: '',
-  address: '',
-  city: ''
+  email: '',
+  telefone: '',
+  linkedin: '',
+  endereco: '',
+  estado: '',
+  cidade: '',
+  cep: '',
+  complementoEndereco: '',
+  tipoFormacao: '',
+  instituicao: '',
+  curso: '',
+  statusFormacao: '',
+  dataConclusao: ''
 });
 const creating = ref(false);
 const createError = ref(null);
 
+const programOptions = computed(() => referenceData.value?.programas || []);
+const classOptions = computed(() => referenceData.value?.turmas || []);
+const stageOptions = computed(() => classStageOptions.value);
+const statusOptions = computed(() => {
+  const options = referenceData.value?.statusOptions || [];
+  return options.length ? options : fallbackStatusOptions;
+});
+const quotaOptions = computed(() => {
+  const options = referenceData.value?.cotaOptions || [];
+  return options.length ? options : fallbackQuotaOptions;
+});
+const genderOptions = computed(() => {
+  const options = referenceData.value?.generoOptions || [];
+  return options.length ? options : fallbackGenderOptions;
+});
+const stateOptions = computed(() => {
+  const options = referenceData.value?.estadoOptions || [];
+  return options.length ? options : fallbackStateOptions;
+});
+const educationTypeOptions = computed(() => fixedEducationTypeOptions);
+const educationStatusOptions = computed(() => {
+  const options = referenceData.value?.statusFormacaoOptions || [];
+  return options.length ? options : fallbackEducationStatusOptions;
+});
+
 const normalize = (value) => (value ?? '').toString().toLowerCase();
 const hasValue = (value) => !!(value ?? '').toString().trim();
+
+const stageLabel = (name) => {
+  const normalized = normalize(name);
+  if (normalized.includes('imersao')) return 'Imersao';
+  if (normalized.includes('nivelamento')) return 'Nivelamento';
+  if (normalized.includes('selecao') || normalized.includes('inscricao')) return 'Inscricao';
+  return name || '-';
+};
+
+const stagePriority = (label) => {
+  const normalized = normalize(label);
+  if (normalized.includes('imersao')) return 0;
+  if (normalized.includes('nivelamento')) return 1;
+  if (normalized.includes('inscricao') || normalized.includes('selecao')) return 2;
+  return 3;
+};
 
 const formatNumber = (value) => new Intl.NumberFormat('pt-BR').format(Number(value || 0));
 
@@ -638,6 +985,36 @@ const formatCPF = (cpf) => {
   return digits.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
 };
 
+const createCpfDigits = computed(() => (createForm.value.cpf || '').replace(/\D/g, ''));
+const createDisabled = computed(() => (
+  creating.value
+  || stageLoading.value
+  || !createForm.value.nome
+  || !createForm.value.email
+  || createCpfDigits.value.length !== 11
+  || !createForm.value.dataNascimento
+  || !createForm.value.turmaId
+  || !createForm.value.etapaId
+));
+
+const uploadTotalCount = computed(() => uploadResult.value?.totalProcessed || 0);
+const uploadNewCount = computed(() => uploadPreview.value.newRows.length || uploadResult.value?.successfullyInserted || 0);
+const uploadExistingCount = computed(() => uploadPreview.value.existingRows.length || uploadResult.value?.alreadyExists || 0);
+const uploadAlertCount = computed(() => uploadPreview.value.alertRows.length || 0);
+const uploadTableRows = computed(() => (uploadTab.value === 'existentes'
+  ? uploadPreview.value.existingRows
+  : uploadPreview.value.newRows));
+const uploadMissingFields = computed(() => {
+  const missing = [];
+  if (!uploadForm.value.programaId) missing.push('Programa de destino');
+  if (!uploadForm.value.turmaId) missing.push('Turma de destino');
+  if (!uploadForm.value.etapaId) missing.push('Etapa inicial');
+  if (!uploadForm.value.statusInicial) missing.push('Status inicial');
+  if (!selectedFile.value) missing.push('Arquivo');
+  return missing;
+});
+const uploadDisabled = computed(() => uploading.value || uploadMissingFields.value.length > 0);
+
 const getInitials = (name) => {
   if (!name) return 'P';
   return name
@@ -661,6 +1038,40 @@ const isRecent7d = (person) => {
   const created = new Date(person.createdAt).getTime();
   if (Number.isNaN(created)) return false;
   return (Date.now() - created) <= 7 * 24 * 60 * 60 * 1000;
+};
+
+const DAYS_30 = 30 * 24 * 60 * 60 * 1000;
+
+const getTimestamp = (value) => {
+  if (!value) return null;
+  const parsed = new Date(value).getTime();
+  return Number.isNaN(parsed) ? null : parsed;
+};
+
+const inRange = (value, start, end) => {
+  const ts = getTimestamp(value);
+  return ts !== null && ts >= start && ts < end;
+};
+
+const activityDate = (person) => personMeta(person).updatedAt || person.updatedAt || person.createdAt;
+
+const getRangeCounts = (predicate, dateGetter) => {
+  const now = Date.now();
+  const currentStart = now - DAYS_30;
+  const previousStart = now - DAYS_30 * 2;
+  const current = people.value.filter((person) => predicate(person) && inRange(dateGetter(person), currentStart, now)).length;
+  const previous = people.value.filter((person) => predicate(person) && inRange(dateGetter(person), previousStart, currentStart)).length;
+  return { current, previous };
+};
+
+const percentChange = (current, previous) => {
+  if (previous === 0) return current > 0 ? 100 : 0;
+  return Math.round(((current - previous) / previous) * 100);
+};
+
+const formatTrend = (value) => {
+  const sign = value < 0 ? '-' : '+';
+  return `${sign}${Math.abs(value)}%`;
 };
 
 const isCompleteProfile = (person) => [person.name, person.email, person.cpf, person.birthDate, person.gender, person.educationLevel, person.address, person.city].every(hasValue);
@@ -767,7 +1178,41 @@ const activeProgramsCount = computed(() => people.value.filter((person) => perso
 const levelingCount = computed(() => people.value.filter((person) => personMeta(person).leveling).length);
 const immersionCount = computed(() => people.value.filter((person) => personMeta(person).immersion).length);
 const newRegistrationsCount = computed(() => people.value.filter(isRecent30d).length);
-const activePeopleRate = computed(() => (totalPeople.value ? Math.round((activePeopleCount.value / totalPeople.value) * 100) : 0));
+const activePeopleTrend = computed(() => {
+  const { current, previous } = getRangeCounts(
+    (person) => personMeta(person).active || personMeta(person).inProgram,
+    (person) => activityDate(person)
+  );
+  return percentChange(current, previous);
+});
+const activeProgramsTrend = computed(() => {
+  const { current, previous } = getRangeCounts(
+    (person) => personMeta(person).inProgram,
+    (person) => activityDate(person)
+  );
+  return percentChange(current, previous);
+});
+const levelingTrend = computed(() => {
+  const { current, previous } = getRangeCounts(
+    (person) => personMeta(person).leveling,
+    (person) => activityDate(person)
+  );
+  return percentChange(current, previous);
+});
+const immersionTrend = computed(() => {
+  const { current, previous } = getRangeCounts(
+    (person) => personMeta(person).immersion,
+    (person) => activityDate(person)
+  );
+  return percentChange(current, previous);
+});
+const newRegistrationsTrend = computed(() => {
+  const { current, previous } = getRangeCounts(
+    (person) => Boolean(person.createdAt),
+    (person) => person.createdAt
+  );
+  return percentChange(current, previous);
+});
 
 const tabs = computed(() => ([
   { value: 'active', label: 'Pessoas Ativas', count: activePeopleCount.value },
@@ -901,6 +1346,18 @@ const loadData = async () => {
   }
 };
 
+const loadReferenceData = async () => {
+  referenceLoading.value = true;
+  referenceError.value = null;
+  try {
+    referenceData.value = await peopleService.getReferenceData();
+  } catch (err) {
+    referenceError.value = `Erro ao carregar opções: ${err.response?.data?.message || err.message}`;
+  } finally {
+    referenceLoading.value = false;
+  }
+};
+
 const viewDetails = (person) => {
   router.push(`/people/${person.id}`);
 };
@@ -919,16 +1376,13 @@ const openMoreActions = () => {
 
 const downloadTemplate = () => {
   showTemplateModal.value = true;
-  const csv = 'nome,email,cpf,educationLevel,address,city,gender,birthDate\n';
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = 'modelo-pessoas.csv';
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
+};
+
+const downloadTemplateXlsx = () => {
+  const worksheet = XLSX.utils.aoa_to_sheet([templateColumns]);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, 'Modelo');
+  XLSX.writeFile(workbook, 'modelo-planilha-alunos.xlsx');
 };
 
 const formatCPFInput = (event) => {
@@ -940,11 +1394,165 @@ const formatCPFInput = (event) => {
   createForm.value.cpf = value;
 };
 
-const handleCreate = async () => {
-  const cpfDigits = createForm.value.cpf.replace(/\D/g, '');
+const resetUploadResults = () => {
+  uploadError.value = null;
+  uploadSuccess.value = null;
+  uploadResult.value = null;
+  uploadPreview.value = { rows: [], newRows: [], existingRows: [], alertRows: [] };
+  uploadTab.value = 'novos';
+};
 
-  if (!createForm.value.name || !createForm.value.email || cpfDigits.length !== 11) {
-    createError.value = 'Nome, CPF e e-mail são obrigatórios';
+const normalizeHeader = (value) => normalize(value).replace(/\s+/g, ' ').trim();
+
+const getColumnIndex = (headers, names, fallbackIndex) => {
+  for (const name of names) {
+    const index = headers.indexOf(normalizeHeader(name));
+    if (index >= 0) return index;
+  }
+  return fallbackIndex;
+};
+
+const parseUploadFile = async (file) => {
+  try {
+    const buffer = await file.arrayBuffer();
+    const workbook = XLSX.read(buffer, { type: 'array' });
+    const sheetName = workbook.SheetNames[0];
+    if (!sheetName) return [];
+
+    const sheet = workbook.Sheets[sheetName];
+    const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+    if (!rows.length) return [];
+
+    const headers = rows[0].map((value) => normalizeHeader(value));
+    const idxName = getColumnIndex(headers, ['Nome', 'Name'], 0);
+    const idxBirthDate = getColumnIndex(headers, ['Data de nascimento', 'Nascimento', 'Birth date'], 1);
+    const idxState = getColumnIndex(headers, ['Estado', 'UF'], 2);
+    const idxInstitution = getColumnIndex(headers, ['Instituição', 'Instituicao'], 3);
+    const idxCpf = getColumnIndex(headers, ['CPF', 'Cpf'], 4);
+    const idxGender = getColumnIndex(headers, ['Gênero', 'Genero'], 5);
+    const idxCity = getColumnIndex(headers, ['Cidade'], 6);
+    const idxCourse = getColumnIndex(headers, ['Curso'], 7);
+    const idxEmail = getColumnIndex(headers, ['E-mail', 'Email'], 8);
+    const idxCota = getColumnIndex(headers, ['Cota'], 9);
+    const idxEducationType = getColumnIndex(headers, ['Tipo de formação', 'Tipo de formacao', 'Formação'], 10);
+    const idxEducationStatus = getColumnIndex(headers, ['Status da formação', 'Status da formacao', 'Status'], 11);
+
+    return rows.slice(1).map((row, index) => {
+      const record = {
+        rowNumber: index + 2,
+        name: String(row[idxName] ?? '').trim(),
+        birthDate: String(row[idxBirthDate] ?? '').trim(),
+        state: String(row[idxState] ?? '').trim(),
+        institution: String(row[idxInstitution] ?? '').trim(),
+        cpf: String(row[idxCpf] ?? '').trim(),
+        gender: String(row[idxGender] ?? '').trim(),
+        city: String(row[idxCity] ?? '').trim(),
+        course: String(row[idxCourse] ?? '').trim(),
+        email: String(row[idxEmail] ?? '').trim(),
+        cota: String(row[idxCota] ?? '').trim(),
+        educationType: String(row[idxEducationType] ?? '').trim(),
+        educationStatus: String(row[idxEducationStatus] ?? '').trim()
+      };
+
+      const hasAnyValue = [
+        record.name,
+        record.birthDate,
+        record.state,
+        record.institution,
+        record.cpf,
+        record.gender,
+        record.city,
+        record.course,
+        record.email,
+        record.cota,
+        record.educationType,
+        record.educationStatus
+      ].some(hasValue);
+      return hasAnyValue ? record : null;
+    }).filter(Boolean);
+  } catch (err) {
+    return [];
+  }
+};
+
+const buildUploadPreview = (rows, result) => {
+  const duplicates = new Set((result?.duplicatePersons || []).map((name) => normalize(name)));
+  const newRows = [];
+  const existingRows = [];
+  const alertRows = [];
+  const expectedFields = [
+    { key: 'name', label: 'Nome' },
+    { key: 'birthDate', label: 'Data de nascimento' },
+    { key: 'state', label: 'Estado' },
+    { key: 'institution', label: 'Instituição' },
+    { key: 'cpf', label: 'CPF' },
+    { key: 'gender', label: 'Gênero' },
+    { key: 'city', label: 'Cidade' },
+    { key: 'course', label: 'Curso' },
+    { key: 'email', label: 'E-mail' },
+    { key: 'cota', label: 'Cota' },
+    { key: 'educationType', label: 'Tipo de formação' },
+    { key: 'educationStatus', label: 'Status da formação' }
+  ];
+
+  rows.forEach((row) => {
+    const issues = [];
+    expectedFields.forEach((field) => {
+      if (!hasValue(row[field.key])) {
+        issues.push(`${field.label} ausente`);
+      }
+    });
+
+    const isDuplicate = duplicates.has(normalize(row.name));
+    if (isDuplicate) issues.unshift('Pessoa já cadastrada');
+
+    if (issues.length) {
+      const entry = { ...row, issue: issues.join(', ') };
+      if (isDuplicate) {
+        existingRows.push(entry);
+      } else {
+        alertRows.push(entry);
+      }
+      return;
+    }
+
+    newRows.push(row);
+  });
+
+  return { rows, newRows, existingRows, alertRows };
+};
+
+const downloadInconsistenciesReport = () => {
+  const existingRows = uploadPreview.value.existingRows;
+  const alertRows = uploadPreview.value.alertRows;
+  if (!existingRows.length && !alertRows.length) return;
+
+  const existingSheetData = [
+    ['Nome', 'E-mail', 'CPF', 'Motivo'],
+    ...existingRows.map((row) => [row.name, row.email, formatCPF(row.cpf), row.issue || 'Pessoa já cadastrada'])
+  ];
+  const alertSheetData = [
+    ['Linha', 'Nome', 'E-mail', 'CPF', 'Motivo'],
+    ...alertRows.map((row) => [row.rowNumber, row.name, row.email, formatCPF(row.cpf), row.issue || 'Campos obrigatórios ausentes'])
+  ];
+
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet(existingSheetData), 'Ja existentes');
+  XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet(alertSheetData), 'Alertas');
+  XLSX.writeFile(workbook, 'relatorio-inconsistencias.xlsx');
+};
+
+const toNullableNumber = (value) => {
+  if (value === '' || value === null || value === undefined) return null;
+  const parsed = Number(value);
+  return Number.isNaN(parsed) ? null : parsed;
+};
+
+const handleCreate = async () => {
+  const cpfDigits = createCpfDigits.value;
+
+  if (!createForm.value.nome || !createForm.value.email || cpfDigits.length !== 11 || !createForm.value.dataNascimento || !createForm.value.turmaId || !createForm.value.etapaId) {
+    createError.value = 'Preencha os campos obrigatórios marcados com *.';
     return;
   }
 
@@ -952,14 +1560,24 @@ const handleCreate = async () => {
   createError.value = null;
 
   try {
-    await peopleService.create({
+    await peopleService.createLink({
       ...createForm.value,
-      cpf: cpfDigits
+      cpf: cpfDigits,
+      programaId: toNullableNumber(createForm.value.programaId),
+      turmaId: toNullableNumber(createForm.value.turmaId),
+      etapaId: toNullableNumber(createForm.value.etapaId),
+      dataNascimento: createForm.value.dataNascimento || null,
+      dataConclusao: createForm.value.dataConclusao || null
     });
     closeCreateModal();
     await loadData();
   } catch (err) {
-    createError.value = err.response?.data?.message || 'Erro ao criar pessoa';
+    const details = err.response?.data?.details;
+    if (Array.isArray(details) && details.length) {
+      createError.value = details.join(' ');
+    } else {
+      createError.value = err.response?.data?.message || err.message || 'Erro ao cadastrar pessoa';
+    }
   } finally {
     creating.value = false;
   }
@@ -968,23 +1586,37 @@ const handleCreate = async () => {
 const closeCreateModal = () => {
   showCreateModal.value = false;
   createError.value = null;
+  stageError.value = null;
+  classStageOptions.value = [];
   createForm.value = {
-    name: '',
-    email: '',
+    programaId: '',
+    turmaId: '',
+    etapaId: '',
+    statusInicial: '',
+    nome: '',
+    dataNascimento: '',
+    genero: '',
+    cota: '',
     cpf: '',
-    birthDate: '',
-    gender: '',
-    educationLevel: '',
-    address: '',
-    city: ''
+    email: '',
+    telefone: '',
+    linkedin: '',
+    endereco: '',
+    estado: '',
+    cidade: '',
+    cep: '',
+    complementoEndereco: '',
+    tipoFormacao: '',
+    instituicao: '',
+    curso: '',
+    statusFormacao: '',
+    dataConclusao: ''
   };
 };
 
 const handleFileSelect = (event) => {
   selectedFile.value = event.target.files[0];
-  uploadError.value = null;
-  uploadSuccess.value = null;
-  uploadResult.value = null;
+  resetUploadResults();
 };
 
 const handleDragOver = () => { isDragging.value = true; };
@@ -995,16 +1627,17 @@ const handleDrop = (event) => {
   const file = event.dataTransfer.files[0];
   if (file && (file.name.endsWith('.xlsx') || file.name.endsWith('.xls') || file.name.endsWith('.csv'))) {
     selectedFile.value = file;
-    uploadError.value = null;
-    uploadSuccess.value = null;
-    uploadResult.value = null;
+    resetUploadResults();
   } else if (file) {
     uploadError.value = 'Formato inválido. Use arquivos .xlsx, .xls ou .csv.';
   }
 };
 
 const uploadFile = async () => {
-  if (!selectedFile.value) return;
+  if (uploadMissingFields.value.length > 0) {
+    uploadError.value = `Preencha os campos obrigatórios: ${uploadMissingFields.value.join(', ')}.`;
+    return;
+  }
 
   uploading.value = true;
   uploadError.value = null;
@@ -1012,13 +1645,13 @@ const uploadFile = async () => {
   uploadResult.value = null;
 
   try {
+    const parsedRows = await parseUploadFile(selectedFile.value);
     const response = await peopleService.importExcel(selectedFile.value);
     uploadResult.value = response;
+    uploadPreview.value = buildUploadPreview(parsedRows, response);
+    uploadTab.value = 'novos';
     uploadSuccess.value = `${response.successfullyInserted || 0} pessoa(s) importada(s) com sucesso!`;
-    setTimeout(() => {
-      closeUploadModal();
-      loadData();
-    }, 1800);
+    await loadData();
   } catch (err) {
     uploadError.value = `Erro ao importar arquivo: ${err.response?.data?.message || err.message}`;
   } finally {
@@ -1029,9 +1662,18 @@ const uploadFile = async () => {
 const closeUploadModal = () => {
   showUploadModal.value = false;
   selectedFile.value = null;
-  uploadError.value = null;
-  uploadSuccess.value = null;
-  uploadResult.value = null;
+  resetUploadResults();
+  uploadForm.value = {
+    programaId: '',
+    turmaId: '',
+    etapaId: '',
+    statusInicial: ''
+  };
+  uploadStageOptions.value = [];
+  uploadStageError.value = null;
+  uploadStageLoading.value = false;
+  uploading.value = false;
+  isDragging.value = false;
   if (fileInput.value) fileInput.value.value = '';
 };
 
@@ -1057,8 +1699,73 @@ watch(filteredPeople, () => {
   }
 });
 
+watch(() => createForm.value.turmaId, async (turmaId) => {
+  if (!turmaId) {
+    classStageOptions.value = [];
+    createForm.value.etapaId = '';
+    stageError.value = null;
+    return;
+  }
+
+  stageLoading.value = true;
+  stageError.value = null;
+  try {
+    const stages = await stageService.getByClassId(turmaId);
+    classStageOptions.value = stages
+      .map((stage) => ({ id: stage.id, label: stageLabel(stage.name) }))
+      .sort((a, b) => {
+        const priorityDiff = stagePriority(a.label) - stagePriority(b.label);
+        if (priorityDiff !== 0) return priorityDiff;
+        return a.label.localeCompare(b.label, 'pt-BR');
+      });
+
+    if (!classStageOptions.value.some((option) => option.id === createForm.value.etapaId)) {
+      createForm.value.etapaId = '';
+    }
+  } catch (err) {
+    classStageOptions.value = [];
+    createForm.value.etapaId = '';
+    stageError.value = `Erro ao carregar etapas: ${err.response?.data?.message || err.message}`;
+  } finally {
+    stageLoading.value = false;
+  }
+});
+
+watch(() => uploadForm.value.turmaId, async (turmaId) => {
+  if (!turmaId) {
+    uploadStageOptions.value = [];
+    uploadForm.value.etapaId = '';
+    uploadStageError.value = null;
+    return;
+  }
+
+  uploadStageLoading.value = true;
+  uploadStageError.value = null;
+  try {
+    const stages = await stageService.getByClassId(turmaId);
+    uploadStageOptions.value = stages
+      .map((stage) => ({ id: stage.id, label: stageLabel(stage.name) }))
+      .sort((a, b) => {
+        const priorityDiff = stagePriority(a.label) - stagePriority(b.label);
+        if (priorityDiff !== 0) return priorityDiff;
+        return a.label.localeCompare(b.label, 'pt-BR');
+      });
+
+    if (!uploadStageOptions.value.some((option) => option.id === uploadForm.value.etapaId)) {
+      uploadForm.value.etapaId = '';
+    }
+  } catch (err) {
+    uploadStageOptions.value = [];
+    uploadForm.value.etapaId = '';
+    uploadStageError.value = `Erro ao carregar etapas: ${err.response?.data?.message || err.message}`;
+  } finally {
+    uploadStageLoading.value = false;
+  }
+});
+
 onMounted(() => {
   loadData();
+  loadReferenceData();
   document.addEventListener('click', handleDocumentClick);
 });
 
@@ -1768,6 +2475,264 @@ onBeforeUnmount(() => {
   font-weight: 800;
 }
 
+.modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.modal-head h2 {
+  margin: 0;
+}
+
+.modal-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  color: #64748b;
+  display: inline-grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.upload-modal {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.upload-modal .modal-head {
+  padding: 18px 22px 14px;
+  border-bottom: 1px solid #e2eaf2;
+  align-items: flex-start;
+}
+
+.upload-body {
+  padding: 16px 22px 10px;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.upload-area-large {
+  padding: 26px 18px;
+  border-radius: 16px;
+  background: #ffffff;
+  border: 2px dashed #d3deeb;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.upload-area-large .upload-text {
+  text-align: center;
+}
+
+.upload-select-btn {
+  height: 36px;
+  padding: 0 16px;
+}
+
+.upload-destination {
+  border-top: 1px solid #e2eaf2;
+  padding-top: 14px;
+}
+
+.upload-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.summary-card {
+  border-radius: 12px;
+  padding: 12px 14px;
+  border: 1px solid transparent;
+}
+
+.summary-label {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.summary-value {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.summary-blue {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1d4ed8;
+}
+
+.summary-green {
+  background: #ecfdf3;
+  border-color: #bbf7d0;
+  color: #15803d;
+}
+
+.summary-amber {
+  background: #fffbeb;
+  border-color: #fde68a;
+  color: #b45309;
+}
+
+.summary-red {
+  background: #fff1f2;
+  border-color: #fecdd3;
+  color: #be123c;
+}
+
+.upload-tabs {
+  display: flex;
+  gap: 12px;
+  border-bottom: 1px solid #e2eaf2;
+}
+
+.upload-tab {
+  background: none;
+  border: 0;
+  padding: 10px 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #64748b;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+}
+
+.upload-tab.active {
+  color: #0f766e;
+  border-bottom-color: #14b8a6;
+}
+
+.upload-table {
+  border: 1px solid #e2eaf2;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.upload-table-el {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.upload-table-el thead {
+  background: #f8fafc;
+  color: #64748b;
+}
+
+.upload-table-el th,
+.upload-table-el td {
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid #e2eaf2;
+}
+
+.upload-table-el tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.upload-empty {
+  text-align: center;
+  color: #94a3b8;
+  padding: 18px 0;
+}
+
+.upload-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.upload-badge-success {
+  background: #ecfdf3;
+  color: #15803d;
+}
+
+.upload-badge-warning {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.create-modal {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.create-modal .modal-head {
+  padding: 18px 22px 14px;
+  border-bottom: 1px solid #e2eaf2;
+  align-items: flex-start;
+}
+
+.create-modal .modal-head h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.modal-subtitle {
+  margin: 4px 0 0;
+  color: #6a7a90;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.create-form {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.modal-body {
+  padding: 16px 22px 8px;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+}
+
+.modal-section + .modal-section {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #e2eaf2;
+}
+
+.modal-section-title {
+  margin: 0 0 12px;
+  color: #0f172a;
+  font-size: 18px;
+  font-weight: 600;
+}
+
 .upload-area {
   border: 2px dashed #cfd8e4;
   border-radius: 18px;
@@ -1812,6 +2777,48 @@ onBeforeUnmount(() => {
   font-size: 13px;
 }
 
+.template-columns {
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.template-columns-title {
+  color: #13233f;
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.template-columns-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px 16px;
+  color: #475569;
+  font-size: 12px;
+}
+
+.template-columns-list li {
+  position: relative;
+  padding-left: 14px;
+}
+
+.template-columns-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 6px;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: #64748b;
+}
+
 .upload-link {
   color: #14b8a6;
   text-decoration: underline;
@@ -1827,6 +2834,63 @@ onBeforeUnmount(() => {
   gap: 10px;
   margin-top: 18px;
   flex-wrap: wrap;
+}
+
+.upload-footer {
+  margin-top: 0;
+  padding: 14px 22px 18px;
+  border-top: 1px solid #e2eaf2;
+  background: #f8fafc;
+}
+
+.create-modal .modal-actions {
+  margin-top: 0;
+  padding: 14px 22px 18px;
+  border-top: 1px solid #e2eaf2;
+}
+
+.modal-secondary {
+  background: #fff;
+  border: 1px solid #d7e1eb;
+  color: #1f2a3d;
+}
+
+.create-modal .form-grid {
+  gap: 12px 18px;
+}
+
+.create-modal .form-group label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #334155;
+}
+
+.create-modal .form-group input,
+.create-modal .form-group select {
+  font-size: 16px;
+  font-weight: 400;
+  color: #0f172a;
+}
+
+.create-modal .form-group input:disabled,
+.create-modal .form-group select:disabled {
+  background: #f1f5f9;
+  color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.create-modal .primary-btn,
+.create-modal .secondary-btn {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.template-actions {
+  justify-content: stretch;
+}
+
+.template-actions .primary-btn {
+  width: 100%;
 }
 
 .primary-btn,
@@ -1947,6 +3011,14 @@ onBeforeUnmount(() => {
   .advanced-filters {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .upload-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 900px) {
@@ -1973,6 +3045,11 @@ onBeforeUnmount(() => {
   .stats-grid,
   .advanced-filters,
   .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .upload-grid,
+  .summary-grid {
     grid-template-columns: 1fr;
   }
 

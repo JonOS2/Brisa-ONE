@@ -102,14 +102,7 @@ public class PeopleService {
                 person.setCpf(getCellValueAsString(row.getCell(2)));
 
                 // Coluna D (3): Data de Nascimento
-                // 1. Primeiro, pegamos o texto puro do Excel (ex: "1980-03-01")
-                String dataTexto = getCellValueAsString(row.getCell(3));
-
-                // 2. Trocamos o tradutor para ler o formato exato que veio do Excel (Ano-Mês-Dia)
-                LocalDate dataConvertida = LocalDate.parse(dataTexto, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-
-                // 3. Por fim, guardamos a data verdadeira e convertida dentro da pessoa
-                person.setBirthDate(dataConvertida);
+                person.setBirthDate(parseDateFromCell(row.getCell(3)));
 
                 // Coluna F (5): Gênero
                 person.setGender(getCellValueAsString(row.getCell(5)));
@@ -155,6 +148,30 @@ public class PeopleService {
             return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         }
         
+        return null;
+    }
+
+    private LocalDate parseDateFromCell(Cell cell) {
+        LocalDate date = getCellValueAsDate(cell);
+        if (date != null) return date;
+
+        String raw = getCellValueAsString(cell);
+        if (raw == null || raw.trim().isEmpty()) return null;
+
+        String value = raw.trim();
+        List<DateTimeFormatter> formatters = List.of(
+                DateTimeFormatter.ofPattern("yyyy-MM-dd"),
+                DateTimeFormatter.ofPattern("dd/MM/yyyy"),
+                DateTimeFormatter.ofPattern("MM/dd/yyyy")
+        );
+
+        for (DateTimeFormatter formatter : formatters) {
+            try {
+                return LocalDate.parse(value, formatter);
+            } catch (Exception ignored) {
+            }
+        }
+
         return null;
     }
     
