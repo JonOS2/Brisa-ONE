@@ -11,14 +11,14 @@
           </div>
 
           <div class="top-actions">
-            <button type="button" class="ghost-btn" @click="downloadTemplate">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="7 10 12 15 17 10"></polyline>
-                <line x1="12" y1="15" x2="12" y2="3"></line>
-              </svg>
-              Modelo de planilha
-            </button>
+          <button type="button" class="ghost-btn" @click="showTemplateModal = true">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Modelo de planilha
+          </button>
 
             <button type="button" class="ghost-btn" @click="showCreateModal = true">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -728,14 +728,24 @@
           </button>
         </div>
         <p class="template-text">Baixe um arquivo modelo com todas as colunas necessárias para cadastro e vínculo dos alunos ao programa.</p>
+        
         <div class="template-columns">
           <div class="template-columns-title">Colunas principais:</div>
           <ul class="template-columns-list">
             <li v-for="column in templateColumns" :key="column">{{ column }}</li>
           </ul>
         </div>
+        
         <div class="modal-actions template-actions">
-          <button type="button" class="primary-btn" @click="downloadTemplateXlsx">Baixar modelo .xlsx</button>
+          <a 
+            href="/Modelo_Planilha_Pessoas.xlsx" 
+            download="Modelo_Planilha_Pessoas.xlsx" 
+            class="primary-btn" 
+            style="text-decoration: none; display: flex; justify-content: center; align-items: center;"
+            @click="showTemplateModal = false"
+          >
+            Baixar modelo .xlsx
+          </a>
         </div>
       </div>
     </div>
@@ -785,18 +795,18 @@ const columnOptions = [
   { key: 'updatedAt', label: 'Última atualização' }
 ];
 const templateColumns = [
-  'Nome',
-  'Data de nascimento',
-  'Estado',
-  'Instituição',
-  'CPF',
-  'Gênero',
-  'Cidade',
-  'Curso',
+  'Nome completo',
   'E-mail',
+  'CPF',
+  'Data de Nascimento',
+  'Gênero',
   'Cota',
+  'Escolaridade',
+  'Curso',
   'Tipo de formação',
-  'Status da formação'
+  'Status da formação',
+  'Cidade',
+  'Estado'
 ];
 const fallbackStatusOptions = ['Ativa', 'Pendente', 'Concluída', 'Reprovada', 'Desclassificada'];
 const fallbackQuotaOptions = ['Ampla Concorrência', 'PCD/Neurodivergente', 'Negro/Pardo', 'Mulher', '45+'];
@@ -1376,13 +1386,6 @@ const openMoreActions = () => {
 
 const downloadTemplate = () => {
   showTemplateModal.value = true;
-};
-
-const downloadTemplateXlsx = () => {
-  const worksheet = XLSX.utils.aoa_to_sheet([templateColumns]);
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Modelo');
-  XLSX.writeFile(workbook, 'modelo-planilha-alunos.xlsx');
 };
 
 const formatCPFInput = (event) => {

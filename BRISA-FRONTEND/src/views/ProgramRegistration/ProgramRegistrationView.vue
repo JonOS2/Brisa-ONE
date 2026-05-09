@@ -311,7 +311,9 @@
 
     <div class="header">
       <div class="header-left">
-        <h1>Cadastro de Programa</h1> <p class="subtitle">Configure e publique novos editais</p> </div>
+        <h1>Cadastro de Programa</h1>
+        <p class="subtitle">Configure e publique novos editais</p>
+      </div>
     </div>
 
     <div class="registration-container">
@@ -319,16 +321,21 @@
       <div class="sidebar">
         <div class="steps">
           <div v-for="(title, index) in stepTitles" :key="index">
-            <div :class="['step', { active: currentStep === index + 1, completed: currentStep > index + 1 }]" @click="goToStep(index + 1)">
-               <div :class="['step-icon', { outline: currentStep < index + 1 }]">
-                  <svg v-if="currentStep > index + 1" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <div :class="['step', { active: currentStep === index + 1, completed: stepStatuses[index] === 'completed', warning: stepStatuses[index] === 'warning' }]" @click="goToStep(index + 1)">
+               
+               <div :class="['step-icon', { outline: stepStatuses[index] === 'pending' && currentStep !== index + 1 }]">
+                  <svg v-if="stepStatuses[index] === 'completed'" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  <svg v-else-if="stepStatuses[index] === 'warning'" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>
                   </svg>
                   <svg v-else xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                     <polyline points="14 2 14 8 20 8"></polyline>
                   </svg>
                </div>
+               
                <div class="step-label">
                   <span class="step-title">{{ title }}</span>
                   <span class="step-desc">{{ stepDescs[index] }}</span>
@@ -441,10 +448,9 @@
           @save-draft="saveDraft"
         />
 
-        <div class="form-actions-footer">
+        <div v-if="currentStep < 6" class="form-actions-footer">
            <button v-if="currentStep > 1" class="btn-footer-back" @click="prevStep">Voltar</button>
-           <button v-if="currentStep < 6" class="btn-footer-continue ml-auto" @click="nextStep">Continuar →</button>
-           <button v-else class="btn-footer-continue ml-auto" @click="nextStep">Finalizar</button>
+           <button class="btn-footer-continue ml-auto" @click="nextStep">Continuar →</button>
         </div>
 
       </div>
@@ -478,10 +484,12 @@
             <div class="timeline">
                <template v-for="(stage, index) in stageList" :key="stage.id">
                  <div class="timeline-item">
-                    <div class="timeline-number">{{ stage.id }}</div> <div class="timeline-content">
+                    <div class="timeline-number">{{ stage.id }}</div>
+                    <div class="timeline-content">
                        <h4>{{ stage.title }}</h4>
                        <p>{{ stage.modality }}</p>
-                       <span class="timeline-tag">{{ stage.slots }}</span> </div>
+                       <span class="timeline-tag">{{ stage.slots }}</span>
+                    </div>
                  </div>
                  <div v-if="index < stageList.length - 1" class="timeline-line"></div>
                </template>
@@ -538,6 +546,9 @@ export default {
       // Variável de controle: Define se as últimas alterações já foram salvas pelo botão
       isDraftSaved: false, 
       
+      // ALTERAÇÃO AQUI: Array que guarda o status de preenchimento (validação) de cada etapa
+      stepStatuses: ['pending', 'pending', 'pending', 'pending', 'pending', 'pending'],
+
       // Arrays que montam os nomes dos 6 botões da barra lateral esquerda
       stepTitles: ['Dados do Programa', 'Estrutura das Etapas', 'Etapa 0 — Inscrição', 'Etapa 1 — Nivelamento', 'Etapa 2 — Imersão', 'Revisão Final'],
       stepDescs: ['Informações gerais', 'Definição do fluxo', 'Formulário e elegibilidade', 'Cursos e avaliação', 'Projetos e benefícios', 'Validar e publicar'],
@@ -653,13 +664,17 @@ export default {
     this.updateLastModifiedTime();
 
     // =======================================================================
-    // NOVA LÓGICA: CARREGAMENTO DOS DADOS DO RASCUNHO (LOCAL STORAGE)
+    // CARREGAMENTO DOS DADOS DO RASCUNHO E DOS STATUS DE VALIDAÇÃO (LOCAL STORAGE)
     // =======================================================================
     const savedStep = localStorage.getItem('programDraftStep');
     if (savedStep) {
       // Se achou, abre a tela exatamente na aba em que a pessoa salvou
       this.currentStep = parseInt(savedStep, 10);
       this.isDraftSaved = true;
+
+      // Resgata o status das bolinhas da barra lateral (Check Azul ou Aviso Amarelo)
+      const savedStatuses = localStorage.getItem('draftStepStatuses');
+      if (savedStatuses) this.stepStatuses = JSON.parse(savedStatuses);
 
       // Resgata os formulários salvos e converte de texto (JSON) para objeto novamente
       const savedFormData = localStorage.getItem('draftFormData');
@@ -765,9 +780,44 @@ export default {
       const minutes = String(now.getMinutes()).padStart(2, '0');
       this.lastUpdatedTime = `${hours}:${minutes}`;
     },
+
+    // =======================================================================
+    // LÓGICA DE VALIDAÇÃO (ALTERAÇÃO): Verifica os campos vazios da aba atual
+    // =======================================================================
+    validateCurrentStep() {
+      let isValid = true;
+      
+      // Validação da Aba 1 (Dados Gerais)
+      if (this.currentStep === 1) {
+        isValid = !!(this.formData.programName && this.formData.batchName && this.formData.executor && this.formData.objective && this.formData.supportEmail && this.displayDates.startDate && this.displayDates.endDate);
+      } 
+      // Validação da Aba 2 (Estrutura)
+      else if (this.currentStep === 2) {
+        isValid = this.stageList.length > 0;
+      } 
+      // Validação da Aba 3 (Inscrição)
+      else if (this.currentStep === 3) {
+        isValid = !!(this.displayDates.inscStart && this.displayDates.inscEnd);
+      } 
+      // Validação da Aba 4 (Nivelamento)
+      else if (this.currentStep === 4) {
+        isValid = !!(this.nivelamentoForm.title && this.displayDates.nivStart && this.displayDates.nivEnd);
+      } 
+      // Validação da Aba 5 (Imersão) - Considerada ok por padrão, ou pode aplicar lógica futura
+      else if (this.currentStep === 5) {
+        isValid = true; 
+      }
+      // Validação da Aba 6 (Revisão)
+      else if (this.currentStep === 6) {
+        isValid = true;
+      }
+      
+      // Atualiza o Array que controla as cores das bolinhas do menu lateral
+      this.stepStatuses[this.currentStep - 1] = isValid ? 'completed' : 'warning';
+    },
     
     // =======================================================================
-    // NOVA LÓGICA DE SALVAMENTO DE RASCUNHO (MÉTODO ACIONADO PELO BOTÃO)
+    // LÓGICA DE SALVAMENTO DE RASCUNHO (MÉTODO ACIONADO PELO BOTÃO E NAVEGAÇÃO)
     // =======================================================================
     saveDraft() {
       // 1. Muda a cor da pílula para verde (Rascunho Salvo)
@@ -776,7 +826,10 @@ export default {
       // 2. Salva a aba atual em que o usuário está navegando
       localStorage.setItem('programDraftStep', this.currentStep.toString());
       
-      // 3. Converte todos os grandes objetos preenchidos para texto (JSON) e salva no cache do navegador
+      // 3. Salva a validação das bolinhas
+      localStorage.setItem('draftStepStatuses', JSON.stringify(this.stepStatuses));
+
+      // 4. Converte todos os grandes objetos preenchidos para texto (JSON) e salva no cache do navegador
       localStorage.setItem('draftFormData', JSON.stringify(this.formData));
       localStorage.setItem('draftInscriptionForm', JSON.stringify(this.inscriptionForm));
       localStorage.setItem('draftNivelamentoForm', JSON.stringify(this.nivelamentoForm));
@@ -784,10 +837,31 @@ export default {
       localStorage.setItem('draftDisplayDates', JSON.stringify(this.displayDates));
     },
 
-    // Funções de pular tela, engatilhadas por botões em tela.
-    nextStep() { if (this.currentStep < 6) this.currentStep++; window.scrollTo({ top: 0, behavior: 'smooth' }); },
-    prevStep() { if (this.currentStep > 1) this.currentStep--; window.scrollTo({ top: 0, behavior: 'smooth' }); },
-    goToStep(num) { this.currentStep = num; window.scrollTo({ top: 0, behavior: 'smooth' }); },
+    // Funções de pular tela (ALTERAÇÃO: Agora elas Valida e Salvam o Rascunho antes de pular a aba!)
+    nextStep() { 
+      this.validateCurrentStep(); // Verifica os campos vazios da aba atual
+      if (this.currentStep < 6) {
+        this.currentStep++; 
+      }
+      this.saveDraft(); // Salva o progresso e as validações
+      window.scrollTo({ top: 0, behavior: 'smooth' }); 
+    },
+    
+    prevStep() { 
+      this.validateCurrentStep();
+      if (this.currentStep > 1) {
+        this.currentStep--; 
+      }
+      this.saveDraft(); 
+      window.scrollTo({ top: 0, behavior: 'smooth' }); 
+    },
+    
+    goToStep(num) { 
+      this.validateCurrentStep();
+      this.currentStep = num; 
+      this.saveDraft(); 
+      window.scrollTo({ top: 0, behavior: 'smooth' }); 
+    },
     
     // ---------------------------------------------------------------------
     // SISTEMA DE DRAG & DROP (Arraste de blocos de Etapas no DOM HTML5)
@@ -1171,6 +1245,12 @@ export default {
 
 .step.completed .step-icon { 
   background-color: #0288d1; 
+  color: white; 
+}
+
+/* ALTERAÇÃO: CSS Para pintar de amarelo/laranja a bolinha da etapa com campos em branco */
+.step.warning .step-icon { 
+  background-color: #f59e0b; 
   color: white; 
 }
 
