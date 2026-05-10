@@ -40,67 +40,65 @@ defineProps({
 
 <style scoped>
 .stat-card {
-  border: 1px solid #dce5ef;
-  border-radius: 14px;
-  background: #fff;
-  padding: 14px 14px 12px;
-  min-height: 92px;
-  position: relative;
-  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #D1D6E8;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 1px 4px rgba(23, 31, 74, 0.08);
   transition: all 0.2s ease;
 }
 
 .stat-card:hover {
-  box-shadow: 0 4px 12px rgba(13, 27, 42, 0.08);
-  border-color: #d1d6e8;
-  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(23, 31, 74, 0.12);
+  border-color: #C0C7DD;
+  transform: translateY(-1px);
 }
 
 .stat-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 8px;
+  align-items: center;
+  margin-bottom: 12px;
 }
 
 .stat-label {
-  color: #6a7a90;
   font-size: 12px;
-  font-weight: 600;
-  text-transform: capitalize;
-  letter-spacing: 0;
+  font-weight: 500;
+  color: #50619E;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
 .stat-value {
-  color: #13233f;
-  font-size: 26px;
-  line-height: 1;
-  font-weight: 800;
+  font-size: 28px;
+  font-weight: 700;
+  color: #171F4A;
+  line-height: 1.1;
 }
 
 /* Icon Colors */
 .icon-primary {
-  color: #14b8a6;
+  color: #6377BA;
 }
 
 .icon-success {
-  color: #15803d;
+  color: #4CAF50;
 }
 
 .icon-info {
-  color: #2563eb;
+  color: #2196F3;
 }
 
 .icon-warning {
-  color: #b45309;
+  color: #FF9800;
 }
 
 .icon-purple {
-  color: #9333ea;
+  color: #9C27B0;
 }
 
 .icon-muted {
-  color: #6b7280;
+  color: #9AA4C0;
 }
 
 @media (max-width: 860px) {
@@ -109,9 +107,7 @@ defineProps({
   }
 
   .stat-value {
-    font-size: 22px;
-  }
-}
+    font-size: 24px;
   }
 
   .stat-label {
