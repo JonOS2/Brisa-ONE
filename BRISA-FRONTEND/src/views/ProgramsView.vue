@@ -1,38 +1,84 @@
 <template>
   <div class="programs-view">
-    <section class="page-header-card">
-      <div class="page-header-top">
-        <div>
-          <h1>Programas</h1>
-          <p class="subtitle">Gerencie os programas cadastrados, acompanhe suas turmas, etapas e andamento geral.</p>
-        </div>
-        <div class="top-actions">
-          <button type="button" class="ghost-btn" @click="showNewClassModal = true">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2">
-              <path d="M5 12h14"></path>
-              <path d="M12 5v14"></path>
-            </svg>
-            Nova turma
-          </button>
-          <button type="button" class="primary-btn" @click="showCreateModal = true">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
-              stroke="currentColor" stroke-width="2">
-              <path d="M5 12h14"></path>
-              <path d="M12 5v14"></path>
-            </svg>
-            Novo programa
-          </button>
-        </div>
+    <header class="page-header">
+      <div>
+        <h1>Programas</h1>
+        <p class="subtitle">Gerenciar programas e turmas</p>
       </div>
-    </section>
+      <div class="header-actions">
+        <button type="button" class="primary-btn" @click="showCreateModal = true">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14"></path>
+            <path d="M12 5v14"></path>
+          </svg>
+          Cadastrar
+        </button>
+        <button type="button" class="ghost-btn" @click="showUploadModal = true">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2">
+            <path d="M12 3v12"></path>
+            <path d="m7 10 5 5 5-5"></path>
+            <path d="M5 21h14"></path>
+          </svg>
+          Importar
+        </button>
+      </div>
+    </header>
+    <!-- Stat Cards -->
+    <div class="stats-grid">
+      <StatCard
+        label="Total de programas"
+        :value="stats.totalProgramas"
+        :icon="Award"
+        icon-color="primary"
+      />
+      <StatCard
+        label="Programas ativos"
+        :value="stats.ativosCount"
+        :icon="CheckCircle"
+        icon-color="success"
+      />
+      <StatCard
+        label="Em espera"
+        :value="stats.esperaCount"
+        :icon="Clock"
+        icon-color="info"
+      />
+      <StatCard
+        label="Em imersão"
+        :value="stats.imersaoCount"
+        :icon="Users"
+        icon-color="purple"
+      />
+      <StatCard
+        label="Em nivelamento"
+        :value="stats.nivelamentoCount"
+        :icon="Building2"
+        icon-color="warning"
+      />
+      <StatCard
+        label="Encerrados"
+        :value="stats.encerradosCount"
+        :icon="CheckCircleGrey"
+        icon-color="muted"
+      />
+    </div>
+
+    <!-- Tab Filter -->
+    <TabFilter
+      :tabs="tabs"
+      :active-tab-id="activeTab"
+      @tab-change="activeTab = $event"
+    />
+
     <div class="search-container">
       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
         stroke="currentColor" stroke-width="2" class="search-icon">
         <circle cx="11" cy="11" r="8"></circle>
         <path d="m21 21-4.35-4.35"></path>
       </svg>
-      <input v-model="searchTerm" type="text" placeholder="Buscar por código ou nome do programa..."
+      <input v-model="searchTerm" type="text" placeholder="Buscar por nome do programa, turma, parceiro, instituição ou localidade..."
         class="search-input" />
     </div>
     <div v-if="loading" class="loading">
@@ -216,19 +262,33 @@
 
 <script>
 import { ref, computed, onMounted, watch } from 'vue';
-import { programService } from '@/services/programService';
-import { classService } from '@/services/classService'; // ✅ import adicionado
 import { useRouter } from 'vue-router';
+import { programService } from '@/services/programService';
+import { classService } from '@/services/classService';
+import StatCard from '@/components/StatCard.vue';
+import TabFilter from '@/components/TabFilter.vue';
+import {
+  Award,
+  CheckCircle,
+  Clock,
+  Users,
+  Building2,
+} from 'lucide-vue-next';
 
 export default {
   name: 'ProgramsView',
+  components: {
+    StatCard,
+    TabFilter,
+  },
   setup() {
     const router = useRouter();
     const programs = ref([]);
-    const classesCount = ref({}); // ✅ novo ref para contagem de turmas
+    const classesCount = ref({});
     const loading = ref(false);
     const error = ref(null);
     const searchTerm = ref('');
+    const activeTab = ref('ativos');
     const showUploadModal = ref(false);
     const showCreateModal = ref(false);
     const showNewClassModal = ref(false);
@@ -250,6 +310,31 @@ export default {
       endDate: ''
     });
 
+    const tabs = [
+      { id: 'ativos', label: 'Programas ativos', count: 4 },
+      { id: 'espera', label: 'Em espera', count: 2 },
+      { id: 'todos', label: 'Todos os programas', count: 18 },
+      { id: 'encerrados', label: 'Encerrados', count: 7 },
+    ];
+
+    const stats = computed(() => {
+      const total = programs.value.length;
+      const ativos = programs.value.filter(p => p.status === 'andamento').length;
+      const espera = programs.value.filter(p => p.status === 'espera').length;
+      const imersao = programs.value.filter(p => p.etapaAtual === 'Imersão').length;
+      const nivelamento = programs.value.filter(p => p.etapaAtual === 'Nivelamento').length;
+      const encerrados = programs.value.filter(p => p.status === 'encerrado').length;
+
+      return {
+        totalProgramas: total || 0,
+        ativosCount: ativos || 0,
+        esperaCount: espera || 0,
+        imersaoCount: imersao || 0,
+        nivelamentoCount: nivelamento || 0,
+        encerradosCount: encerrados || 0,
+      };
+    });
+
     watch(
       () => [programForm.value.startDate, programForm.value.endDate],
       ([startDate, endDate]) => {
@@ -266,12 +351,28 @@ export default {
     );
 
     const filteredPrograms = computed(() => {
-      if (!searchTerm.value) return programs.value;
-      const term = searchTerm.value.toLowerCase();
-      return programs.value.filter(program =>
-        program.code?.toLowerCase().includes(term) ||
-        program.name?.toLowerCase().includes(term)
-      );
+      let result = programs.value;
+
+      // Filter by tab
+      if (activeTab.value === 'ativos') {
+        result = result.filter(p => p.status === 'andamento');
+      } else if (activeTab.value === 'espera') {
+        result = result.filter(p => p.status === 'espera');
+      } else if (activeTab.value === 'encerrados') {
+        result = result.filter(p => p.status === 'encerrado');
+      }
+      // 'todos' shows all programs
+
+      // Filter by search term
+      if (searchTerm.value) {
+        const term = searchTerm.value.toLowerCase();
+        result = result.filter(program =>
+          program.code?.toLowerCase().includes(term) ||
+          program.name?.toLowerCase().includes(term)
+        );
+      }
+
+      return result;
     });
 
     // ✅ Carrega programas e contagem de turmas em paralelo
@@ -405,12 +506,17 @@ export default {
     });
 
     return {
+      // UI State
       programs,
-      classesCount, // ✅ exposto para o template
+      classesCount,
       loading,
       error,
       searchTerm,
+      activeTab,
       filteredPrograms,
+      tabs,
+      stats,
+      // Modal State
       showUploadModal,
       showCreateModal,
       showNewClassModal,
@@ -424,6 +530,14 @@ export default {
       saving,
       formError,
       programForm,
+      // Icons
+      Award,
+      CheckCircle,
+      Clock,
+      Users,
+      Building2,
+      CheckCircleGrey: CheckCircle,
+      // Methods
       formatDate,
       viewClasses,
       editProgram,
@@ -442,221 +556,277 @@ export default {
 
 <style scoped>
 .programs-view {
-  padding: 30px;
-  max-width: 1400px;
-  margin: 0 auto;
+  min-height: 100%;
+  background: #eef3f8;
+  padding: 14px 16px 20px;
 }
-.header {
+
+.page-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 32px;
+  margin-bottom: 18px;
+  gap: 16px;
+  background: #fff;
+  border: 1px solid #dfe7f1;
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(13, 27, 42, 0.05);
+  padding: 18px 18px 16px;
 }
-.header-left h1 {
+
+.page-header h1 {
   margin: 0 0 4px 0;
-  color: #1F285F;
-  font-size: 32px;
-  font-weight: 700;
+  color: #13233f;
+  font-size: 28px;
+  line-height: 1.1;
+  font-weight: 800;
 }
+
 .subtitle {
-  margin: 0;
-  color: #666;
-  font-size: 15px;
+  margin: 6px 0 0;
+  color: #6a7a90;
+  font-size: 14px;
 }
+
 .header-actions {
   display: flex;
   align-items: center;
   gap: 12px;
 }
-.btn-create {
-  height: 44px;
-  background: linear-gradient(135deg, #1F285F 0%, #0288d1 100%);
-  color: white;
-  border: none;
-  padding: 0 24px;
-  border-radius: 10px;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
+
+.primary-btn,
+.ghost-btn {
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid #d1dbe8;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 12px rgba(31, 40, 95, 0.2);
-}
-.btn-create:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(31, 40, 95, 0.3);
-}
-.btn-create:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(31, 40, 95, 0.15);
-}
-.btn-import {
-  height: 44px;
-  box-sizing: border-box;
-  background: white;
-  color: #0288d1;
-  border: 2px solid #0288d1;
-  padding: 0 22px;
-  border-radius: 10px;
-  font-size: 15px;
-  font-weight: 600;
+  padding: 0 14px;
   cursor: pointer;
-  display: inline-flex;
-  align-items: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.ghost-btn {
+  background: #fff;
+  color: #13233f;
+}
+
+.primary-btn {
+  background: #14b8a6;
+  color: #fff;
+  border-color: #14b8a6;
+  box-shadow: 0 8px 16px rgba(20, 184, 166, 0.20);
+}
+
+.ghost-btn:hover {
+  background: #f8fafc;
+  border-color: #cfd9e6;
+  transform: translateY(-1px);
+}
+
+.primary-btn:hover {
+  background: #0d9488;
+  border-color: #0d9488;
+  box-shadow: 0 12px 20px rgba(13, 148, 136, 0.24);
+  transform: translateY(-1px);
+}
+
+.stats-grid {
+  margin-bottom: 20px;
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 10px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 8px rgba(2, 136, 209, 0.1);
 }
-.btn-import:hover {
-  background: #0288d1;
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(2, 136, 209, 0.25);
+
+@media (max-width: 1280px) {
+  .stats-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
-.btn-import:active {
-  transform: translateY(0);
+
+@media (max-width: 900px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
+
+@media (max-width: 720px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .search-container {
   position: relative;
-  margin-bottom: 32px;
+  margin-bottom: 16px;
   max-width: 500px;
 }
+
 .search-icon {
   position: absolute;
   left: 16px;
   top: 50%;
   transform: translateY(-50%);
-  color: #999;
+  color: #9AA4C0;
 }
+
 .search-input {
   width: 100%;
-  padding: 14px 16px 14px 48px;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
-  font-size: 15px;
+  padding: 10px 14px 10px 38px;
+  border: 1px solid #D1D6E8;
+  border-radius: 6px;
+  font-size: 14px;
   transition: all 0.2s;
+  background: #fff;
+  color: #171F4A;
 }
+
 .search-input:focus {
   outline: none;
-  border-color: #0288d1;
-  box-shadow: 0 0 0 3px rgba(2, 136, 209, 0.1);
+  border-color: #6377BA;
+  box-shadow: 0 0 0 3px rgba(99, 119, 186, 0.15);
 }
+
+.search-input::placeholder {
+  color: #9AA4C0;
+}
+
 .programs-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+  max-width: 100%;
 }
+
 .program-card {
   background: white;
   border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 2px 8px rgba(31, 40, 95, 0.08);
+  padding: 16px;
+  box-shadow: 0 1px 4px rgba(23, 31, 74, 0.08);
   transition: all 0.3s;
   cursor: pointer;
-  border: 2px solid transparent;
+  border: 1px solid #E1E6F0;
 }
+
 .program-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(31, 40, 95, 0.12);
-  border-color: #0288d1;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(23, 31, 74, 0.12);
+  border-color: #D1D6E8;
 }
+
 .card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 10px;
 }
+
 .card-icon {
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, #0288d1 0%, #0277bd 100%);
-  border-radius: 12px;
+  width: 36px;
+  height: 36px;
+  background: #2A3566;
+  border-radius: 9px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
 }
+
 .btn-icon {
-  background: #f5f5f5;
+  background: #f4f5f7;
   border: none;
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  color: #666;
+  color: #6377BA;
   transition: all 0.2s;
 }
+
 .btn-icon:hover {
-  background: #0288d1;
-  color: white;
+  background: #E8EBF5;
+  color: #2A3566;
 }
+
 .card-body {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
+
 .program-name {
-  margin: 0 0 8px 0;
-  color: #1F285F;
-  font-size: 20px;
-  font-weight: 700;
+  margin: 0 0 6px 0;
+  color: #171F4A;
+  font-size: 16px;
+  font-weight: 600;
   line-height: 1.3;
 }
+
 .program-code {
   display: inline-block;
-  background: #e3f2fd;
-  color: #0277bd;
-  padding: 4px 12px;
+  background: #E8EBF5;
+  color: #2A3566;
+  padding: 3px 8px;
   border-radius: 6px;
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 600;
-  margin-bottom: 16px;
+  margin-bottom: 10px;
 }
+
 .program-details {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 4px;
 }
+
 .detail-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: #666;
-  font-size: 14px;
+  gap: 6px;
+  color: #50619E;
+  font-size: 12px;
 }
+
 .detail-item svg {
-  color: #999;
+  color: #9AA4C0;
   flex-shrink: 0;
 }
+
 .card-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-top: 16px;
+  padding-top: 12px;
   border-top: 1px solid #f0f0f0;
 }
+
 .stat-badge {
   display: flex;
   align-items: center;
-  gap: 8px;
-  background: #f5f7fa;
-  padding: 8px 12px;
-  border-radius: 8px;
-  color: #1F285F;
-  font-size: 14px;
+  gap: 6px;
+  background: #E8EBF5;
+  padding: 5px 8px;
+  border-radius: 6px;
+  color: #2A3566;
+  font-size: 11px;
   font-weight: 600;
 }
+
 .stat-badge svg {
-  color: #0288d1;
+  color: #6377BA;
 }
+
 .arrow-icon {
-  color: #0288d1;
+  color: #6377BA;
   display: flex;
   align-items: center;
 }
+
 .loading {
   display: flex;
   flex-direction: column;
@@ -921,5 +1091,39 @@ export default {
 .modal-actions .btn-secondary:hover {
   background: #f5f5f5;
   border-color: #ccc;
+}
+
+@media (max-width: 860px) {
+  .programs-view {
+    padding: 16px 12px 24px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .page-header h1 {
+    font-size: 24px;
+  }
+
+  .header-actions {
+    width: 100%;
+  }
+
+  .btn-create,
+  .btn-import {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .search-container {
+    max-width: 100%;
+  }
+
+  .programs-grid {
+    max-width: 100%;
+    grid-template-columns: 1fr;
+  }
 }
 </style>
