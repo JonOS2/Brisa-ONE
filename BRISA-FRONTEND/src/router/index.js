@@ -17,6 +17,8 @@ import StageDetailsView from '@/views/StageDetailsView.vue';
 import InstitutionsView from '@/views/InstitutionsView.vue';
 import LogsView from '@/views/LogsView.vue';
 import CoursesView from '@/views/CoursesView.vue';
+import AdminPanelView from '@/views/AdminPanelView.vue';
+import CareerView from '@/views/CareerView.vue';
 
 const routes = [
   {
@@ -76,6 +78,18 @@ const routes = [
     path: '/courses',
     name: 'Courses',
     component: CoursesView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/admin-panel',
+    name: 'AdminPanel',
+    component: AdminPanelView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/carreira',
+    name: 'Career',
+    component: CareerView,
     meta: { requiresAuth: true }
   },
   {
