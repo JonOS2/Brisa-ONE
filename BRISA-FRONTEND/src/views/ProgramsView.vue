@@ -22,21 +22,10 @@
                   <span v-if="selectedProgram">
                     {{ selectedProgram.nome }} ({{ selectedProgram.totalTurmas }} turma<span v-if="selectedProgram.totalTurmas !== 1">s</span>)
                   </span>
-                  <span v-else-if="showAllProgramsClasses">Todos os programas</span>
-                  <span v-else>Programas</span>
+                  <span v-else>Todos os programas</span>
                 </button>
 
                 <div v-if="showProgramSelector" class="program-selector-menu">
-                  <button
-                    type="button"
-                    class="program-option-btn"
-                    :class="{ active: !selectedProgramId && !showAllProgramsClasses }"
-                    @click="clearSelectedProgram"
-                  >
-                    <strong>Programas</strong>
-                    <small>Limpa a seleção atual</small>
-                  </button>
-
                   <button
                     type="button"
                     class="program-option-btn"
@@ -75,19 +64,15 @@
                   @focus="showProgramSelector = true"
                 />
               </div>
-
-              <button
-                type="button"
-                class="clear-selection-btn"
-                :class="{ active: !selectedProgramId && !showAllProgramsClasses }"
-                @click="clearSelectedProgram"
-              >
-                Programas
-              </button>
             </div>
           </div>
 
           <div class="top-actions">
+            <button v-if="selectedProgramId" type="button" class="ghost-btn" @click="editSelectedProgram">
+              <Edit2 :size="18" />
+              Editar programa
+            </button>
+
             <button type="button" class="ghost-btn" @click="openNewClassModal">
               <Plus :size="18" />
               Nova turma
@@ -303,18 +288,22 @@
                 <Users :size="16" />
                 Pessoas
               </button>
-              <button type="button" class="action-btn" @click="editProgram(program)">
-                <Edit2 :size="16" />
-                Editar
+              <button type="button" class="action-btn" @click="openClassCourses(program)">
+                <BookOpen :size="16" />
+                Cursos
               </button>
 
               <div class="options-menu-container">
-                <button type="button" class="action-btn" @click="toggleOptionsMenu(program.programId)">
+                <button type="button" class="action-btn" @click="toggleOptionsMenu(actionMenuId(program))">
                   <MoreVertical :size="16" />
                   Opções
                 </button>
 
-                <div v-if="showOptionsMenu === program.programId" class="options-menu">
+                <div v-if="showOptionsMenu === actionMenuId(program)" class="options-menu">
+                  <button type="button" class="options-action" @click="editClass(program)">
+                    <Edit2 :size="16" />
+                    Editar turma
+                  </button>
                   <button type="button" class="options-danger" @click="askDelete(program)">
                     <Trash2 :size="16" />
                     Excluir programa
@@ -624,6 +613,7 @@ import {
   Building2,
   Calendar,
   Award,
+  BookOpen,
   CheckCircle,
   Clock,
   Edit2,
@@ -661,7 +651,7 @@ const showOptionsMenu = ref(null);
 const showProgramSelector = ref(false);
 const programSelectorSearch = ref('');
 const selectedProgramId = ref('');
-const showAllProgramsClasses = ref(false);
+const showAllProgramsClasses = ref(true);
 const allClasses = ref([]);
 const selectedProgramClasses = ref([]);
 const classCountsByProgram = ref({});
@@ -1077,22 +1067,6 @@ function selectAllPrograms() {
   currentPage.value = 1;
 }
 
-function clearSelectedProgram() {
-  selectedProgramId.value = '';
-  showAllProgramsClasses.value = false;
-  selectedProgramClasses.value = [];
-  activeTab.value = 'todos';
-  showFilters.value = false;
-  searchInput.value = '';
-  appliedSearch.value = '';
-  selectedStatus.value = '';
-  selectedStage.value = '';
-  selectedYear.value = '';
-  selectedLocality.value = '';
-  showProgramSelector.value = false;
-  currentPage.value = 1;
-}
-
 function viewProgram(program) {
   const classId = resolveClassId(program) || resolveClassIdByCode(program);
   if (classId != null) {
@@ -1142,16 +1116,54 @@ function openPeople(program) {
   router.push({ path: '/people', query: { programa: `${program.nome} - Turma ${program.turma}` } });
 }
 
-function editProgram(program) {
-  router.push({ path: '/programs/register', query: { edit: program.programId } });
+function openClassCourses(program) {
+  const classId = resolveClassId(program) || resolveClassIdByCode(program);
+  if (classId == null) {
+    errorMessage.value = 'Não foi possível identificar a turma para abrir os cursos.';
+    return;
+  }
+
+  router.push({
+    name: 'ClassCourses',
+    params: {
+      programId: program.programId,
+      classId,
+    },
+  });
+}
+
+function editSelectedProgram() {
+  if (!selectedProgramId.value) return;
+  router.push({ path: '/programs/register', query: { edit: selectedProgramId.value } });
+}
+
+function editClass(program) {
+  const classId = resolveClassId(program) || resolveClassIdByCode(program);
+  if (classId == null) {
+    errorMessage.value = 'Não foi possível identificar a turma para edição.';
+    return;
+  }
+
+  showOptionsMenu.value = null;
+  router.push({
+    name: 'ClassDetails',
+    params: {
+      programId: program.programId,
+      classId,
+    },
+  });
 }
 
 function goToProgramRegistration() {
   router.push({ path: '/programs/register' });
 }
 
-function toggleOptionsMenu(programId) {
-  showOptionsMenu.value = showOptionsMenu.value === programId ? null : programId;
+function actionMenuId(program) {
+  return `${program.programId}-${resolveClassId(program) ?? program.turma ?? 'sem-turma'}`;
+}
+
+function toggleOptionsMenu(menuId) {
+  showOptionsMenu.value = showOptionsMenu.value === menuId ? null : menuId;
 }
 
 function askDelete(program) {
@@ -1228,6 +1240,7 @@ async function loadData() {
     allClasses.value = Array.isArray(classesData) ? classesData : [];
     if (selectedProgramId.value && !programCatalog.value.some((item) => item.programId === selectedProgramId.value)) {
       selectedProgramId.value = '';
+      showAllProgramsClasses.value = true;
       selectedProgramClasses.value = [];
     }
     if (selectedProgramId.value) {
@@ -1351,8 +1364,7 @@ h1 {
   position: relative;
 }
 
-.program-selector-btn,
-.clear-selection-btn {
+.program-selector-btn {
   height: 40px;
   border-radius: 12px;
   border: 1px solid #d8e1eb;
@@ -1367,14 +1379,12 @@ h1 {
   padding: 0 14px;
 }
 
-.program-selector-btn:hover,
-.clear-selection-btn:hover {
+.program-selector-btn:hover {
   background: #f8fafc;
   border-color: #cfd9e6;
 }
 
-.program-selector-btn.active,
-.clear-selection-btn.active {
+.program-selector-btn.active {
   background: #ecfdf5;
   border-color: #b7ebcd;
   color: #0f766e;
@@ -1999,17 +2009,26 @@ h1 {
   z-index: 10;
 }
 
+.options-action,
 .options-danger {
   width: 100%;
   border: none;
   background: #fff;
-  color: #b42318;
+  color: #13233f;
   padding: 10px 12px;
   border-radius: 10px;
   display: inline-flex;
   align-items: center;
   gap: 8px;
   cursor: pointer;
+}
+
+.options-action:hover {
+  background: #f8fafc;
+}
+
+.options-danger {
+  color: #b42318;
 }
 
 .options-danger:hover {
@@ -2361,7 +2380,6 @@ h1 {
 
   .program-selector,
   .program-selector-btn,
-  .clear-selection-btn,
   .program-selector-search {
     width: 100%;
   }
