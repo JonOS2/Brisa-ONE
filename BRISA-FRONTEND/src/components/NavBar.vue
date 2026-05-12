@@ -51,12 +51,21 @@
           </router-link>
         </li>
         <li>
-          <router-link to="/courses" :class="{ active: $route.path === '/courses' }">
+          <router-link to="/admin-panel" :class="{ active: $route.path === '/admin-panel' }">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
               <path d="M22 6.5V17.5A2.5 2.5 0 0 1 19.5 20H6.5A2.5 2.5 0 0 1 4 17.5V6.5A2.5 2.5 0 0 1 6.5 4H19.5A2.5 2.5 0 0 1 22 6.5Z"></path>
             </svg>
             Painel
+          </router-link>
+        </li>
+        <li>
+          <router-link to="/carreira" :class="{ active: $route.path === '/carreira' }">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 3v18h18"></path>
+              <path d="m19 9-5 5-4-4-3 3"></path>
+            </svg>
+            Carreira
           </router-link>
         </li>
       </ul>
