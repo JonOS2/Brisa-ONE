@@ -37,7 +37,7 @@ export default {
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  background: #f5f6fa;
+  background: #eef3f8;
 }
 
 #app {

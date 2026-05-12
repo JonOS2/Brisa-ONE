@@ -7,7 +7,6 @@ import DashboardsView from '@/views/DashboardView.vue';
 import PeopleView from '@/views/PeopleView.vue';
 import PersonDetailsView from '@/views/PersonDetailsView.vue';
 import ProgramsView from '@/views/ProgramsView.vue';
-import ProgramDetailsView from '@/views/ProgramDetailsView.vue';
 
 // 👇 ESTA FOI A ÚNICA LINHA ALTERADA 👇
 // O router agora procura o Arquivo Pai dentro da nova pasta que você criou.
@@ -82,8 +81,10 @@ const routes = [
   {
     path: '/programs/:id',
     name: 'ProgramDetails',
-    component: ProgramDetailsView,
-    meta: { requiresAuth: true }
+    redirect: to => ({
+      path: '/programs',
+      query: { programId: String(to.params.id) }
+    })
   },
   {
     path: '/programs/:programId/classes/:classId',

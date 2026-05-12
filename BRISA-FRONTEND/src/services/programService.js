@@ -1,6 +1,24 @@
 import api from './api';
 
 export const programService = {
+  async getOverview(params = {}) {
+    try {
+      const response = await api.get('/programs/overview', { params });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  async getClassTemplates() {
+    try {
+      const response = await api.get('/programs/class-templates');
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
   async getAll() {
     try {
       const response = await api.get('/programs');
@@ -40,6 +58,15 @@ export const programService = {
   async delete(id) {
     try {
       await api.delete(`/programs/${id}`);
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  async createClassFromProgram(programId, payload) {
+    try {
+      const response = await api.post(`/programs/${programId}/classes`, payload);
+      return response.data;
     } catch (error) {
       throw error;
     }
