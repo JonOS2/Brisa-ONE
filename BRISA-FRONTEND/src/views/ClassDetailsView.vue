@@ -17,8 +17,13 @@
             </button>
 
             <div class="hero-actions">
-              <button class="btn-outline" @click="goToPeople">Pessoas</button>
-              <button class="btn-primary" @click="goToClassCourses">Cursos</button>
+              <button class="btn-primary" @click="editProgram">
+                <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 20h9" />
+                  <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
+                </svg>
+                <span>Editar programa</span>
+              </button>
             </div>
           </div>
 
@@ -32,17 +37,28 @@
             </div>
 
             <div class="meta-row">
-              <span>
-                <strong>Local:</strong>
+              <span class="meta-item">
+                <svg class="meta-icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z" />
+                </svg>
+                {{ partnerLabel }}
+              </span>
+              <span class="meta-item">
+                <svg class="meta-icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 10c0 5-8 12-8 12s-8-7-8-12a8 8 0 0 1 16 0Z" />
+                  <circle cx="12" cy="10" r="3" />
+                </svg>
                 {{ classData.location?.name || '-' }}
               </span>
-              <span>
-                <strong>Início:</strong>
-                {{ formatDate(classData.startDate) }}
-              </span>
-              <span>
-                <strong>Fim:</strong>
-                {{ formatDate(classData.endDate) }}
+              <span class="meta-item">
+                <svg class="meta-icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M8 2v4" />
+                  <path d="M16 2v4" />
+                  <rect width="18" height="18" x="3" y="4" rx="2" />
+                  <path d="M3 10h18" />
+                </svg>
+                {{ classPeriodLabel }}
               </span>
             </div>
           </div>
@@ -51,23 +67,27 @@
         <div class="hero-cards">
           <article class="hero-card">
             <span class="hero-label">Inscritos</span>
-            <strong>{{ totalCandidates }}</strong>
-            <small>Candidatos cadastrados nas etapas</small>
+            <strong>{{ totalCandidates || 612 }}</strong>
+            <small>+48 em lista</small>
+            <small class="hero-support">Candidatos cadastrados</small>
           </article>
           <article class="hero-card">
-            <span class="hero-label">Etapas</span>
-            <strong>{{ stages.length }}</strong>
-            <small>Fluxo da turma</small>
+            <span class="hero-label">Nivelamento</span>
+            <strong>{{ overviewTopCards.nivelamentoSelecionados }}</strong>
+            <small>{{ overviewTopCards.nivelamentoAtivos }} ativos</small>
+            <small class="hero-support">Selecionados</small>
           </article>
           <article class="hero-card">
-            <span class="hero-label">Progresso</span>
-            <strong>{{ progressPct }}%</strong>
-            <small>Ciclo geral da turma</small>
+            <span class="hero-label">Imersão</span>
+            <strong class="teal-strong">{{ overviewTopCards.imersaoAprovados }}</strong>
+            <small>{{ overviewTopCards.imersaoGrupos }} grupos</small>
+            <small class="hero-support">Aprovados para fase final</small>
           </article>
           <article class="hero-card">
-            <span class="hero-label">Próxima etapa</span>
-            <strong>{{ nextStageLabel }}</strong>
-            <small>Próximo marco do ciclo</small>
+            <span class="hero-label">Alertas Críticos</span>
+            <strong class="warning-strong">{{ overviewTopCards.alertasCriticos }}</strong>
+            <small class="warning-small">{{ overviewTopCards.alertasRisco }} em risco</small>
+            <small class="hero-support">Pendências ativas</small>
           </article>
         </div>
 
@@ -96,102 +116,379 @@
 
             <div class="status-grid">
               <div>
-                <span>Período da turma</span>
-                <strong>{{ formatDate(classData.startDate) }} a {{ formatDate(classData.endDate) }}</strong>
+                <span>Período da etapa</span>
+                <strong>{{ currentStagePeriod }}</strong>
               </div>
               <div>
                 <span>Próximo marco</span>
-                <strong>{{ nextStageLabel }}</strong>
+                <strong class="teal-strong">{{ currentStageMilestone }}</strong>
+              </div>
+              <div>
+                <span>Data</span>
+                <strong>{{ currentStageMilestoneDate }}</strong>
+              </div>
+              <div>
+                <span>Modelo</span>
+                <strong>{{ classModelLabel }}</strong>
+              </div>
+              <div>
+                <span>Carga horária</span>
+                <strong>{{ classWorkloadLabel }}</strong>
               </div>
               <div>
                 <span>Local</span>
                 <strong>{{ classData.location?.name || '-' }}</strong>
               </div>
-              <div>
-                <span>Programa</span>
-                <strong>{{ classData.program?.name || '-' }}</strong>
-              </div>
-              <div>
-                <span>Etapas cadastradas</span>
-                <strong>{{ stages.length }}</strong>
-              </div>
-              <div>
-                <span>Total de candidatos</span>
-                <strong>{{ totalCandidates }}</strong>
-              </div>
             </div>
+
+            <p class="status-note">
+              A turma está em desenvolvimento dos projetos, com avaliação parcial como próximo marco.
+            </p>
           </article>
 
           <article class="panel">
             <div class="panel-head">
-              <h3>Ciclo da Turma</h3>
-              <div class="panel-progress">Progresso Geral <strong>{{ progressPct }}%</strong></div>
+              <h3>Ciclo do Programa</h3>
+              <div class="panel-progress">Progresso Geral <strong>{{ overviewProgressPct }}%</strong></div>
             </div>
 
             <div class="progress-track">
-              <div class="progress-fill" :style="{ width: `${progressPct}%` }" />
+              <div class="progress-fill" :style="{ width: `${overviewProgressPct}%` }" />
             </div>
 
             <div class="cycle">
-              <div v-for="(item, index) in cycle" :key="item" class="cycle-item">
-                <div class="cycle-pill" :class="{ done: index < currentStageIndex, current: index === currentStageIndex }">
+              <div v-for="(item, index) in overviewCycle" :key="item" class="cycle-item">
+                <div class="cycle-pill" :class="{ done: index < overviewCurrentCycleIndex, current: index === overviewCurrentCycleIndex }">
                   {{ item }}
                 </div>
-                <div v-if="index < cycle.length - 1" class="cycle-line" :class="{ done: index < currentStageIndex }" />
+                <div v-if="index < overviewCycle.length - 1" class="cycle-line" :class="{ done: index < overviewCurrentCycleIndex }" />
               </div>
             </div>
           </article>
 
-          <div class="grid-3">
-            <article class="panel mini">
-              <h4>Processo Seletivo</h4>
-              <div class="mini-list">
-                <div><span>Inscritos</span><strong>{{ totalCandidates }}</strong></div>
-                <div><span>Etapas de seleção</span><strong>{{ stageBucket.selecao }}</strong></div>
-                <div><span>Status</span><strong>{{ classStatusLabel }}</strong></div>
-              </div>
-            </article>
+          <section class="overview-block">
+            <h3 class="overview-title">Resumo por Etapa</h3>
+            <div class="summary-grid">
+              <article v-for="card in overviewStageCards" :key="card.title" class="summary-card">
+                <div class="summary-card-head">
+                  <h4>{{ card.title }}</h4>
+                  <span class="pill" :class="card.statusClass">{{ card.status }}</span>
+                </div>
+                <div class="summary-card-list">
+                  <div v-for="item in card.items" :key="item.label">
+                    <span>{{ item.label }}</span>
+                    <strong :class="item.valueClass">{{ item.value }}</strong>
+                  </div>
+                </div>
+                <button type="button" class="details-link">Ver detalhes →</button>
+              </article>
+            </div>
+          </section>
 
-            <article class="panel mini">
-              <h4>Nivelamento</h4>
-              <div class="mini-list">
-                <div><span>Etapas de nivelamento</span><strong>{{ stageBucket.nivelamento }}</strong></div>
-                <div><span>Candidatos</span><strong>{{ totalCandidates }}</strong></div>
-                <div><span>Gestão detalhada</span><strong>Via Cursos</strong></div>
+          <article class="panel">
+            <h3 class="section-subtitle">Cronograma Resumido</h3>
+            <div class="timeline-list">
+              <div v-for="item in overviewTimeline" :key="item.label" class="timeline-row">
+                <div class="timeline-left">
+                  <span class="timeline-check">✓</span>
+                  <span class="timeline-label">{{ item.label }}</span>
+                </div>
+                <div class="timeline-right">
+                  <span class="timeline-date">{{ item.date }}</span>
+                  <span class="pill pill-green">{{ item.status }}</span>
+                </div>
               </div>
-            </article>
+            </div>
+            <button type="button" class="details-link timeline-link">Ver cronograma completo →</button>
+          </article>
 
-            <article class="panel mini">
-              <h4>Imersão</h4>
-              <div class="mini-list">
-                <div><span>Etapas de imersão</span><strong>{{ stageBucket.imersao }}</strong></div>
-                <div><span>Status atual</span><strong>{{ classStatusLabel }}</strong></div>
-                <div><span>Próximo passo</span><strong>{{ nextStageLabel }}</strong></div>
+          <section class="overview-block">
+            <h3 class="overview-title">Distribuição dos Alunos</h3>
+            <div class="distribution-grid">
+              <article class="panel distribution-panel">
+                <h4>Por Cota</h4>
+                <div class="quota-list">
+                  <div v-for="item in quotaDistribution" :key="item.label" class="quota-row">
+                    <div class="quota-head">
+                      <span>{{ item.label }}</span>
+                      <strong>{{ item.value }}%</strong>
+                    </div>
+                    <div class="quota-track">
+                      <div class="quota-fill" :style="{ width: `${item.value}%`, background: item.color }" />
+                    </div>
+                  </div>
+                </div>
+              </article>
+
+              <article class="panel distribution-panel">
+                <h4>Por Gênero</h4>
+                <div class="gender-grid">
+                  <div v-for="item in genderDistribution" :key="item.label" class="gender-card">
+                    <strong>{{ item.value }}%</strong>
+                    <span>{{ item.label }}</span>
+                  </div>
+                </div>
+              </article>
+
+              <article class="panel distribution-panel">
+                <h4>Por Cidade/UF</h4>
+                <div class="simple-list">
+                  <div v-for="item in cityDistribution" :key="item.label">
+                    <span>{{ item.label }}</span>
+                    <strong>{{ item.value }}</strong>
+                  </div>
+                </div>
+              </article>
+
+              <article class="panel distribution-panel">
+                <h4>Por Tipo de Formação</h4>
+                <div class="simple-list">
+                  <div v-for="item in educationDistribution" :key="item.label">
+                    <span>{{ item.label }}</span>
+                    <strong>{{ item.value }}</strong>
+                  </div>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <article class="panel updates-panel">
+            <h3 class="section-subtitle">Últimas Atualizações</h3>
+            <div class="updates-list">
+              <div v-for="item in overviewUpdates" :key="item.action" class="update-row">
+                <span class="update-dot" :class="item.dotClass" />
+                <span class="update-action">{{ item.action }}</span>
+                <div class="update-meta">
+                  <span>{{ item.author }}</span>
+                  <span>{{ item.date }}</span>
+                  <span class="pill" :class="item.statusClass">{{ item.status }}</span>
+                </div>
               </div>
-            </article>
-          </div>
+            </div>
+          </article>
         </section>
 
         <section v-else-if="activeTab === 'pessoas'" class="stack">
-          <article class="panel">
-            <h3>Pessoas vinculadas à turma</h3>
-            <p class="muted">Abrir a tela de pessoas com o filtro desta turma.</p>
-            <div class="actions-inline">
-              <button class="btn-primary" @click="goToPeople">Abrir Pessoas</button>
+          <article class="panel people-panel">
+            <div class="people-filters">
+              <div class="people-search-row">
+                <div class="people-search-box">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="people-search-icon">
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.35-4.35" />
+                  </svg>
+                  <input
+                    v-model="peopleSearch"
+                    type="text"
+                    class="people-search-input"
+                    placeholder="Buscar por nome, CPF ou e-mail..."
+                  />
+                </div>
+                <button type="button" class="people-search-btn">Pesquisar</button>
+              </div>
+
+              <div class="people-select-row">
+                <select v-model="peopleFilterStage" class="people-filter-select">
+                  <option value="">Etapa</option>
+                  <option v-for="option in peopleStageOptions" :key="option" :value="option">{{ option }}</option>
+                </select>
+                <select v-model="peopleFilterStatus" class="people-filter-select">
+                  <option value="">Status</option>
+                  <option v-for="option in peopleStatusOptions" :key="option" :value="option">{{ option }}</option>
+                </select>
+                <select v-model="peopleFilterQuota" class="people-filter-select">
+                  <option value="">Cota</option>
+                  <option v-for="option in peopleQuotaOptions" :key="option" :value="option">{{ option }}</option>
+                </select>
+                <select v-model="peopleFilterCity" class="people-filter-select">
+                  <option value="">Cidade</option>
+                  <option v-for="option in peopleCityOptions" :key="option" :value="option">{{ option }}</option>
+                </select>
+                <select v-model="peopleFilterGender" class="people-filter-select">
+                  <option value="">Gênero</option>
+                  <option v-for="option in peopleGenderOptions" :key="option" :value="option">{{ option }}</option>
+                </select>
+              </div>
             </div>
+
+            <div v-if="peopleLoading" class="state-box">Carregando pessoas da turma...</div>
+            <div v-else-if="peopleError" class="state-box state-error">{{ peopleError }}</div>
+            <div v-else-if="filteredClassPeople.length === 0" class="state-box">Nenhuma pessoa vinculada a esta turma.</div>
+
+            <template v-else>
+              <div class="people-table-wrap">
+                <table class="people-table-v2">
+                  <thead>
+                    <tr>
+                      <th>Nome</th>
+                      <th>CPF</th>
+                      <th>E-mail</th>
+                      <th>Gênero</th>
+                      <th>Idade</th>
+                      <th>Cota</th>
+                      <th>Cidade</th>
+                      <th>Etapa Atual</th>
+                      <th>Status</th>
+                      <th class="actions-col">Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="person in paginatedClassPeople" :key="person.id">
+                      <td class="name-cell">{{ person.name }}</td>
+                      <td>{{ formatCPF(person.cpf) }}</td>
+                      <td>{{ person.email || '-' }}</td>
+                      <td>{{ person.gender || '-' }}</td>
+                      <td>{{ person.age }}</td>
+                      <td>
+                        <span v-if="person.quota !== '-'" class="quota-pill">{{ person.quota }}</span>
+                        <span v-else>-</span>
+                      </td>
+                      <td>{{ person.city }}</td>
+                      <td>{{ person.stage }}</td>
+                      <td>
+                        <span class="status-pill" :class="person.statusClass">{{ person.status }}</span>
+                      </td>
+                      <td class="actions-col">
+                        <button type="button" class="icon-btn" title="Visualizar pessoa" @click="viewPerson(person)">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                            <circle cx="12" cy="12" r="3" />
+                          </svg>
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="people-pagination">
+                <div class="people-page-summary">
+                  Mostrando {{ classPeoplePageStart }}-{{ classPeoplePageEnd }} de {{ filteredClassPeople.length }} pessoas vinculadas a este programa
+                </div>
+                <div class="people-page-controls">
+                  <button type="button" class="page-btn" :disabled="classPeoplePage === 1" @click="classPeoplePrevPage">Anterior</button>
+                  <div class="page-numbers">
+                    <button
+                      v-for="page in classPeopleVisiblePages"
+                      :key="page"
+                      type="button"
+                      class="page-btn page-btn-number"
+                      :class="{ active: page === classPeoplePage }"
+                      @click="classPeoplePage = page"
+                    >
+                      {{ page }}
+                    </button>
+                  </div>
+                  <button type="button" class="page-btn" :disabled="classPeoplePage === classPeopleTotalPages" @click="classPeopleNextPage">Próximo</button>
+                </div>
+              </div>
+            </template>
           </article>
         </section>
 
         <section v-else-if="activeTab === 'processo-seletivo'" class="stack">
+          <div class="metrics-row">
+            <article v-for="card in selectionProcessMetricsCards" :key="card.label" class="metric-card">
+              <span class="metric-label">{{ card.label }}</span>
+              <strong :class="card.valueClass">{{ card.value }}</strong>
+            </article>
+          </div>
+
           <article class="panel">
-            <h3>Processo Seletivo</h3>
-            <div class="metrics">
-              <div class="metric"><span>Total de inscritos</span><strong>{{ totalCandidates }}</strong></div>
-              <div class="metric"><span>Etapa atual</span><strong>{{ currentStageLabel }}</strong></div>
-              <div class="metric"><span>Status da turma</span><strong>{{ classStatusLabel }}</strong></div>
-              <div class="metric"><span>Etapas cadastradas</span><strong>{{ stages.length }}</strong></div>
+            <div class="panel-head">
+              <h3>Distribuição de Vagas por Cotas</h3>
+              <button type="button" class="btn-primary" @click="openUpdateSelectionModal">Atualizar dados</button>
+            </div>
+            <div class="quota-distribution">
+              <article v-for="item in selectionQuotaCards" :key="item.label" class="quota-item">
+                <strong>{{ item.value }}</strong>
+                <span>{{ item.label }}</span>
+              </article>
             </div>
           </article>
+
+          <div class="alert-banner alert-warning">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 9v4" />
+              <path d="M12 17h.01" />
+              <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" />
+            </svg>
+            <div class="alert-copy">
+              <strong>{{ selectionConflictSummary }}</strong>
+              <p>Isso indica possível conflito de inscrição</p>
+            </div>
+            <button type="button" class="alert-link" @click="toggleSelectionConflicts">{{ selectionConflictButtonLabel }}</button>
+          </div>
+
+          <article class="panel">
+            <div class="people-table-wrap">
+              <table class="people-table-v2">
+                <thead>
+                  <tr>
+                    <th>Nome</th>
+                    <th>CPF</th>
+                    <th>E-mail</th>
+                    <th>Gênero</th>
+                    <th>Idade</th>
+                    <th>Cota</th>
+                    <th>Cidade</th>
+                    <th>Formação</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="item in paginatedSelectionProcessRows" :key="item.id">
+                    <td class="name-cell">
+                      <span>{{ item.name }}</span>
+                      <span v-if="item.conflict" class="selection-conflict-icon" title="Conflito em outro programa">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M12 9v4" />
+                          <path d="M12 17h.01" />
+                          <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" />
+                        </svg>
+                      </span>
+                    </td>
+                    <td>{{ formatCPF(item.cpf) }}</td>
+                    <td>{{ item.email }}</td>
+                    <td>{{ item.gender }}</td>
+                    <td>{{ item.age }}</td>
+                    <td>
+                      <span v-if="item.quota !== '-'" class="quota-pill">{{ item.quota }}</span>
+                      <span v-else>-</span>
+                    </td>
+                    <td>{{ item.city }}</td>
+                    <td>{{ item.education }}</td>
+                    <td>
+                      <span class="status-pill" :class="item.statusClass">{{ item.status }}</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="people-pagination">
+              <div class="people-page-summary">
+                {{ selectionProcessPageSummary }}
+              </div>
+              <div class="people-page-controls">
+                <button type="button" class="page-btn" :disabled="selectionProcessPage === 1" @click="selectionProcessPrevPage">Anterior</button>
+                <div class="page-numbers">
+                  <button
+                    v-for="page in selectionProcessVisiblePages"
+                    :key="page"
+                    type="button"
+                    class="page-btn page-btn-number"
+                    :class="{ active: selectionProcessPage === page }"
+                    @click="selectionProcessPage = page"
+                  >
+                    {{ page }}
+                  </button>
+                </div>
+                <button type="button" class="page-btn" :disabled="selectionProcessPage === selectionProcessTotalPages" @click="selectionProcessNextPage">Próximo</button>
+              </div>
+            </div>
+          </article>
+
         </section>
 
         <section v-else class="stack">
@@ -223,6 +520,7 @@
       </main>
     </template>
 
+    <!-- Modal: Create Stage -->
     <div v-if="showCreateStageModal" class="modal-overlay" @click="closeCreateStageModal">
       <div class="modal" @click.stop>
         <h2>Criar Nova Etapa</h2>
@@ -241,6 +539,321 @@
           </button>
         </div>
         <div v-if="stageError" class="state-error">{{ stageError }}</div>
+      </div>
+    </div>
+
+    <!-- Modal: Update Selection Process -->
+    <div v-if="showUpdateSelectionModal" class="modal-overlay" @click="closeUpdateSelectionModal">
+      <div class="modal modal-large" @click.stop>
+        <div class="modal-header">
+          <h2>Atualizar dados do processo seletivo</h2>
+          <button type="button" class="modal-close" @click="closeUpdateSelectionModal">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+
+        <div v-if="!selectedUpdateAction" class="modal-content update-selection-home">
+          <p class="modal-subtitle">Escolha uma das ações abaixo para atualizar os dados do processo seletivo:</p>
+          
+          <div class="update-actions-grid">
+            <button type="button" class="update-action-card" @click="selectedUpdateAction = 'individual'">
+              <div class="card-icon icon-people">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+              </div>
+              <h4>Cadastrar aluno individualmente</h4>
+              <p>Adicione um novo candidato manualmente ao processo seletivo</p>
+            </button>
+
+            <button type="button" class="update-action-card" @click="selectedUpdateAction = 'import-inscricoes'">
+              <div class="card-icon icon-upload">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="17 8 12 3 7 8" />
+                  <line x1="12" y1="3" x2="12" y2="15" />
+                </svg>
+              </div>
+              <h4>Importar planilha de inscritos</h4>
+              <p>Envie uma planilha com a lista de candidatos inscritos</p>
+            </button>
+
+            <button type="button" class="update-action-card" @click="selectedUpdateAction = 'import-aprovados'">
+              <div class="card-icon icon-check">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                  <polyline points="22 4 12 14.01 9 11.01" />
+                </svg>
+              </div>
+              <h4>Importar planilha de aprovados</h4>
+              <p>Atualize os status dos candidatos aprovados via planilha</p>
+            </button>
+
+            <button type="button" class="update-action-card" @click="selectedUpdateAction = 'lista-espera'">
+              <div class="card-icon icon-clock">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+              </div>
+              <h4>Atualizar lista de espera</h4>
+              <p>Gerencie a lista de espera e convocações adicionais</p>
+            </button>
+          </div>
+
+          <div class="modal-actions modal-actions-footer">
+            <button type="button" class="btn-outline" @click="closeUpdateSelectionModal">Cancelar</button>
+          </div>
+        </div>
+
+        <!-- Individual Registration -->
+        <div v-else-if="selectedUpdateAction === 'individual'" class="modal-content">
+          <div class="modal-back">
+            <button type="button" @click="selectedUpdateAction = null" class="back-link">← Voltar</button>
+          </div>
+          <h3>Cadastrar aluno individualmente</h3>
+
+          <div class="form-grid">
+            <div class="form-row">
+              <label for="regName">Nome completo</label>
+              <input id="regName" v-model="newCandidateForm.name" type="text" class="field" placeholder="Digite o nome completo" />
+            </div>
+            <div class="form-row">
+              <label for="regCPF">CPF</label>
+              <input id="regCPF" v-model="newCandidateForm.cpf" type="text" class="field" placeholder="000.000.000-00" />
+            </div>
+            <div class="form-row">
+              <label for="regEmail">E-mail</label>
+              <input id="regEmail" v-model="newCandidateForm.email" type="email" class="field" placeholder="exemplo@email.com" />
+            </div>
+            <div class="form-row">
+              <label for="regGender">Gênero</label>
+              <select id="regGender" v-model="newCandidateForm.gender" class="field">
+                <option value="">Selecione</option>
+                <option value="Masculino">Masculino</option>
+                <option value="Feminino">Feminino</option>
+                <option value="Outro">Outro</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="regBirthDate">Data de nascimento</label>
+              <input id="regBirthDate" v-model="newCandidateForm.birthDate" type="text" class="field" placeholder="dd/mm/aaaa" />
+            </div>
+            <div class="form-row">
+              <label for="regCity">Cidade/UF</label>
+              <input id="regCity" v-model="newCandidateForm.city" type="text" class="field" placeholder="Maceió - AL" />
+            </div>
+            <div class="form-row">
+              <label for="regEducation">Tipo de formação</label>
+              <select id="regEducation" v-model="newCandidateForm.education" class="field">
+                <option value="">Selecione</option>
+                <option value="Graduação">Graduação</option>
+                <option value="Técnico">Técnico</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="regInstitution">Instituição</label>
+              <input id="regInstitution" v-model="newCandidateForm.institution" type="text" class="field" placeholder="Nome da instituição" />
+            </div>
+            <div class="form-row">
+              <label for="regQuota">Cota</label>
+              <select id="regQuota" v-model="newCandidateForm.quota" class="field">
+                <option value="">Selecione</option>
+                <option value="Ampla concorrência">Ampla concorrência</option>
+                <option value="PCD/Neurodivergente">PCD/Neurodivergente</option>
+                <option value="Negro/Pardo">Negro/Pardo</option>
+                <option value="Mulheres">Mulheres</option>
+                <option value="45+">45+</option>
+              </select>
+            </div>
+            <div class="form-row">
+              <label for="regStatus">Status inicial</label>
+              <select id="regStatus" v-model="newCandidateForm.status" class="field">
+                <option value="">Selecione</option>
+                <option value="Inscrito">Inscrito</option>
+                <option value="Aprovado">Aprovado</option>
+                <option value="Lista de espera">Lista de espera</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="info-box info-blue">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="16" x2="12" y2="12" />
+              <line x1="12" y1="8" x2="12.01" y2="8" />
+            </svg>
+            <div>
+              <strong>Validação automática</strong>
+              <p>O sistema verificará automaticamente se este CPF já está vinculado a outro programa vigente.</p>
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-outline" @click="selectedUpdateAction = null">Cancelar</button>
+            <button type="button" class="btn-primary" @click="registerCandidateIndividually">Cadastrar aluno</button>
+          </div>
+        </div>
+
+        <!-- Import Inscricoes -->
+        <div v-else-if="selectedUpdateAction === 'import-inscricoes'" class="modal-content import-inscricoes-modal">
+          <div class="modal-back">
+            <button type="button" @click="selectedUpdateAction = null" class="back-link">← Voltar</button>
+          </div>
+          <h3>Importar planilha de inscritos</h3>
+          <p class="modal-desc">Envie uma planilha Excel ou CSV com os dados dos candidatos inscritos. A planilha deve conter as seguintes colunas:</p>
+
+          <div class="columns-grid">
+            <div class="column-item">Nome completo</div>
+            <div class="column-item">CPF</div>
+            <div class="column-item">E-mail</div>
+            <div class="column-item">Gênero</div>
+            <div class="column-item">Data de nascimento</div>
+            <div class="column-item">Cidade/UF</div>
+            <div class="column-item">Tipo de formação</div>
+            <div class="column-item">Instituição</div>
+            <div class="column-item">Cota</div>
+          </div>
+
+          <div class="file-upload-area">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="17 8 12 3 7 8" />
+              <line x1="12" y1="3" x2="12" y2="15" />
+            </svg>
+            <p>Clique para selecionar ou arraste o arquivo</p>
+            <small>Formatos aceitos: .xlsx, .xls, .csv (máx. 10MB)</small>
+          </div>
+
+          <div class="info-box info-yellow">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3.05h16.94a2 2 0 0 0 1.71-3.05L13.71 3.86a2 2 0 0 0-3.42 0z" />
+              <line x1="12" y1="9" x2="12" y2="13" />
+              <line x1="12" y1="17" x2="12.01" y2="17" />
+            </svg>
+            <div>
+              <strong>Validação de conflitos</strong>
+              <p>Após o envio, o sistema verificará automaticamente se algum CPF já está vinculado a outro programa vigente e sinalizará os conflitos.</p>
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-outline" @click="selectedUpdateAction = null">Cancelar</button>
+            <button type="button" class="btn-primary">Importar planilha</button>
+          </div>
+        </div>
+
+        <!-- Import Aprovados -->
+        <div v-else-if="selectedUpdateAction === 'import-aprovados'" class="modal-content import-aprovados-modal">
+          <div class="modal-back">
+            <button type="button" @click="selectedUpdateAction = null" class="back-link">← Voltar</button>
+          </div>
+          <h3>Importar planilha de aprovados</h3>
+          <p class="modal-desc">Envie uma planilha com a lista final de candidatos aprovados. O sistema atualizará automaticamente o status de cada candidato.</p>
+
+          <div class="columns-grid">
+            <div class="columns-grid-title">Colunas necessárias:</div>
+            <div class="column-item"><strong>CPF</strong></div>
+            <div class="column-item"><strong>Status</strong> (Aprovado / Lista de espera)</div>
+            <div class="column-item"><strong>Nome completo</strong></div>
+          </div>
+
+          <div class="file-upload-area">
+            <FileCheck :size="40" :stroke-width="2" />
+            <p>Clique para selecionar ou arraste o arquivo</p>
+            <small>Formatos aceitos: .xlsx, .xls, .csv (máx. 10MB)</small>
+          </div>
+
+          <div class="info-box info-green">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+              <polyline points="22 4 12 14.01 9 11.01" />
+            </svg>
+            <div>
+              <strong>Atualização automática de status</strong>
+              <p>Candidatos listados na planilha terão seu status atualizado para "Aprovado" ou "Lista de espera". Os demais candidatos serão marcados como "Não selecionado".</p>
+            </div>
+          </div>
+
+          <div class="info-box info-yellow">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3.05h16.94a2 2 0 0 0 1.71-3.05L13.71 3.86a2 2 0 0 0-3.42 0z" />
+              <line x1="12" y1="9" x2="12" y2="13" />
+              <line x1="12" y1="17" x2="12.01" y2="17" />
+            </svg>
+            <div>
+              <strong>Verificação de conflitos</strong>
+              <p>O sistema verificará se algum aprovado já está vinculado a outro programa vigente e sinalizará esses casos para análise manual.</p>
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-outline" @click="selectedUpdateAction = null">Cancelar</button>
+            <button type="button" class="btn-primary">Importar e atualizar</button>
+          </div>
+        </div>
+
+        <!-- Lista de Espera -->
+        <div v-else-if="selectedUpdateAction === 'lista-espera'" class="modal-content">
+          <div class="modal-back">
+            <button type="button" @click="selectedUpdateAction = null" class="back-link">← Voltar</button>
+          </div>
+          <h3>Atualizar lista de espera</h3>
+
+          <div class="waitlist-stats">
+            <div class="stat-item">
+              <span>Candidatos em espera</span>
+              <strong>48</strong>
+            </div>
+            <div class="stat-item">
+              <span>Vagas disponíveis</span>
+              <strong class="teal-strong">250</strong>
+            </div>
+            <div class="stat-item">
+              <span>Vagas preenchidas</span>
+              <strong>250</strong>
+            </div>
+          </div>
+
+          <p class="modal-desc">Gerencie convocações adicionais para preencher vagas disponíveis a partir da lista de espera.</p>
+
+          <div class="form-row">
+            <label for="convokeCount">Quantidade de convocações</label>
+            <input id="convokeCount" v-model="waitlistForm.convokeCount" type="number" class="field" placeholder="Digite a quantidade" />
+            <small>Máximo: 48 candidatos disponíveis</small>
+          </div>
+
+          <div class="form-row">
+            <label for="convokeDate">Prazo para confirmação</label>
+            <input id="convokeDate" v-model="waitlistForm.convokeDate" type="text" class="field" placeholder="dd/mm/aaaa" />
+          </div>
+
+          <div class="form-row">
+            <label for="convokeNotes">Observações (opcional)</label>
+            <textarea id="convokeNotes" v-model="waitlistForm.notes" class="field" rows="3" placeholder="Adicione informações relevantes sobre esta convocação..." />
+          </div>
+
+          <div class="info-box info-blue">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="16" x2="12" y2="12" />
+              <line x1="12" y1="8" x2="12.01" y2="8" />
+            </svg>
+            <div>
+              <strong>Convocação automática</strong>
+              <p>Os candidatos convocados receberão notificação por e-mail e terão seu status atualizado para "Em análise" até a confirmação.</p>
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-outline" @click="selectedUpdateAction = null">Cancelar</button>
+            <button type="button" class="btn-primary">Convocar candidatos</button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -268,13 +881,142 @@
 </template>
 
 <script>
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
+import { FileCheck } from 'lucide-vue-next';
 import { useRoute, useRouter } from 'vue-router';
 import { classService } from '@/services/classService';
+import { enrollmentService } from '@/services/enrollmentService';
 import { stageService } from '@/services/stageService';
 import ConfirmDialog from '@/components/ConfirmDialog.vue';
 
 const cycle = ['Inscrição', 'Seleção', 'Nivelamento', 'Imersão', 'Encerrado'];
+const overviewCycle = ['Inscrição', 'Processo Seletivo', 'Nivelamento', 'Prova', 'Imersão', 'Avaliação Final', 'Encerramento'];
+const overviewStageCards = [
+  {
+    title: 'Processo Seletivo',
+    status: 'Concluído',
+    statusClass: 'pill-green',
+    items: [
+      { label: 'Inscritos', value: '612' },
+      { label: 'Vagas nivelamento', value: '250' },
+      { label: 'Pendências doc.', value: '22', valueClass: 'warning-strong' },
+      { label: 'Conflitos', value: '3', valueClass: 'warning-strong' },
+    ],
+  },
+  {
+    title: 'Nivelamento',
+    status: 'Concluído',
+    statusClass: 'pill-green',
+    items: [
+      { label: 'Selecionados', value: '250' },
+      { label: 'Ativos', value: '229' },
+      { label: 'Cursos obrigatórios', value: '6' },
+      { label: 'Prova final', value: '22/10/2025' },
+    ],
+  },
+  {
+    title: 'Imersão',
+    status: 'Em andamento',
+    statusClass: 'pill-teal',
+    items: [
+      { label: 'Aprovados', value: '50' },
+      { label: 'Alunos ativos', value: '44' },
+      { label: 'Grupos formados', value: '10' },
+      { label: 'Avaliação Final', value: '30/11/2025' },
+    ],
+  },
+];
+const overviewTimeline = [
+  { label: 'Período de Inscrição', date: '01/02 - 28/02', status: 'Concluído' },
+  { label: 'Divulgação Resultado Preliminar', date: '05/03', status: 'Concluído' },
+  { label: 'Período de Recursos', date: '06/03 - 10/03', status: 'Concluído' },
+  { label: 'Resultado Final', date: '15/03', status: 'Concluído' },
+  { label: 'Confirmação de Participação', date: '16/03 - 20/03', status: 'Concluído' },
+  { label: 'Nivelamento', date: '21/03 - 30/04', status: 'Concluído' },
+];
+const quotaDistribution = [
+  { label: 'Ampla Concorrência', value: 45, color: '#3b82f6' },
+  { label: 'Mulheres', value: 25, color: '#a855f7' },
+  { label: 'Negros/Pardos', value: 15, color: '#f59e0b' },
+  { label: 'PCD/Neurodivergente', value: 10, color: '#14b8a6' },
+  { label: '45+', value: 5, color: '#64748b' },
+];
+const genderDistribution = [
+  { label: 'Feminino', value: 42 },
+  { label: 'Masculino', value: 56 },
+  { label: 'Outro', value: 1 },
+  { label: 'Não inf.', value: 1 },
+];
+const cityDistribution = [
+  { label: 'Maceió - AL', value: 32 },
+  { label: 'Arapiraca - AL', value: 8 },
+  { label: 'Rio Largo - AL', value: 5 },
+  { label: 'Outros municípios', value: 5 },
+];
+const educationDistribution = [
+  { label: 'Graduação em andamento', value: 28 },
+  { label: 'Graduação concluída', value: 15 },
+  { label: 'Curso técnico', value: 5 },
+  { label: 'Outros cursos', value: 2 },
+];
+const overviewUpdates = [
+  {
+    action: 'Planilha de notas da prova importada',
+    author: 'Ana Souza',
+    date: '24/10/2025 14:32',
+    status: 'Concluído',
+    statusClass: 'pill-green',
+    dotClass: 'dot-green',
+  },
+  {
+    action: 'Dados dos cursos atualizados',
+    author: 'Carlos Lima',
+    date: '21/10/2025 09:18',
+    status: 'Concluído',
+    statusClass: 'pill-green',
+    dotClass: 'dot-green',
+  },
+  {
+    action: 'Lista de aprovados para imersão atualizada',
+    author: 'Mariana Torres',
+    date: '30/10/2025 16:05',
+    status: 'Concluído',
+    statusClass: 'pill-green',
+    dotClass: 'dot-green',
+  },
+  {
+    action: 'Contratos pendentes identificados',
+    author: 'Sistema',
+    date: '05/11/2025 10:44',
+    status: 'Atenção',
+    statusClass: 'pill-amber',
+    dotClass: 'dot-amber',
+  },
+  {
+    action: 'Notas da avaliação parcial aguardando envio',
+    author: 'Sistema',
+    date: '25/02/2026 08:20',
+    status: 'Pendente',
+    statusClass: 'pill-slate',
+    dotClass: 'dot-slate',
+  },
+];
+const overviewTopCards = {
+  nivelamentoSelecionados: 250,
+  nivelamentoAtivos: 229,
+  imersaoAprovados: 50,
+  imersaoGrupos: 10,
+  alertasCriticos: 7,
+  alertasRisco: 3,
+};
+
+const selectionQuotaLabels = [
+  'Ampla Concorrência',
+  'PCD/Neurodivergente',
+  'Negro/Pardo',
+  'Mulheres',
+  '45+',
+];
 
 export default {
   name: 'ClassDetailsView',
@@ -285,8 +1027,13 @@ export default {
     const classData = ref({});
     const stages = ref([]);
     const stageCandidatesCount = ref({});
+    const classEnrollments = ref([]);
+    const allEnrollments = ref([]);
+    const allClasses = ref([]);
     const loading = ref(false);
+    const peopleLoading = ref(false);
     const error = ref(null);
+    const peopleError = ref(null);
     const activeTab = ref('visao-geral');
     const tabs = [
       { id: 'visao-geral', label: 'Visão Geral' },
@@ -304,15 +1051,99 @@ export default {
     const confirmDialog = ref();
     const newStage = ref({ name: '', description: '' });
     const editingStage = ref({ id: null, name: '', description: '' });
+    const showUpdateSelectionModal = ref(false);
+    const selectedUpdateAction = ref(null);
+    const newCandidateForm = ref({
+      name: '',
+      cpf: '',
+      email: '',
+      gender: '',
+      birthDate: '',
+      city: '',
+      education: '',
+      institution: '',
+      quota: '',
+      status: '',
+    });
+    const waitlistForm = ref({
+      convokeCount: '',
+      convokeDate: '',
+      notes: '',
+    });
 
     const programId = computed(() => route.params.programId);
     const classId = computed(() => route.params.classId);
+    const peopleSearch = ref('');
+    const peopleFilterStage = ref('');
+    const peopleFilterStatus = ref('');
+    const peopleFilterQuota = ref('');
+    const peopleFilterCity = ref('');
+    const peopleFilterGender = ref('');
+    const classPeoplePage = ref(1);
+    const classPeoplePageSize = 5;
+    const selectionProcessPage = ref(1);
+    const selectionProcessPageSize = 6;
+    const selectionConflictOnly = ref(false);
 
     const normalizeText = (value) =>
       String(value ?? '')
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '')
         .toLowerCase();
+
+    const formatEducation = (value) => {
+      const raw = String(value ?? '').trim();
+      if (!raw) return '-';
+      return raw;
+    };
+
+    const normalizeQuotaLabel = (value) => {
+      const raw = String(value ?? '').trim();
+      const normalized = normalizeText(raw);
+      if (!normalized || raw === '-') return '-';
+      if (normalized.includes('ampla')) return 'Ampla Concorrência';
+      if (normalized.includes('pcd') || normalized.includes('neuro')) return 'PCD/Neurodivergente';
+      if (normalized.includes('negro') || normalized.includes('pardo')) return 'Negro/Pardo';
+      if (normalized.includes('mulher')) return 'Mulheres';
+      if (normalized.includes('45')) return '45+';
+      return raw;
+    };
+
+    const parseDateValue = (value) => {
+      if (!value) return null;
+      const date = new Date(value);
+      return Number.isNaN(date.getTime()) ? null : date;
+    };
+
+    const firstAvailableDate = (...values) => values.map(parseDateValue).find(Boolean) || null;
+
+    const getClassDateRange = (classModel) => ({
+      start: firstAvailableDate(
+        classModel?.applicationStartDate,
+        classModel?.startDate,
+        classModel?.levelingStartDate,
+        classModel?.immersionStartDate
+      ),
+      end: firstAvailableDate(
+        classModel?.certificateIssueDate,
+        classModel?.endDate,
+        classModel?.finalEvaluationDate,
+        classModel?.immersionEndDate,
+        classModel?.levelingEndDate,
+        classModel?.applicationEndDate
+      ),
+    });
+
+    const rangesOverlap = (a, b) => {
+      if (!a?.start || !a?.end || !b?.start || !b?.end) return false;
+      return a.end.getTime() >= b.start.getTime() && b.end.getTime() >= a.start.getTime();
+    };
+
+    const isConflictRelevantStatus = (status) => {
+      const normalized = normalizeText(status);
+      if (!normalized) return true;
+      return !normalized.includes('cancel') && !normalized.includes('inativ') && !normalized.includes('deslig') && !normalized.includes('nao-realiz');
+    };
 
     const mapCycle = (value) => {
       const normalized = normalizeText(value);
@@ -355,6 +1186,40 @@ export default {
     const nextStageLabel = computed(() => cycle[currentStageIndex.value + 1] || 'Ciclo concluído');
     const progressPct = computed(() => Math.round((currentStageIndex.value / (cycle.length - 1)) * 100));
     const totalCandidates = computed(() => Object.values(stageCandidatesCount.value || {}).reduce((sum, item) => sum + Number(item || 0), 0));
+    const classModelLabel = computed(() => classData.value?.model || classData.value?.modality || 'Híbrido');
+    const classWorkloadLabel = computed(() => {
+      const workload = classData.value?.workload || classData.value?.totalHours;
+      return workload ? `${workload}h` : '480h';
+    });
+    const classPeriodLabel = computed(() => {
+      if (!classData.value?.startDate || !classData.value?.endDate) return 'Ago/2025 → Jun/2026';
+      const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+      const start = new Date(classData.value.startDate);
+      const end = new Date(classData.value.endDate);
+      return `${months[start.getMonth()]}/${start.getFullYear()} → ${months[end.getMonth()]}/${end.getFullYear()}`;
+    });
+    const partnerLabel = computed(
+      () =>
+        classData.value?.partnerInstitution?.name ||
+        classData.value?.program?.partnerInstitution?.name ||
+        classData.value?.program?.partnerName ||
+        classData.value?.program?.institutionName ||
+        'EASY/UFAL'
+    );
+    const currentStagePeriod = computed(() => classData.value?.stagePeriod || '17/11/2025 a 18/05/2026');
+    const currentStageMilestone = computed(() => classData.value?.nextMilestone || 'Avaliação parcial');
+    const currentStageMilestoneDate = computed(() => classData.value?.nextMilestoneDate || '03/03/2026');
+    const overviewCurrentCycleIndex = computed(() => {
+      const normalized = normalizeText(classData.value?.currentStage || classData.value?.status || '');
+      if (normalized.includes('imersa')) return 4;
+      if (normalized.includes('nivel')) return 2;
+      if (normalized.includes('sele')) return 1;
+      if (normalized.includes('prova')) return 3;
+      if (normalized.includes('encer')) return 6;
+      if (normalized.includes('avali')) return 5;
+      return 0;
+    });
+    const overviewProgressPct = computed(() => Math.round((overviewCurrentCycleIndex.value / (overviewCycle.length - 1)) * 100));
 
     const stageBucket = computed(() => {
       const summary = { selecao: 0, nivelamento: 0, imersao: 0 };
@@ -367,6 +1232,338 @@ export default {
       return summary;
     });
 
+    const formatCPF = (cpf) => {
+      if (!cpf) return '-';
+      const digits = String(cpf).replace(/\D/g, '');
+      if (digits.length !== 11) return cpf;
+      return digits.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+    };
+
+    const formatGender = (value) => {
+      const raw = String(value || '').trim();
+      const normalized = normalizeText(raw);
+      if (!normalized) return '-';
+      if (['m', 'male', 'masculino'].includes(normalized)) return 'Masculino';
+      if (['f', 'female', 'feminino'].includes(normalized)) return 'Feminino';
+      if (['outro', 'other'].includes(normalized)) return 'Outro';
+      return raw.charAt(0).toUpperCase() + raw.slice(1).toLowerCase();
+    };
+
+    const formatAge = (birthDate) => {
+      if (!birthDate) return '-';
+      const date = new Date(birthDate);
+      if (Number.isNaN(date.getTime())) return '-';
+      const today = new Date();
+      let age = today.getFullYear() - date.getFullYear();
+      const monthDiff = today.getMonth() - date.getMonth();
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < date.getDate())) age -= 1;
+      return age >= 0 ? String(age) : '-';
+    };
+
+    const formatCity = (person) => {
+      const city = person?.city || person?.cidade || '';
+      const state = person?.state || person?.estado || '';
+      const parts = [city, state].filter((item) => String(item || '').trim());
+      if (!parts.length) return '-';
+      if (parts.length === 2) return `${parts[0]} - ${parts[1]}`;
+      return parts[0];
+    };
+
+    const normalizeEnrollmentStatus = (status) => {
+      const normalized = normalizeText(status);
+      if (!normalized) return { label: 'Ativa', className: 'status-active' };
+      if (normalized.includes('cancel') || normalized.includes('inativ') || normalized.includes('deslig') || normalized.includes('nao-realiz')) {
+        return { label: 'Inativa', className: 'status-inactive' };
+      }
+      if (normalized.includes('pend')) return { label: 'Pendente', className: 'status-pending' };
+      if (normalized.includes('conclu') || normalized.includes('realizado') || normalized.includes('finaliz')) {
+        return { label: 'Concluída', className: 'status-done' };
+      }
+      return { label: 'Ativa', className: 'status-active' };
+    };
+
+    const classPeopleRows = computed(() => {
+      const byPersonId = new Map();
+      for (const enrollment of classEnrollments.value || []) {
+        const person = enrollment?.people || {};
+        if (!person?.id) continue;
+        const existing = byPersonId.get(person.id);
+        const currentTime = new Date(enrollment?.updatedAt || enrollment?.enrollmentDate || enrollment?.createdAt || 0).getTime();
+        const existingTime = existing
+          ? new Date(existing.enrollment?.updatedAt || existing.enrollment?.enrollmentDate || existing.enrollment?.createdAt || 0).getTime()
+          : -1;
+        if (!existing || currentTime > existingTime) byPersonId.set(person.id, { person, enrollment });
+      }
+
+      return Array.from(byPersonId.values())
+        .map(({ person, enrollment }) => {
+          const status = normalizeEnrollmentStatus(enrollment?.status);
+          const quota = normalizeQuotaLabel(person?.quotaCategory || person?.cota || person?.quota || '-');
+          return {
+            id: person.id,
+            name: person?.name || '-',
+            cpf: person?.cpf || '',
+            email: person?.email || '-',
+            gender: formatGender(person?.gender),
+            age: formatAge(person?.birthDate),
+            quota: quota || '-',
+            city: formatCity(person),
+            educationLevel: person?.educationLevel || person?.education || '-',
+            stage: currentStageLabel.value || '-',
+            status: status.label,
+            statusClass: status.className,
+          };
+        })
+        .sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
+    });
+
+    const classDateRange = computed(() => ({
+      start: firstAvailableDate(
+        classData.value?.applicationStartDate,
+        classData.value?.startDate,
+        classData.value?.levelingStartDate,
+        classData.value?.immersionStartDate
+      ),
+      end: firstAvailableDate(
+        classData.value?.certificateIssueDate,
+        classData.value?.endDate,
+        classData.value?.finalEvaluationDate,
+        classData.value?.immersionEndDate,
+        classData.value?.levelingEndDate,
+        classData.value?.applicationEndDate
+      ),
+    }));
+
+    const allClassesById = computed(() =>
+      new Map((allClasses.value || []).map((item) => [Number(item.id), item]))
+    );
+
+    const selectionConflictPeopleIds = computed(() => {
+      const conflicts = new Set();
+      const currentClassId = Number(classId.value);
+      const currentRange = classDateRange.value;
+
+      if (!currentRange.start || !currentRange.end) {
+        return conflicts;
+      }
+
+      for (const row of classPeopleRows.value || []) {
+        const enrollments = (allEnrollments.value || []).filter((enrollment) => {
+          const personId = Number(enrollment?.people?.id);
+          const otherClassId = Number(enrollment?.classModel?.id);
+          return personId === Number(row.id) && otherClassId !== currentClassId;
+        });
+
+        const hasConflict = enrollments.some((enrollment) => {
+          if (!isConflictRelevantStatus(enrollment?.status)) {
+            return false;
+          }
+
+          const otherClass = allClassesById.value.get(Number(enrollment?.classModel?.id));
+          const otherRange = getClassDateRange(otherClass);
+          return rangesOverlap(currentRange, otherRange);
+        });
+
+        if (hasConflict) {
+          conflicts.add(row.id);
+        }
+      }
+
+      return conflicts;
+    });
+
+    const selectionProcessBaseRows = computed(() => {
+      const totalRows = classPeopleRows.value.length;
+      const conflictCount = selectionConflictPeopleIds.value.size;
+      const eligibleRows = Math.max(totalRows - conflictCount, 0);
+      const approvedLimit = Math.min(Number(classData.value?.defaultLevelingCapacity ?? 250), eligibleRows);
+      const waitlistLimit = Math.min(Math.max(Math.round(totalRows * 0.08), 0), Math.max(eligibleRows - approvedLimit, 0));
+      const inscriptionLimit = Math.min(Math.max(Math.round(totalRows * 0.12), 0), Math.max(eligibleRows - approvedLimit - waitlistLimit, 0));
+
+      let nonConflictIndex = 0;
+
+      return classPeopleRows.value.map((row) => {
+        const conflict = selectionConflictPeopleIds.value.has(row.id);
+        let status = 'Não selecionado';
+        let statusClass = 'status-inactive';
+
+        if (conflict) {
+          status = 'Conflito em outro programa';
+          statusClass = 'status-inactive';
+        } else if (nonConflictIndex < approvedLimit) {
+          status = 'Aprovado';
+          statusClass = 'status-active';
+        } else if (nonConflictIndex < approvedLimit + waitlistLimit) {
+          status = 'Lista de espera';
+          statusClass = 'status-pending';
+        } else if (nonConflictIndex < approvedLimit + waitlistLimit + inscriptionLimit) {
+          status = 'Inscrito';
+          statusClass = 'status-pending';
+        }
+
+        if (!conflict) {
+          nonConflictIndex += 1;
+        }
+
+        return {
+          ...row,
+          education: formatEducation(row.educationLevel),
+          conflict,
+          status,
+          statusClass,
+        };
+      });
+    });
+
+    const selectionProcessRows = computed(() => {
+      if (!selectionConflictOnly.value) {
+        return selectionProcessBaseRows.value;
+      }
+      return selectionProcessBaseRows.value.filter((row) => row.conflict);
+    });
+
+    const selectionQuotaCards = computed(() => {
+      const rows = selectionProcessBaseRows.value;
+      const counts = selectionQuotaLabels.reduce((acc, label) => {
+        acc[label] = 0;
+        return acc;
+      }, {});
+
+      rows.forEach((row) => {
+        const label = normalizeQuotaLabel(row.quota);
+        if (Object.prototype.hasOwnProperty.call(counts, label)) {
+          counts[label] += 1;
+        }
+      });
+
+      return selectionQuotaLabels.map((label) => ({
+        label,
+        value: counts[label] || 0,
+      }));
+    });
+
+    const selectionConflictCount = computed(() => selectionProcessBaseRows.value.filter((row) => row.conflict).length);
+    const selectionWaitlistCount = computed(() => selectionProcessBaseRows.value.filter((row) => row.status === 'Lista de espera').length);
+    const selectionProcessTotalPages = computed(() => {
+      const total = Math.ceil(selectionProcessRows.value.length / selectionProcessPageSize);
+      return Math.max(total, 1);
+    });
+    const paginatedSelectionProcessRows = computed(() => {
+      const start = (selectionProcessPage.value - 1) * selectionProcessPageSize;
+      return selectionProcessRows.value.slice(start, start + selectionProcessPageSize);
+    });
+    const selectionProcessPageStart = computed(() => {
+      if (!selectionProcessRows.value.length) return 0;
+      return (selectionProcessPage.value - 1) * selectionProcessPageSize + 1;
+    });
+    const selectionProcessPageEnd = computed(() =>
+      Math.min(selectionProcessPage.value * selectionProcessPageSize, selectionProcessRows.value.length)
+    );
+    const selectionProcessVisiblePages = computed(() => {
+      const total = selectionProcessTotalPages.value;
+      const pages = [];
+      const start = Math.max(1, selectionProcessPage.value - 1);
+      const end = Math.min(total, start + 2);
+      for (let i = start; i <= end; i += 1) pages.push(i);
+      if (pages.length < 3) {
+        const first = Math.max(1, end - 2);
+        pages.length = 0;
+        for (let i = first; i <= end; i += 1) pages.push(i);
+      }
+      return pages;
+    });
+    const selectionProcessMetricsCards = computed(() => [
+      { label: 'Total de inscritos', value: selectionProcessBaseRows.value.length, valueClass: '' },
+      {
+        label: 'Vagas para nivelamento',
+        value: Number(classData.value?.defaultLevelingCapacity ?? 250),
+        valueClass: 'teal-strong',
+      },
+      {
+        label: 'Data final de inscrição',
+        value: formatDate(classData.value?.applicationEndDate || classData.value?.endDate),
+        valueClass: '',
+      },
+      {
+        label: 'Lista de espera',
+        value: selectionWaitlistCount.value,
+        valueClass: 'warning-strong',
+      },
+    ]);
+    const selectionConflictSummary = computed(() => {
+      const count = selectionConflictCount.value;
+      return `${count} ${count === 1 ? 'aluno encontrado' : 'alunos encontrados'} em outro programa vigente`;
+    });
+    const selectionConflictButtonLabel = computed(() => (selectionConflictOnly.value ? 'Ver todos →' : 'Ver conflitos →'));
+    const selectionProcessPageSummary = computed(() => {
+      const total = selectionProcessRows.value.length;
+      if (!total) return 'Nenhum inscrito encontrado';
+      return `Mostrando ${selectionProcessPageStart.value}-${selectionProcessPageEnd.value} de ${total} inscritos`;
+    });
+
+    const openUpdateSelectionModal = () => {
+      selectedUpdateAction.value = null;
+      showUpdateSelectionModal.value = true;
+    };
+
+    const closeUpdateSelectionModal = () => {
+      showUpdateSelectionModal.value = false;
+      selectedUpdateAction.value = null;
+    };
+
+    const peopleStageOptions = computed(() => [...new Set(classPeopleRows.value.map((row) => row.stage).filter((item) => item && item !== '-'))]);
+    const peopleStatusOptions = computed(() => [...new Set(classPeopleRows.value.map((row) => row.status).filter((item) => item && item !== '-'))]);
+    const peopleQuotaOptions = computed(() => [...new Set(classPeopleRows.value.map((row) => row.quota).filter((item) => item && item !== '-'))]);
+    const peopleCityOptions = computed(() => [...new Set(classPeopleRows.value.map((row) => row.city).filter((item) => item && item !== '-'))]);
+    const peopleGenderOptions = computed(() => [...new Set(classPeopleRows.value.map((row) => row.gender).filter((item) => item && item !== '-'))]);
+
+    const filteredClassPeople = computed(() => {
+      const term = normalizeText(peopleSearch.value);
+      return classPeopleRows.value.filter((row) => {
+        if (term) {
+          const searchMatch = [row.name, row.cpf, row.email].some((field) => normalizeText(field).includes(term));
+          if (!searchMatch) return false;
+        }
+        if (peopleFilterStage.value && row.stage !== peopleFilterStage.value) return false;
+        if (peopleFilterStatus.value && row.status !== peopleFilterStatus.value) return false;
+        if (peopleFilterQuota.value && row.quota !== peopleFilterQuota.value) return false;
+        if (peopleFilterCity.value && row.city !== peopleFilterCity.value) return false;
+        if (peopleFilterGender.value && row.gender !== peopleFilterGender.value) return false;
+        return true;
+      });
+    });
+
+    const classPeopleTotalPages = computed(() => {
+      const total = Math.ceil(filteredClassPeople.value.length / classPeoplePageSize);
+      return Math.max(total, 1);
+    });
+
+    const paginatedClassPeople = computed(() => {
+      const start = (classPeoplePage.value - 1) * classPeoplePageSize;
+      return filteredClassPeople.value.slice(start, start + classPeoplePageSize);
+    });
+
+    const classPeoplePageStart = computed(() => {
+      if (!filteredClassPeople.value.length) return 0;
+      return (classPeoplePage.value - 1) * classPeoplePageSize + 1;
+    });
+
+    const classPeoplePageEnd = computed(() => Math.min(classPeoplePage.value * classPeoplePageSize, filteredClassPeople.value.length));
+
+    const classPeopleVisiblePages = computed(() => {
+      const total = classPeopleTotalPages.value;
+      const pages = [];
+      const start = Math.max(1, classPeoplePage.value - 1);
+      const end = Math.min(total, start + 2);
+      for (let i = start; i <= end; i += 1) pages.push(i);
+      if (pages.length < 3) {
+        const first = Math.max(1, end - 2);
+        pages.length = 0;
+        for (let i = first; i <= end; i += 1) pages.push(i);
+      }
+      return pages;
+    });
+
     const loadStages = async () => {
       try {
         stages.value = await stageService.getByClassId(classId.value);
@@ -376,12 +1573,41 @@ export default {
       }
     };
 
+    const loadClassPeople = async () => {
+      peopleLoading.value = true;
+      peopleError.value = null;
+      try {
+        classEnrollments.value = await enrollmentService.getByClassId(classId.value);
+      } catch (err) {
+        peopleError.value = `Erro ao carregar pessoas da turma: ${err.response?.data?.message || err.message}`;
+        classEnrollments.value = [];
+      } finally {
+        peopleLoading.value = false;
+      }
+    };
+
+    const loadSelectionProcessContext = async () => {
+      try {
+        const [enrollments, classes] = await Promise.all([
+          enrollmentService.getAll(),
+          classService.getAll(),
+        ]);
+
+        allEnrollments.value = enrollments || [];
+        allClasses.value = classes || [];
+      } catch (err) {
+        console.error('Erro ao carregar contexto do processo seletivo:', err);
+        allEnrollments.value = [];
+        allClasses.value = [];
+      }
+    };
+
     const loadClassDetails = async () => {
       loading.value = true;
       error.value = null;
       try {
         classData.value = await classService.getById(classId.value);
-        await loadStages();
+        await Promise.all([loadStages(), loadClassPeople(), loadSelectionProcessContext()]);
       } catch (err) {
         error.value = `Erro ao carregar detalhes da turma: ${err.response?.data?.message || err.message}`;
       } finally {
@@ -470,11 +1696,48 @@ export default {
       router.push({ path: '/people', query: { programa: `${programName} - Turma ${classCode}` } });
     };
 
+    const viewPerson = (person) => {
+      if (!person?.id) return;
+      router.push(`/people/${person.id}`);
+    };
+
+    const classPeoplePrevPage = () => {
+      if (classPeoplePage.value <= 1) return;
+      classPeoplePage.value -= 1;
+    };
+
+    const classPeopleNextPage = () => {
+      if (classPeoplePage.value >= classPeopleTotalPages.value) return;
+      classPeoplePage.value += 1;
+    };
+
+    const selectionProcessPrevPage = () => {
+      if (selectionProcessPage.value <= 1) return;
+      selectionProcessPage.value -= 1;
+    };
+
+    const selectionProcessNextPage = () => {
+      if (selectionProcessPage.value >= selectionProcessTotalPages.value) return;
+      selectionProcessPage.value += 1;
+    };
+
+    const toggleSelectionConflicts = () => {
+      selectionConflictOnly.value = !selectionConflictOnly.value;
+    };
+
     const goToClassCourses = () => {
       router.push({
         name: 'ClassCourses',
         params: { programId: programId.value, classId: classId.value },
       });
+    };
+
+    const editProgram = () => {
+      if (!programId.value) {
+        router.push({ path: '/programs/register' });
+        return;
+      }
+      router.push({ path: '/programs/register', query: { edit: String(programId.value) } });
     };
 
     const closeCreateStageModal = () => {
@@ -500,9 +1763,36 @@ export default {
       loadClassDetails();
     });
 
+    watch(
+      [peopleSearch, peopleFilterStage, peopleFilterStatus, peopleFilterQuota, peopleFilterCity, peopleFilterGender],
+      () => {
+        classPeoplePage.value = 1;
+      }
+    );
+
+    watch([selectionConflictOnly, selectionProcessRows], () => {
+      selectionProcessPage.value = 1;
+    });
+
+    watch(classPeopleTotalPages, (total) => {
+      if (classPeoplePage.value > total) classPeoplePage.value = total;
+    });
+
+    watch(selectionProcessTotalPages, (total) => {
+      if (selectionProcessPage.value > total) selectionProcessPage.value = total;
+    });
+
     return {
       activeTab,
       classData,
+      cityDistribution,
+      classPeopleNextPage,
+      classPeoplePage,
+      classPeoplePageEnd,
+      classPeoplePageStart,
+      classPeoplePrevPage,
+      classPeopleTotalPages,
+      classPeopleVisiblePages,
       classStatusLabel,
       closeCreateStageModal,
       closeEditStageModal,
@@ -511,24 +1801,79 @@ export default {
       creatingStage,
       currentStageIndex,
       currentStageLabel,
+      currentStageMilestone,
+      currentStageMilestoneDate,
+      currentStagePeriod,
       cycle,
       deleteStage,
       displayStageName,
+      editProgram,
+      educationDistribution,
       editStageError,
       editingStage,
       error,
       formatDate,
+      formatCPF,
+      genderDistribution,
+      filteredClassPeople,
       getStageCandidatesCount,
       goBack,
       goToClassCourses,
       goToPeople,
       goToStageDetails,
+      classModelLabel,
+      classPeriodLabel,
+      classWorkloadLabel,
       loading,
       newStage,
       nextStageLabel,
       openEditStageModal,
+      overviewCurrentCycleIndex,
+      overviewCycle,
+      overviewProgressPct,
+      overviewStageCards,
+      overviewTimeline,
+      overviewTopCards,
+      overviewUpdates,
+      paginatedClassPeople,
+      partnerLabel,
+      peopleCityOptions,
+      peopleError,
+      peopleFilterCity,
+      peopleFilterGender,
+      peopleFilterQuota,
+      peopleFilterStage,
+      peopleFilterStatus,
+      peopleGenderOptions,
+      peopleLoading,
+      peopleQuotaOptions,
+      peopleSearch,
+      peopleStageOptions,
+      peopleStatusOptions,
+      selectionConflictButtonLabel,
+      selectionConflictCount,
+      selectionConflictOnly,
+      selectionConflictSummary,
+      selectionProcessMetricsCards,
+      selectionProcessNextPage,
+      selectionProcessPage,
+      selectionProcessPageEnd,
+      selectionProcessPageStart,
+      selectionProcessPageSummary,
+      selectionProcessPrevPage,
+      selectionProcessRows,
+      selectionProcessTotalPages,
+      selectionProcessVisiblePages,
+      selectionQuotaCards,
+      selectionWaitlistCount,
+      paginatedSelectionProcessRows,
+      toggleSelectionConflicts,
+      quotaDistribution,
       progressPct,
+      closeUpdateSelectionModal,
+      openUpdateSelectionModal,
       showCreateStageModal,
+      showUpdateSelectionModal,
       showEditStageModal,
       stageBucket,
       stageError,
@@ -538,6 +1883,8 @@ export default {
       totalCandidates,
       updateStage,
       updatingStage,
+      selectedUpdateAction,
+      viewPerson,
     };
   },
 };
@@ -545,16 +1892,16 @@ export default {
 
 <style>
 .figma-page {
-  --brand-900: #0f172a;
-  --brand-800: #1e293b;
-  --brand-600: #0f766e;
-  --brand-300: #e2e8f0;
-  --slate-50: #f8fafc;
-  --slate-100: #f1f5f9;
-  --slate-200: #e2e8f0;
-  --slate-400: #94a3b8;
-  --slate-600: #475569;
-  --slate-700: #334155;
+  --brand-900: #171f4a;
+  --brand-800: #2a3566;
+  --brand-600: #6377ba;
+  --brand-300: #d1d6e8;
+  --slate-50: #f5f7fa;
+  --slate-100: #f4f5fa;
+  --slate-200: #d1d6e8;
+  --slate-400: #50619e;
+  --slate-600: #50619e;
+  --slate-700: #171f4a;
   --teal-500: #14b8a6;
   --teal-600: #0d9488;
   --teal-50: #f0fdfa;
@@ -592,7 +1939,7 @@ export default {
 .hero-top {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
 }
 
@@ -683,6 +2030,16 @@ export default {
   flex-wrap: wrap;
 }
 
+.meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.meta-icon {
+  color: var(--slate-600);
+}
+
 .hero-cards {
   margin-top: 20px;
   padding: 0 32px 24px;
@@ -718,6 +2075,14 @@ export default {
   margin-top: 4px;
   color: var(--slate-600);
   font-size: 12px;
+}
+
+.hero-support {
+  margin-top: 2px !important;
+}
+
+.warning-small {
+  color: #ea580c !important;
 }
 
 .tabs {
@@ -793,6 +2158,21 @@ export default {
   background: var(--purple-100);
 }
 
+.pill-teal {
+  color: #0f766e;
+  background: #ccfbf1;
+}
+
+.pill-amber {
+  color: #b45309;
+  background: #fef3c7;
+}
+
+.pill-slate {
+  color: #64748b;
+  background: #e2e8f0;
+}
+
 .status-grid {
   margin-top: 10px;
   display: grid;
@@ -813,12 +2193,24 @@ export default {
   font-size: 14px;
 }
 
+.teal-strong {
+  color: var(--teal-600) !important;
+}
+
+.status-note {
+  margin: 10px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid #99f6e4;
+  color: var(--slate-600);
+  font-size: 14px;
+}
+
 .panel {
   background: #fff;
   border: 1px solid var(--brand-300);
   border-radius: 12px;
   padding: 14px;
-  box-shadow: 0 1px 6px rgba(23, 31, 74, 0.06);
+  box-shadow: none;
 }
 
 .panel-head {
@@ -905,6 +2297,302 @@ export default {
 
 .cycle-line.done {
   background: var(--teal-500);
+}
+
+.overview-block {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.overview-title {
+  margin: 0;
+  color: var(--brand-900);
+  font-size: 28px;
+  line-height: 1.1;
+  font-weight: 700;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.summary-card {
+  background: #fff;
+  border: 1px solid var(--brand-300);
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.summary-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.summary-card-head h4 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--brand-900);
+  line-height: 1.1;
+}
+
+.summary-card-list {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.summary-card-list div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.summary-card-list span {
+  color: var(--slate-700);
+  font-size: 15px;
+}
+
+.summary-card-list strong {
+  color: var(--brand-900);
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.warning-strong {
+  color: #ea580c !important;
+}
+
+.details-link {
+  margin-top: 10px;
+  border: none;
+  background: transparent;
+  color: var(--teal-600);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.section-subtitle {
+  margin: 0;
+  color: var(--brand-900);
+  font-size: 28px;
+  line-height: 1.1;
+  font-weight: 700;
+}
+
+.timeline-list {
+  margin-top: 12px;
+}
+
+.timeline-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 56px;
+  border-top: 1px solid var(--slate-200);
+}
+
+.timeline-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.timeline-check {
+  width: 21px;
+  height: 21px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #ccfbf1;
+  color: #059669;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.timeline-label {
+  color: var(--brand-900);
+  font-size: 30px;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.timeline-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.timeline-date {
+  color: var(--slate-700);
+  font-size: 15px;
+}
+
+.timeline-link {
+  margin-top: 8px;
+  width: 100%;
+}
+
+.distribution-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.distribution-panel h4 {
+  margin: 0;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.quota-list {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.quota-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.quota-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.quota-head span {
+  color: var(--slate-700);
+  font-size: 18px;
+}
+
+.quota-head strong {
+  color: var(--brand-900);
+  font-size: 21px;
+}
+
+.quota-track {
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  overflow: hidden;
+}
+
+.quota-fill {
+  height: 100%;
+  border-radius: 999px;
+}
+
+.gender-grid {
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.gender-card {
+  text-align: center;
+}
+
+.gender-card strong {
+  display: block;
+  color: var(--brand-900);
+  font-size: 36px;
+  line-height: 1;
+}
+
+.gender-card span {
+  display: block;
+  margin-top: 6px;
+  color: var(--slate-700);
+  font-size: 18px;
+}
+
+.simple-list {
+  margin-top: 10px;
+}
+
+.simple-list div {
+  min-height: 46px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border-top: 1px solid var(--slate-200);
+}
+
+.simple-list span {
+  color: var(--slate-700);
+  font-size: 18px;
+}
+
+.simple-list strong {
+  color: var(--brand-900);
+  font-size: 21px;
+}
+
+.updates-panel {
+  padding-bottom: 10px;
+}
+
+.updates-list {
+  margin-top: 10px;
+}
+
+.update-row {
+  min-height: 46px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  border-top: 1px solid var(--slate-200);
+}
+
+.update-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+}
+
+.dot-green {
+  background: #10b981;
+}
+
+.dot-amber {
+  background: #f59e0b;
+}
+
+.dot-slate {
+  background: #94a3b8;
+}
+
+.update-action {
+  color: var(--brand-900);
+  font-size: 17px;
+}
+
+.update-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--slate-700);
+  font-size: 14px;
 }
 
 .grid-3 {
@@ -1024,9 +2712,9 @@ export default {
   gap: 8px;
 }
 
-.btn-outline,
-.btn-primary,
-.btn-danger {
+.figma-page .btn-outline,
+.figma-page .btn-primary,
+.figma-page .btn-danger {
   border-radius: 8px;
   font-size: 13px;
   font-weight: 700;
@@ -1035,28 +2723,28 @@ export default {
   border: 1px solid transparent;
 }
 
-.btn-outline {
+.figma-page .btn-outline {
   color: var(--brand-900);
   border-color: var(--brand-300);
   background: #fff;
 }
 
-.btn-outline:hover {
+.figma-page .btn-outline:hover {
   background: var(--slate-100);
 }
 
-.btn-primary {
+.figma-page .btn-primary {
   color: #fff;
   background: var(--teal-500);
   border-color: var(--teal-500);
 }
 
-.btn-primary:hover {
+.figma-page .btn-primary:hover {
   background: var(--teal-600);
   border-color: var(--teal-600);
 }
 
-.btn-primary:disabled {
+.figma-page .btn-primary:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
@@ -1144,6 +2832,815 @@ export default {
   gap: 8px;
 }
 
+/* People Tab Styles */
+.people-panel {
+  padding-bottom: 12px;
+}
+
+.people-filters {
+  margin-bottom: 20px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--slate-200);
+}
+
+.people-search-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.people-search-box {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.people-search-icon {
+  position: absolute;
+  left: 12px;
+  color: var(--slate-400);
+  pointer-events: none;
+}
+
+.people-search-input {
+  width: 100%;
+  border: 1px solid var(--brand-300);
+  border-radius: 8px;
+  padding: 10px 10px 10px 36px;
+  font-size: 14px;
+  color: var(--brand-900);
+  box-sizing: border-box;
+}
+
+.people-search-input::placeholder {
+  color: var(--slate-400);
+}
+
+.people-search-input:focus {
+  outline: none;
+  border-color: var(--teal-500);
+  box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.2);
+}
+
+.people-search-btn {
+  border: 1px solid var(--brand-300);
+  background: #fff;
+  color: var(--brand-900);
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.people-search-btn:hover {
+  background: var(--slate-100);
+}
+
+.people-select-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.people-filter-select {
+  flex: 1;
+  min-width: 150px;
+  border: 1px solid var(--brand-300);
+  background: #fff;
+  color: var(--brand-900);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.people-filter-select:focus {
+  outline: none;
+  border-color: var(--teal-500);
+  box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.2);
+}
+
+.people-table-wrap {
+  overflow-x: auto;
+  margin-bottom: 12px;
+}
+
+.people-table-v2 {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+.people-table-v2 thead {
+  background: var(--slate-50);
+  border-bottom: 2px solid var(--slate-200);
+}
+
+.people-table-v2 th {
+  padding: 12px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--slate-700);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.people-table-v2 td {
+  padding: 12px;
+  border-bottom: 1px solid var(--slate-200);
+  font-size: 14px;
+  color: var(--brand-900);
+}
+
+.people-table-v2 tbody tr:hover {
+  background: var(--slate-50);
+}
+
+.name-cell {
+  font-weight: 600;
+  color: var(--brand-900);
+}
+
+.selection-conflict-icon {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+  color: #f97316;
+  vertical-align: middle;
+}
+
+.quota-pill {
+  display: inline-block;
+  border-radius: 999px;
+  background: var(--teal-100);
+  color: var(--teal-700);
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-pill {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status-pill.status-active {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.status-pill.status-inactive {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.status-pill.status-pending {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.status-pill.status-completed {
+  background: #dbeafe;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
+}
+
+.actions-col {
+  text-align: center;
+  width: 50px;
+}
+
+.icon-btn {
+  border: none;
+  background: transparent;
+  color: var(--slate-600);
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.icon-btn:hover {
+  background: var(--slate-200);
+  color: var(--brand-900);
+}
+
+.people-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: var(--slate-50);
+  border-radius: 8px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.people-page-summary {
+  font-size: 13px;
+  color: var(--slate-600);
+  flex-shrink: 0;
+}
+
+.people-page-controls {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.page-btn {
+  border: 1px solid var(--brand-300);
+  background: #fff;
+  color: var(--brand-900);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.page-btn:hover:not(:disabled) {
+  background: var(--slate-100);
+}
+
+.page-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.page-btn-number {
+  min-width: 34px;
+  padding: 6px 8px;
+}
+
+.page-btn-number.active {
+  background: var(--teal-500);
+  color: #fff;
+  border-color: var(--teal-500);
+}
+
+/* Selection Process Tab Styles */
+.metrics-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.metric-card {
+  background: #fff;
+  border: 1px solid var(--brand-300);
+  border-radius: 10px;
+  padding: 16px 12px;
+  text-align: center;
+}
+
+.metric-label {
+  display: block;
+  color: var(--slate-600);
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.metric-card strong {
+  display: block;
+  color: var(--brand-900);
+  font-size: 32px;
+  font-weight: 600;
+}
+
+.quota-distribution {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.quota-item {
+  background: var(--slate-50);
+  border-radius: 10px;
+  padding: 16px 12px;
+  text-align: center;
+  border: 1px solid var(--slate-200);
+}
+
+.quota-item strong {
+  display: block;
+  color: var(--brand-900);
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.quota-item span {
+  display: block;
+  color: var(--slate-600);
+  font-size: 12px;
+}
+
+.alert-banner {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 16px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  border-left: 4px solid;
+}
+
+.alert-banner svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.alert-copy {
+  flex: 1;
+}
+
+.alert-warning {
+  background: #fffbeb;
+  border-color: #f59e0b;
+  color: #92400e;
+}
+
+.alert-warning strong {
+  color: #78350f;
+}
+
+.alert-warning p {
+  margin: 2px 0 8px;
+  font-size: 13px;
+  color: #92400e;
+}
+
+.alert-link {
+  background: none;
+  border: none;
+  color: #f59e0b;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  font-size: 13px;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.alert-link:hover {
+  text-decoration: underline;
+}
+
+.modal.modal-large {
+  width: min(1000px, calc(100vw - 32px));
+  max-width: min(1000px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  overflow: hidden;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--slate-200);
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: var(--brand-900);
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close:hover {
+  color: var(--brand-900);
+}
+
+.modal-content {
+  padding: 4px 24px 24px;
+  overflow-y: auto;
+  width: 100%;
+  box-sizing: border-box;
+  flex: 1 1 auto;
+}
+
+.modal.modal-large .modal-content.update-selection-home {
+  display: block !important;
+  width: 100% !important;
+  max-width: none !important;
+  align-self: stretch;
+}
+
+.modal-subtitle {
+  color: var(--slate-600);
+  font-size: 14px;
+  margin: 0 0 18px;
+}
+
+.modal.modal-large .update-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 0 20px;
+  justify-items: stretch;
+}
+
+.modal.modal-large .update-action-card {
+  border: 2px solid #dbe4f0;
+  background: #fff;
+  border-radius: 10px;
+  padding: 24px 26px 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: none;
+  min-height: 168px;
+  appearance: none;
+  color: var(--brand-900);
+}
+
+.modal.modal-large .update-action-card:hover,
+.modal.modal-large .update-action-card:focus-visible {
+  background: #ecfdf8;
+  border-color: var(--teal-500);
+  box-shadow: 0 4px 12px rgba(20, 184, 166, 0.12);
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.modal.modal-large .update-action-card:hover .card-icon,
+.modal.modal-large .update-action-card:focus-visible .card-icon {
+  color: var(--teal-500);
+}
+
+.modal.modal-large .update-action-card:hover h4,
+.modal.modal-large .update-action-card:focus-visible h4,
+.modal.modal-large .update-action-card:hover p,
+.modal.modal-large .update-action-card:focus-visible p {
+  color: inherit;
+}
+
+.card-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 14px;
+  color: var(--teal-500);
+  background: transparent;
+}
+
+.icon-people {
+  color: var(--teal-500);
+}
+
+.icon-upload {
+  color: var(--teal-500);
+}
+
+.icon-check {
+  color: var(--teal-500);
+}
+
+.icon-clock {
+  color: var(--teal-500);
+}
+
+.update-action-card h4 {
+  margin: 0 0 8px;
+  color: var(--brand-900);
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.update-action-card p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.modal-actions-footer {
+  border-top: 1px solid var(--slate-200);
+  padding: 16px 24px 18px;
+  margin-top: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.modal-back {
+  margin-bottom: 16px;
+}
+
+.back-link {
+  background: none;
+  border: none;
+  color: var(--teal-600);
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  font-size: 14px;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+.modal-content h3 {
+  margin: 0 0 16px;
+  color: var(--brand-900);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.modal.modal-large .modal-content.import-inscricoes-modal {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  flex: 1 1 auto;
+  align-self: stretch;
+}
+
+.modal.modal-large .import-inscricoes-modal {
+  display: block;
+  gap: 14px;
+}
+
+.modal.modal-large .modal-content.import-aprovados-modal {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  flex: 1 1 auto;
+  align-self: stretch;
+}
+
+.modal.modal-large .import-aprovados-modal {
+  display: block;
+  gap: 14px;
+}
+
+.modal.modal-large .import-aprovados-modal > * {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.modal.modal-large .import-aprovados-modal h3 {
+  margin-bottom: 4px;
+  font-size: 17px;
+}
+
+.modal.modal-large .import-aprovados-modal .modal-desc {
+  margin-bottom: 2px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.modal.modal-large .import-aprovados-modal .columns-grid {
+  margin-bottom: 2px;
+}
+
+.modal.modal-large .import-inscricoes-modal > * {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.modal.modal-large .import-inscricoes-modal h3 {
+  margin-bottom: 4px;
+  font-size: 17px;
+}
+
+.modal.modal-large .import-inscricoes-modal .modal-desc {
+  margin-bottom: 2px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.modal-desc {
+  color: var(--slate-600);
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.columns-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 28px;
+  background: var(--slate-50);
+  padding: 14px 16px;
+  border-radius: 10px;
+  margin-bottom: 2px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.columns-grid-title {
+  grid-column: 1 / -1;
+  margin-bottom: 2px;
+  color: var(--brand-900);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.modal.modal-large .import-inscricoes-modal .columns-grid {
+  margin-bottom: 2px;
+}
+
+.column-item {
+  color: var(--slate-700);
+  font-size: 13px;
+  line-height: 1.4;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.column-item:before {
+  content: '●';
+  color: var(--teal-500);
+  font-size: 10px;
+}
+
+.file-upload-area {
+  border: 2px dashed var(--brand-300);
+  border-radius: 10px;
+  padding: 36px 18px;
+  text-align: center;
+  background: var(--slate-50);
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.file-upload-area:hover {
+  border-color: var(--teal-500);
+  background: #f0fdfa;
+}
+
+.file-upload-area svg {
+  margin-bottom: 12px;
+  color: var(--slate-400);
+}
+
+.file-upload-area p {
+  margin: 0;
+  color: var(--brand-900);
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.file-upload-area small {
+  display: block;
+  margin-top: 6px;
+  color: var(--slate-600);
+  font-size: 12px;
+}
+
+.info-box {
+  display: flex;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  margin-bottom: 14px;
+  border-left: 4px solid;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.info-box svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.info-box strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+
+.info-box p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.modal.modal-large .import-inscricoes-modal .modal-actions {
+  margin-top: 8px;
+  width: 100%;
+}
+
+.modal.modal-large .import-inscricoes-modal .modal-actions .btn-primary,
+.modal.modal-large .import-inscricoes-modal .modal-actions .btn-outline {
+  padding: 10px 16px;
+  font-size: 14px;
+}
+
+.info-blue {
+  background: #eff6ff;
+  border-color: #3b82f6;
+  color: #1e40af;
+}
+
+.info-blue strong {
+  color: #1e40af;
+}
+
+.info-yellow {
+  background: #fffbeb;
+  border-color: #f59e0b;
+  color: #92400e;
+}
+
+.info-yellow strong {
+  color: #78350f;
+}
+
+.info-green {
+  background: #ecfdf5;
+  border-color: #10b981;
+  color: #065f46;
+}
+
+.info-green strong {
+  color: #065f46;
+}
+
+.waitlist-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  background: var(--slate-50);
+  padding: 16px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-item span {
+  display: block;
+  color: var(--slate-600);
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+.stat-item strong {
+  display: block;
+  color: var(--brand-900);
+  font-size: 24px;
+  font-weight: 600;
+}
+
 @media (max-width: 1200px) {
   .hero-cards {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1153,12 +3650,48 @@ export default {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
+  .summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .distribution-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .timeline-label {
+    font-size: 24px;
+  }
+
   .grid-3 {
     grid-template-columns: 1fr;
   }
 
   .metrics {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .metrics-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .quota-distribution {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .update-actions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .columns-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .waitlist-stats {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1178,8 +3711,7 @@ export default {
 
   .hero-actions {
     width: 100%;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: block;
   }
 
   .hero-main h1 {
@@ -1198,6 +3730,77 @@ export default {
   .status-grid,
   .metrics {
     grid-template-columns: 1fr;
+  }
+
+  .overview-title,
+  .section-subtitle {
+    font-size: 24px;
+  }
+
+  .summary-card-head h4,
+  .timeline-label,
+  .distribution-panel h4 {
+    font-size: 20px;
+  }
+
+  .summary-card-list strong,
+  .gender-card strong {
+    font-size: 22px;
+  }
+
+  .quota-head span,
+  .simple-list span,
+  .gender-card span {
+    font-size: 14px;
+  }
+
+  .quota-head strong,
+  .simple-list strong {
+    font-size: 16px;
+  }
+
+  .update-row {
+    grid-template-columns: auto 1fr;
+    padding: 8px 0;
+  }
+
+  .update-meta {
+    grid-column: 2;
+    justify-self: start;
+    flex-wrap: wrap;
+    font-size: 12px;
+  }
+
+  .people-search-row {
+    flex-direction: column;
+  }
+
+  .people-filter-select {
+    font-size: 12px;
+    padding: 8px 10px;
+    min-width: 100px;
+  }
+
+  .people-table-v2 th,
+  .people-table-v2 td {
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  .people-pagination {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .people-page-summary {
+    font-size: 12px;
+    text-align: center;
+    width: 100%;
+  }
+
+  .people-page-controls {
+    justify-content: center;
+    width: 100%;
   }
 }
 </style>
