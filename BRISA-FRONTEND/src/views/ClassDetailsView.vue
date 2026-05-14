@@ -535,7 +535,7 @@
             </div>
 
             <div class="email-banner">
-              <div style="display:flex;align-items:center;gap:12px;justify-content:space-between;">
+              <div style="display:flex;align-items:center;gap:12px;justify-content:space-between;width:100%;">
                 <div style="display:flex;align-items:center;gap:12px;">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v11"/><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
                   <div>
@@ -543,13 +543,13 @@
                     <span style="color:#0c4a6e;">{{ lastEmailInfo }}</span>
                   </div>
                 </div>
-                <div></div>
+                <span class="email-banner-status" v-if="lastEmailInfo && lastEmailInfo !== 'Nenhum e-mail enviado recentemente'">Enviado</span>
               </div>
             </div>
 
             <div class="nivelamento-actions">
-              <button type="button" class="btn-outline" @click="openUpdateSelectionModal">Atualizar dados</button>
-              <button type="button" class="btn-outline">
+              <button type="button" class="btn-outline" @click="openUpdateSelectionModal"><span>Atualizar dados</span></button>
+              <button type="button" class="btn-outline" @click="showSubmitCoursesModal = true">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                   <polyline points="17 8 12 3 7 8" />
@@ -557,7 +557,7 @@
                 </svg>
                 <span>Submeter dados dos cursos</span>
               </button>
-              <button type="button" class="btn-outline">
+              <button type="button" class="btn-outline" @click="showSubmitProvaNotasModal = true">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                   <polyline points="17 8 12 3 7 8" />
@@ -565,16 +565,8 @@
                 </svg>
                 <span>Submeter notas da prova</span>
               </button>
-              <button type="button" class="btn-outline" @click="openIndividualRegistration">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                  <circle cx="12" cy="7" r="4" />
-                </svg>
-                <span>Cadastrar aluno</span>
-              </button>
               <div class="spacer"></div>
-              <button type="button" class="btn-primary">Enviar mensagem</button>
-              <span class="pill pill-blue nivelamento-status-pill">Enviado</span>
+              <button type="button" class="btn-primary" @click="showSendMessageModal = true"><span>Enviar mensagem</span></button>
             </div>
           </div>
 
@@ -1072,6 +1064,204 @@
         <div v-if="editStageError" class="state-error">{{ editStageError }}</div>
       </div>
     </div>
+
+    <!-- Modal: Submit Courses Data -->
+    <div v-if="showSubmitCoursesModal" class="modal-overlay" @click="showSubmitCoursesModal = false">
+      <div class="modal modal-large" @click.stop>
+        <div class="modal-header">
+          <h2>Submeter dados dos cursos</h2>
+          <button type="button" class="modal-close" @click="showSubmitCoursesModal = false">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="modal-content submit-cursos-modal">
+          <p class="modal-desc">Envie a planilha com os dados de conclusão e notas dos cursos</p>
+
+          <div class="columns-grid">
+            <div class="columns-grid-title">A planilha deve conter as seguintes colunas:</div>
+            <div class="column-item"><strong>CPF</strong></div>
+            <div class="column-item"><strong>Nome</strong></div>
+            <div class="column-item"><strong>Curso</strong></div>
+            <div class="column-item"><strong>Percentual de conclusão</strong></div>
+            <div class="column-item"><strong>Nota</strong></div>
+            <div class="column-item"><strong>Status</strong></div>
+            <div class="column-item"><strong>Data de atualização</strong></div>
+          </div>
+
+          <div class="file-upload-area">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="17 8 12 3 7 8" />
+              <line x1="12" y1="3" x2="12" y2="15" />
+            </svg>
+            <p>Clique para selecionar ou arraste o arquivo</p>
+            <small>Formatos aceitos: .xlsx, .xls, .csv (máx. 10MB)</small>
+          </div>
+
+          <div class="info-box info-blue">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="16" x2="12" y2="12" />
+              <line x1="12" y1="8" x2="12.01" y2="8" />
+            </svg>
+            <div>
+              <strong>Após o envio, o sistema processará:</strong>
+              <ul style="margin: 8px 0 0 0; padding-left: 20px;">
+                <li>Atualização dos percentuais de conclusão</li>
+                <li>Registro das notas obtidas</li>
+                <li>Identificação de alunos com pendências em cursos obrigatórios</li>
+                <li>Verificação de conflitos com outros programas vigentes</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-outline" @click="showSubmitCoursesModal = false">Cancelar</button>
+            <button type="button" class="btn-primary">Submeter planilha</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Submit Test Grades -->
+    <div v-if="showSubmitProvaNotasModal" class="modal-overlay" @click="showSubmitProvaNotasModal = false">
+      <div class="modal modal-large" @click.stop>
+        <div class="modal-header">
+          <h2>Submeter notas da prova</h2>
+          <button type="button" class="modal-close" @click="showSubmitProvaNotasModal = false">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="modal-content submit-prova-notas-modal">
+          <p class="modal-desc">Envie a planilha com as notas finais e o desempenho por questão</p>
+
+          <div class="columns-grid">
+            <p class="columns-grid-title">A planilha deve conter as seguintes colunas:</p>
+            <div class="column-item"><strong>Obrigatórias:</strong> CPF, Nome, Nota final, Tempo de conclusão</div>
+            <div class="column-item"><strong>Questões:</strong> Q1, Q2, Q3... Q80 (respostas ou pontuação por questão)</div>
+            <div class="column-item"><strong>Opcional:</strong> Área/Assunto (para análise por tema)</div>
+          </div>
+
+          <input
+            type="file"
+            ref="fileInputTestGrades"
+            style="display: none"
+            accept=".xlsx,.xls,.csv"
+          />
+
+          <div class="file-upload-area" @click="$refs.fileInputTestGrades?.click()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="17 8 12 3 7 8" />
+              <line x1="12" y1="3" x2="12" y2="15" />
+            </svg>
+            <p>Clique para selecionar ou arraste o arquivo</p>
+            <small>Formatos aceitos: .xlsx, .xls, .csv (máx. 10MB)</small>
+          </div>
+
+          <div class="info-box">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="16" x2="12" y2="12" />
+              <line x1="12" y1="8" x2="12.01" y2="8" />
+            </svg>
+            <div>
+              <strong>Após o envio, o sistema processará:</strong>
+              <ul style="margin: 8px 0 0 0; padding-left: 20px;">
+                <li>Atualização das notas finais dos alunos</li>
+                <li>Cálculo do desempenho por questão</li>
+                <li>Análise de pontos fortes e fracos</li>
+                <li>Identificação de questões com baixo desempenho</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-outline" @click="showSubmitProvaNotasModal = false">Cancelar</button>
+            <button type="button" class="btn-primary">Submeter notas</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Send Message -->
+    <div v-if="showSendMessageModal" class="modal-overlay" @click="showSendMessageModal = false">
+      <div class="modal modal-large" @click.stop>
+        <div class="modal-header">
+          <h2>Enviar mensagem aos alunos</h2>
+          <button type="button" class="modal-close" @click="showSendMessageModal = false">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+
+        <div class="modal-content send-message-modal">
+          <p class="modal-desc">Comunique os alunos sobre pendências na conclusão dos cursos obrigatórios do nivelamento.</p>
+
+          <div class="send-message-section">
+            <label class="section-label">Destinatários</label>
+            <div class="radio-option">
+              <input type="radio" id="all-students" name="recipients" value="all" checked />
+              <label for="all-students">Todos os alunos do nivelamento</label>
+            </div>
+            <div class="radio-option">
+              <input type="radio" id="pending-students" name="recipients" value="pending" />
+              <label for="pending-students">Apenas alunos com cursos obrigatórios pendentes</label>
+            </div>
+
+            <div class="stats-grid">
+              <div class="stat-item">
+                <span class="stat-label">Total selecionados:</span>
+                <span class="stat-value">37</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Com pendências:</span>
+                <span class="stat-value pending">37</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Sem pendências:</span>
+                <span class="stat-value">0</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="send-message-section">
+            <label for="email-subject" class="section-label">Assunto do e-mail</label>
+            <input
+              id="email-subject"
+              type="text"
+              placeholder="Pendência na conclusão dos cursos obrigatórios"
+              class="text-input"
+            />
+          </div>
+
+          <div class="send-message-section">
+            <label for="message-body" class="section-label">Mensagem</label>
+            <textarea
+              id="message-body"
+              class="textarea-input"
+              rows="6"
+              placeholder="Olá, identificamos que você ainda possui pendências em um ou mais cursos obrigatórios da etapa de Nivelamento. A conclusão desses cursos é necessária para continuar no processo. Acesse a plataforma e regularize sua situação dentro do prazo."
+            >Olá, identificamos que você ainda possui pendências em um ou mais cursos obrigatórios da etapa de Nivelamento. A conclusão desses cursos é necessária para continuar no processo. Acesse a plataforma e regularize sua situação dentro do prazo.</textarea>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-outline" @click="showSendMessageModal = false">Cancelar</button>
+            <button type="button" class="btn-primary">Enviar mensagem</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -1248,6 +1438,9 @@ export default {
     const newStage = ref({ name: '', description: '' });
     const editingStage = ref({ id: null, name: '', description: '' });
     const showUpdateSelectionModal = ref(false);
+    const showSubmitCoursesModal = ref(false);
+    const showSubmitProvaNotasModal = ref(false);
+    const showSendMessageModal = ref(false);
     const selectedUpdateAction = ref(null);
     const registeringCandidate = ref(false);
     const registrationError = ref('');
@@ -2297,6 +2490,9 @@ export default {
       openUpdateSelectionModal,
       showCreateStageModal,
       showUpdateSelectionModal,
+      showSubmitCoursesModal,
+      showSubmitProvaNotasModal,
+      showSendMessageModal,
       showEditStageModal,
       stageBucket,
       stageError,
@@ -3160,6 +3356,12 @@ export default {
   border: 1px solid transparent;
 }
 
+.figma-page .btn-outline span,
+.figma-page .btn-primary span,
+.figma-page .btn-danger span {
+  font-weight: 700;
+}
+
 .figma-page .btn-outline {
   color: var(--brand-900);
   border-color: var(--brand-300);
@@ -3943,10 +4145,194 @@ export default {
   line-height: 1.5;
 }
 
+.modal.modal-large .modal-content.submit-cursos-modal {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  flex: 1 1 auto;
+  align-self: stretch;
+}
+
+.modal.modal-large .submit-cursos-modal {
+  display: block;
+  gap: 14px;
+}
+
+.modal.modal-large .submit-cursos-modal > * {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.modal.modal-large .submit-cursos-modal h3 {
+  margin-bottom: 4px;
+  font-size: 17px;
+}
+
+.modal.modal-large .submit-cursos-modal .modal-desc {
+  margin-bottom: 2px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.modal.modal-large .modal-content.submit-prova-notas-modal {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  flex: 1 1 auto;
+  align-self: stretch;
+}
+
+.modal.modal-large .submit-prova-notas-modal {
+  display: block;
+  gap: 14px;
+}
+
+.modal.modal-large .submit-prova-notas-modal > * {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.modal.modal-large .submit-prova-notas-modal h3 {
+  margin-bottom: 4px;
+  font-size: 17px;
+}
+
+.modal.modal-large .submit-prova-notas-modal .modal-desc {
+  margin-bottom: 2px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
 .modal-desc {
   color: var(--slate-600);
   font-size: 14px;
   margin-bottom: 16px;
+}
+
+.modal.modal-large .modal-content.send-message-modal {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  flex: 1 1 auto;
+  align-self: stretch;
+}
+
+.modal.modal-large .send-message-modal {
+  display: block;
+  gap: 14px;
+}
+
+.modal.modal-large .send-message-modal > * {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.send-message-section {
+  margin-bottom: 16px;
+}
+
+.section-label {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--brand-900);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+.radio-option input[type="radio"] {
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--teal-500);
+}
+
+.radio-option label {
+  margin: 0;
+  cursor: pointer;
+  color: var(--slate-700);
+  font-size: 14px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 12px;
+  padding: 12px;
+  background: var(--slate-50);
+  border-radius: 8px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--slate-600);
+  font-weight: 500;
+}
+
+.stat-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--brand-900);
+}
+
+.stat-value.pending {
+  color: #ea580c;
+}
+
+.text-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--slate-300);
+  border-radius: 6px;
+  font-size: 14px;
+  color: var(--slate-700);
+  background: white;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.text-input:focus {
+  outline: none;
+  border-color: var(--teal-500);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.textarea-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--slate-300);
+  border-radius: 6px;
+  font-size: 14px;
+  color: var(--slate-700);
+  background: white;
+  box-sizing: border-box;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 120px;
+}
+
+.textarea-input:focus {
+  outline: none;
+  border-color: var(--teal-500);
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
 }
 
 .form-grid {
@@ -3959,7 +4345,7 @@ export default {
 .columns-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px 28px;
+  gap: 8px 12px;
   background: var(--slate-50);
   padding: 14px 16px;
   border-radius: 10px;
@@ -4347,6 +4733,13 @@ export default {
 .n-card.amber .value { color:#d97706; }
 .n-card.red .value { color:#dc2626; }
 .email-banner { background:#f0f9ff; border:1px solid #dbeafe; border-radius:8px; padding:12px 16px; margin:0 24px; }
+.email-banner-status {
+  color: #2563eb;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
 .courses-panel { margin: 12px 24px; }
 .course-card { display:flex; justify-content:space-between; align-items:center; padding:12px; border-bottom:1px solid var(--slate-100); }
 .students-table table { width:100%; border-collapse:collapse; }
