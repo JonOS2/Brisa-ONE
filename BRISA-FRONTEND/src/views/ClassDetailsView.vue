@@ -578,97 +578,127 @@
             </div>
           </div>
 
+          <!-- Seção Cursos do Nivelamento -->
           <article class="panel">
-              <div class="panel-head">
-                <h3>Cursos do Nivelamento</h3>
-                <button v-if="courseItems && courseItems.length" type="button" class="btn-primary" @click="openAddCoursesModal">Gerenciar cursos</button>
-              </div>
+           <div class="panel-head">
+             <h3>Cursos do Nivelamento</h3>
+             <button v-if="courseItems && courseItems.length" type="button" class="btn-primary" @click="openAddCoursesModal">Gerenciar cursos</button>
+           </div>
 
-              <div class="courses-list">
-                <div v-if="!courseItems || courseItems.length === 0" class="no-data">Nenhum curso encontrado para o nivelamento.</div>
+           <div class="courses-list">
+             <div v-if="!courseItems || courseItems.length === 0" class="no-data">Nenhum curso encontrado para o nivelamento.</div>
 
-                <div v-for="course in courseItems" :key="course?.id" class="course-card-new">
-                  <div class="course-left-new">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="course-icon">
-                      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z" />
-                    </svg>
-                    <span class="course-name-new">{{ course?.name || 'Sem nome' }}</span>
-                    <span v-if="course?.required" class="course-badge course-badge-required">Obrigatório</span>
-                    <span v-if="course?.knowledgeArea" class="course-badge">{{ course.knowledgeArea }}</span>
-                  </div>
+             <div v-for="course in courseItems" :key="course?.id" class="course-card-new">
+               <div class="course-left-new">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="course-icon">
+                   <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                   <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z" />
+                 </svg>
+                 <span class="course-name-new">{{ course?.name || 'Sem nome' }}</span>
+                 <span v-if="course?.required" class="course-badge course-badge-required">Obrigatório</span>
+                 <span v-if="course?.knowledgeArea" class="course-badge">{{ course.knowledgeArea }}</span>
+               </div>
 
-                  <div class="course-right-new">
-                    <div class="course-stats-new">
-                      <div class="course-stats-text">{{ 0 }} concluídos · {{ 0 }} pendentes</div>
-                      <div class="progress-container">
-                        <div class="progress-bar">
-                          <div class="progress-fill" :style="{ width: (course?.completionPct || 0) + '%', backgroundColor: getCompletionColor(course?.completionPct || 0) }"></div>
-                        </div>
-                        <span class="progress-pct">{{ course?.completionPct || 0 }}%</span>
-                      </div>
+               <div class="course-right-new">
+                 <div class="course-stats-new">
+                   <div class="course-stats-text">{{ 0 }} concluídos · {{ 0 }} pendentes</div>
+                   <div class="progress-container">
+                     <div class="progress-bar">
+                       <div class="progress-fill" :style="{ width: (course?.completionPct || 0) + '%', backgroundColor: getCompletionColor(course?.completionPct || 0) }"></div>
+                     </div>
+                     <span class="progress-pct">{{ course?.completionPct || 0 }}%</span>
                     </div>
-                    <div class="course-media">Média: {{ course?.completionPct || 0 }}</div>
-                  </div>
+                 </div>
+                 <div class="course-media">Média: {{ course?.completionPct || 0 }}</div>
                 </div>
               </div>
+           </div>
 
-            <div class="alert-banner alert-warning">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3.05L13.71 3.86a2 2 0 0 0-3.42 0z" />
-                <line x1="12" y1="9" x2="12" y2="13" />
-                <line x1="12" y1="17" x2="12.01" y2="17" />
-              </svg>
-              <div class="alert-copy">
-                <strong>Prova Final do Nivelamento marcada para {{ overviewTimeline[5]?.date || '30/04' }}</strong>
-                <p>Recomenda-se revisar as notas e progressões antes da prova final.</p>
-              </div>
-              <button type="button" class="alert-link" @click="() => {}">Ver cronograma</button>
-            </div>
+           <div class="alert-banner alert-warning">
+             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+               <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3.05L13.71 3.86a2 2 0 0 0-3.42 0z" />
+               <line x1="12" y1="9" x2="12" y2="13" />
+               <line x1="12" y1="17" x2="12.01" y2="17" />
+             </svg>
+             <div class="alert-copy">
+               <strong>Cursos obrigatórios com pendências</strong>
+               <p>37 alunos ainda possuem pendências em cursos obrigatórios</p>
+             </div>
+             <button type="button" class="alert-link">Enviar mensagem</button>
+           </div>
+          </article>
 
-            <div class="final-exam-cards" style="margin-top:16px; display:flex; gap:12px;">
-              <div class="exam-card">
-                <h4>Prova Final - Turma</h4>
-                <p>Data: {{ overviewTimeline[5]?.date || '30/04' }} · Local: Online</p>
-                <div class="exam-meta"><strong>Participantes:</strong> {{ selectionProcessMetricsCards[0].value }}</div>
-              </div>
-              <div class="exam-card">
-                <h4>Resultado Consolidado</h4>
-                <p>Média de aprovação: <strong>{{ Math.round((selectionProcessMetricsCards[1].value / Math.max(selectionProcessMetricsCards[0].value,1)) * 100) }}%</strong></p>
-                <div class="exam-meta"><strong>Cursos:</strong> {{ courseItems ? courseItems.length : 0 }}</div>
-              </div>
-            </div>
+          <!-- Seção Prova Final do Nivelamento -->
+          <article class="panel">
+           <div class="panel-head">
+             <h3>Prova Final do Nivelamento</h3>
+           </div>
 
-            <div class="students-section" style="margin-top:20px;">
-              <h3>Alunos do Nivelamento</h3>
-              <div class="students-table">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Nome</th>
-                      <th>CPF</th>
-                      <th>Progresso médio</th>
-                      <th>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="student in getNivelamentoStudents" :key="student.id">
-                      <td>{{ student.name || student.id }}</td>
-                      <td>{{ student.cpf || '-' }}</td>
-                      <td>
-                        <div class="student-progress">
-                          <div class="student-progress-bar">
-                            <div class="student-progress-fill" :style="{ width: student.avg + '%' }"></div>
-                          </div>
-                          <small>{{ student.avg }}%</small>
-                        </div>
-                      </td>
-                      <td><span class="status-pill" :class="student.avg===100 ? 'status-approved' : 'status-inprogress'">{{ student.avg===100 ? 'Concluído' : 'Em andamento' }}</span></td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
+           <div class="exam-stats">
+             <div class="exam-stat-card">
+               <div class="exam-stat-label">Data da prova</div>
+               <div class="exam-stat-value">{{ overviewTimeline[5]?.date || '30/04' }}</div>
+             </div>
+             <div class="exam-stat-card">
+               <div class="exam-stat-label">Questões</div>
+               <div class="exam-stat-value">--</div>
+             </div>
+             <div class="exam-stat-card">
+               <div class="exam-stat-label">Duração</div>
+               <div class="exam-stat-value">--</div>
+             </div>
+             <div class="exam-stat-card">
+               <div class="exam-stat-label">Média geral</div>
+               <div class="exam-stat-value teal">--</div>
+             </div>
+             <div class="exam-stat-card">
+               <div class="exam-stat-label">Maior nota</div>
+               <div class="exam-stat-value emerald">--</div>
+             </div>
+             <div class="exam-stat-card">
+               <div class="exam-stat-label">Nota de corte</div>
+               <div class="exam-stat-value amber">--</div>
+             </div>
+           </div>
+
+           <div class="exam-criteria">
+             <p><strong>Critério de aprovação:</strong> A aprovação no nivelamento considera nota igual ou superior a 50% da maior nota obtida na turma, além da conclusão dos cursos obrigatórios.</p>
+           </div>
+          </article>
+
+          <!-- Seção Alunos do Nivelamento -->
+          <article class="panel">
+           <div class="panel-head">
+             <h3>Alunos do Nivelamento</h3>
+           </div>
+
+           <div class="students-table">
+             <table>
+               <thead>
+                 <tr>
+                   <th>Nome</th>
+                   <th>CPF</th>
+                   <th>Progresso médio</th>
+                   <th>Status</th>
+                 </tr>
+               </thead>
+               <tbody>
+                 <tr v-for="student in getNivelamentoStudents" :key="student.id">
+                   <td>{{ student.name || student.id }}</td>
+                   <td>{{ student.cpf || '-' }}</td>
+                   <td>
+                     <div class="student-progress">
+                       <div class="student-progress-bar">
+                         <div class="student-progress-fill" :style="{ width: student.avg + '%' }"></div>
+                       </div>
+                       <small>{{ student.avg }}%</small>
+                     </div>
+                   </td>
+                   <td><span class="status-pill" :class="student.avg===100 ? 'status-approved' : 'status-inprogress'">{{ student.avg===100 ? 'Concluído' : 'Em andamento' }}</span></td>
+                 </tr>
+               </tbody>
+             </table>
+           </div>
           </article>
         </section>
       </main>
@@ -4450,6 +4480,115 @@ export default {
   color: var(--slate-900);
   min-width: 32px;
   text-align: right;
+}
+
+/* Exam statistics cards */
+.exam-stats {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.exam-stat-card {
+  background: var(--slate-50);
+  border: 1px solid var(--slate-200);
+  border-radius: 8px;
+  padding: 12px;
+}
+.exam-stat-label {
+  font-size: 12px;
+  color: var(--slate-600);
+  margin-bottom: 8px;
+}
+.exam-stat-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--slate-900);
+}
+.exam-stat-value.teal {
+  color: var(--teal-600);
+}
+.exam-stat-value.emerald {
+  color: #047857;
+}
+.exam-stat-value.amber {
+  color: #d97706;
+}
+
+/* Exam criteria box */
+.exam-criteria {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  padding: 12px;
+}
+.exam-criteria p {
+  font-size: 14px;
+  color: #1e40af;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Students table styling */
+.students-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.students-table thead {
+  background: var(--slate-50);
+  border-bottom: 1px solid var(--slate-200);
+}
+.students-table th {
+  padding: 12px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--slate-600);
+  text-transform: uppercase;
+}
+.students-table tbody tr {
+  border-bottom: 1px solid var(--slate-200);
+}
+.students-table tbody tr:hover {
+  background: var(--slate-50);
+}
+.students-table td {
+  padding: 12px;
+}
+.student-progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.student-progress-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--slate-200);
+  border-radius: 3px;
+  overflow: hidden;
+  min-width: 100px;
+}
+.student-progress-fill {
+  height: 100%;
+  background: var(--teal-600);
+  border-radius: 3px;
+}
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.status-approved {
+  background: #dcfce7;
+  color: #047857;
+}
+.status-inprogress {
+  background: #fef3c7;
+  color: #92400e;
 }
 
 /* Tabs background stripe */
