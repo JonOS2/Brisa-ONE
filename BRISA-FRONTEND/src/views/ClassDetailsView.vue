@@ -492,28 +492,182 @@
         </section>
 
         <section v-else class="stack">
-          <article class="panel">
-            <div class="panel-head">
-              <h3>Etapas da Turma</h3>
-              <button class="btn-primary" @click="showCreateStageModal = true">+ Criar Etapa</button>
+          <!-- Sub-tabs for Etapas -->
+          <div class="bg-white border-b border-slate-200">
+            <div class="px-6">
+              <div class="tabs-bg flex items-center gap-1">
+                <button type="button" @click="etapasSubTab = 'nivelamento'" :class="['tab-btn', etapasSubTab === 'nivelamento' ? 'active' : '']">Nivelamento</button>
+                <button type="button" @click="etapasSubTab = 'imersao'" :class="['tab-btn', etapasSubTab === 'imersao' ? 'active' : '']">Imersão</button>
+              </div>
+            </div>
+          </div>
+
+          <div v-if="etapasSubTab === 'nivelamento'" class="space-y-4">
+             <div class="nivelamento-cards">
+              <div class="n-card">
+                <div class="label">Alunos no nivelamento</div>
+                <div class="value">{{ getNivelamentoStudents.length }}</div>
+              </div>
+               <div class="n-card teal">
+                <div class="label">Ativos</div>
+                <div class="value">{{ courseStats.inProgress + courseStats.completed }}</div>
+              </div>
+              <div class="n-card">
+                <div class="label">Cursos obrigatórios</div>
+                <div class="value">{{ courseItems.filter(c => c.required).length }}</div>
+              </div>
+              <div class="n-card">
+                <div class="label">Cursos não obrigatórios</div>
+                <div class="value">{{ courseItems.filter(c => !c.required).length }}</div>
+              </div>
+               <div class="n-card teal">
+                <div class="label">Conclusão obrigatórios</div>
+                <div class="value">{{ courseItems.length ? Math.round((courseItems.filter(c=>c.required && c.pctCompleted).length / Math.max(1, courseItems.filter(c=>c.required).length)) * 100) + '%' : '—' }}</div>
+              </div>
+               <div class="n-card amber">
+                <div class="label">Nota de corte prova</div>
+                <div class="value">39</div>
+              </div>
+               <div class="n-card red">
+                <div class="label">Alertas</div>
+                <div class="value">{{ courseItems.filter(c => c.completionPct < 40).length }}</div>
+              </div>
             </div>
 
-            <div v-if="stages.length === 0" class="state-box">Nenhuma etapa criada para esta turma.</div>
-
-            <div v-else class="stage-grid">
-              <article v-for="stage in stages" :key="stage.id" class="stage-card">
-                <div class="stage-top">
-                  <h4>{{ displayStageName(stage.name) }}</h4>
-                  <span class="stage-count">{{ getStageCandidatesCount(stage.id) }} candidatos</span>
+            <div class="email-banner">
+              <div style="display:flex;align-items:center;gap:12px;justify-content:space-between;">
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v11"/><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg>
+                  <div>
+                    <span style="font-weight:600;color:#075985;">Último e-mail enviado: </span>
+                    <span style="color:#0c4a6e;">{{ lastEmailInfo }}</span>
+                  </div>
                 </div>
-                <p>{{ stage.description || 'Sem descrição cadastrada.' }}</p>
+                <div></div>
+              </div>
+            </div>
 
-                <div class="stage-actions">
-                  <button class="btn-outline" @click="goToStageDetails(stage)">Detalhes</button>
-                  <button class="btn-outline" @click="openEditStageModal(stage)">Editar</button>
-                  <button class="btn-danger" @click="deleteStage(stage.id)">Excluir</button>
+            <div class="nivelamento-actions">
+              <button type="button" class="btn-outline" @click="openUpdateSelectionModal">Atualizar dados</button>
+              <button type="button" class="btn-outline">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="17 8 12 3 7 8" />
+                  <line x1="12" y1="3" x2="12" y2="15" />
+                </svg>
+                <span>Submeter dados dos cursos</span>
+              </button>
+              <button type="button" class="btn-outline">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="17 8 12 3 7 8" />
+                  <line x1="12" y1="3" x2="12" y2="15" />
+                </svg>
+                <span>Submeter notas da prova</span>
+              </button>
+              <button type="button" class="btn-outline" @click="openIndividualRegistration">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+                <span>Cadastrar aluno</span>
+              </button>
+              <div class="spacer"></div>
+              <button type="button" class="btn-primary">Enviar mensagem</button>
+              <span class="pill pill-blue nivelamento-status-pill">Enviado</span>
+            </div>
+          </div>
+
+          <article class="panel">
+              <div class="panel-head">
+                <h3>Cursos do Nivelamento</h3>
+                <button v-if="courseItems && courseItems.length" type="button" class="btn-primary" @click="openAddCoursesModal">Gerenciar cursos</button>
+              </div>
+
+              <div class="courses-list">
+                <div v-if="!courseItems || courseItems.length === 0" class="no-data">Nenhum curso encontrado para o nivelamento.</div>
+
+                <div v-for="course in courseItems" :key="course?.id" class="course-card-new">
+                  <div class="course-left-new">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="course-icon">
+                      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z" />
+                    </svg>
+                    <span class="course-name-new">{{ course?.name || 'Sem nome' }}</span>
+                    <span v-if="course?.required" class="course-badge course-badge-required">Obrigatório</span>
+                    <span v-if="course?.knowledgeArea" class="course-badge">{{ course.knowledgeArea }}</span>
+                  </div>
+
+                  <div class="course-right-new">
+                    <div class="course-stats-new">
+                      <div class="course-stats-text">{{ 0 }} concluídos · {{ 0 }} pendentes</div>
+                      <div class="progress-container">
+                        <div class="progress-bar">
+                          <div class="progress-fill" :style="{ width: (course?.completionPct || 0) + '%', backgroundColor: getCompletionColor(course?.completionPct || 0) }"></div>
+                        </div>
+                        <span class="progress-pct">{{ course?.completionPct || 0 }}%</span>
+                      </div>
+                    </div>
+                    <div class="course-media">Média: {{ course?.completionPct || 0 }}</div>
+                  </div>
                 </div>
-              </article>
+              </div>
+
+            <div class="alert-banner alert-warning">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3.05L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                <line x1="12" y1="9" x2="12" y2="13" />
+                <line x1="12" y1="17" x2="12.01" y2="17" />
+              </svg>
+              <div class="alert-copy">
+                <strong>Prova Final do Nivelamento marcada para {{ overviewTimeline[5]?.date || '30/04' }}</strong>
+                <p>Recomenda-se revisar as notas e progressões antes da prova final.</p>
+              </div>
+              <button type="button" class="alert-link" @click="() => {}">Ver cronograma</button>
+            </div>
+
+            <div class="final-exam-cards" style="margin-top:16px; display:flex; gap:12px;">
+              <div class="exam-card">
+                <h4>Prova Final - Turma</h4>
+                <p>Data: {{ overviewTimeline[5]?.date || '30/04' }} · Local: Online</p>
+                <div class="exam-meta"><strong>Participantes:</strong> {{ selectionProcessMetricsCards[0].value }}</div>
+              </div>
+              <div class="exam-card">
+                <h4>Resultado Consolidado</h4>
+                <p>Média de aprovação: <strong>{{ Math.round((selectionProcessMetricsCards[1].value / Math.max(selectionProcessMetricsCards[0].value,1)) * 100) }}%</strong></p>
+                <div class="exam-meta"><strong>Cursos:</strong> {{ courseItems ? courseItems.length : 0 }}</div>
+              </div>
+            </div>
+
+            <div class="students-section" style="margin-top:20px;">
+              <h3>Alunos do Nivelamento</h3>
+              <div class="students-table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Nome</th>
+                      <th>CPF</th>
+                      <th>Progresso médio</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="student in getNivelamentoStudents" :key="student.id">
+                      <td>{{ student.name || student.id }}</td>
+                      <td>{{ student.cpf || '-' }}</td>
+                      <td>
+                        <div class="student-progress">
+                          <div class="student-progress-bar">
+                            <div class="student-progress-fill" :style="{ width: student.avg + '%' }"></div>
+                          </div>
+                          <small>{{ student.avg }}%</small>
+                        </div>
+                      </td>
+                      <td><span class="status-pill" :class="student.avg===100 ? 'status-approved' : 'status-inprogress'">{{ student.avg===100 ? 'Concluído' : 'Em andamento' }}</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </article>
         </section>
@@ -530,7 +684,7 @@
         </div>
         <div class="form-row">
           <label for="stageDescription">Descrição</label>
-          <textarea id="stageDescription" v-model="newStage.description" class="field" rows="3" placeholder="Descrição da etapa (opcional)" />
+          <textarea id="stageDescription" v-model="newStage.description" class="field" rows="3" placeholder="Descrição da etapa (opcional)"></textarea>
         </div>
         <div class="modal-actions">
           <button class="btn-outline" @click="closeCreateStageModal">Cancelar</button>
@@ -544,7 +698,7 @@
 
     <!-- Modal: Update Selection Process -->
     <div v-if="showUpdateSelectionModal" class="modal-overlay" @click="closeUpdateSelectionModal">
-      <div class="modal modal-large" @click.stop>
+      <div :class="['modal', selectedUpdateAction === 'lista-espera' ? 'modal-waitlist' : 'modal-large']" @click.stop>
         <div class="modal-header">
           <h2>Atualizar dados do processo seletivo</h2>
           <button type="button" class="modal-close" @click="closeUpdateSelectionModal">
@@ -559,7 +713,7 @@
           <p class="modal-subtitle">Escolha uma das ações abaixo para atualizar os dados do processo seletivo:</p>
           
           <div class="update-actions-grid">
-            <button type="button" class="update-action-card" @click="selectedUpdateAction = 'individual'">
+            <button type="button" class="update-action-card" @click="openIndividualRegistration">
               <div class="card-icon icon-people">
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -611,70 +765,74 @@
         </div>
 
         <!-- Individual Registration -->
-        <div v-else-if="selectedUpdateAction === 'individual'" class="modal-content">
+        <div v-else-if="selectedUpdateAction === 'individual'" class="modal-content modal-large individual-modal">
           <div class="modal-back">
-            <button type="button" @click="selectedUpdateAction = null" class="back-link">← Voltar</button>
+            <button type="button" @click="closeIndividualRegistration" class="back-link">← Voltar</button>
           </div>
           <h3>Cadastrar aluno individualmente</h3>
 
-          <div class="form-grid">
-            <div class="form-row">
+          <div class="form-grid individual-form-grid">
+            <div class="candidate-field-row">
               <label for="regName">Nome completo</label>
               <input id="regName" v-model="newCandidateForm.name" type="text" class="field" placeholder="Digite o nome completo" />
             </div>
-            <div class="form-row">
+            <div class="candidate-field-row">
               <label for="regCPF">CPF</label>
               <input id="regCPF" v-model="newCandidateForm.cpf" type="text" class="field" placeholder="000.000.000-00" />
             </div>
-            <div class="form-row">
+            <div class="candidate-field-row">
               <label for="regEmail">E-mail</label>
               <input id="regEmail" v-model="newCandidateForm.email" type="email" class="field" placeholder="exemplo@email.com" />
             </div>
-            <div class="form-row">
+            <div class="candidate-field-row">
               <label for="regGender">Gênero</label>
               <select id="regGender" v-model="newCandidateForm.gender" class="field">
                 <option value="">Selecione</option>
-                <option value="Masculino">Masculino</option>
                 <option value="Feminino">Feminino</option>
+                <option value="Masculino">Masculino</option>
                 <option value="Outro">Outro</option>
+                <option value="Não informado">Não informado</option>
               </select>
             </div>
-            <div class="form-row">
+            <div class="candidate-field-row">
               <label for="regBirthDate">Data de nascimento</label>
               <input id="regBirthDate" v-model="newCandidateForm.birthDate" type="text" class="field" placeholder="dd/mm/aaaa" />
             </div>
-            <div class="form-row">
+            <div class="candidate-field-row">
               <label for="regCity">Cidade/UF</label>
               <input id="regCity" v-model="newCandidateForm.city" type="text" class="field" placeholder="Maceió - AL" />
             </div>
-            <div class="form-row">
+            <div class="candidate-field-row">
               <label for="regEducation">Tipo de formação</label>
               <select id="regEducation" v-model="newCandidateForm.education" class="field">
                 <option value="">Selecione</option>
-                <option value="Graduação">Graduação</option>
-                <option value="Técnico">Técnico</option>
+                <option value="Graduação em andamento">Graduação em andamento</option>
+                <option value="Graduação concluída">Graduação concluída</option>
+                <option value="Curso técnico">Curso técnico</option>
+                <option value="Outros cursos de exatas/tecnologia">Outros cursos de exatas/tecnologia</option>
               </select>
             </div>
-            <div class="form-row">
+            <div class="candidate-field-row">
               <label for="regInstitution">Instituição</label>
               <input id="regInstitution" v-model="newCandidateForm.institution" type="text" class="field" placeholder="Nome da instituição" />
             </div>
-            <div class="form-row">
+            <div class="candidate-field-row">
               <label for="regQuota">Cota</label>
               <select id="regQuota" v-model="newCandidateForm.quota" class="field">
                 <option value="">Selecione</option>
                 <option value="Ampla concorrência">Ampla concorrência</option>
                 <option value="PCD/Neurodivergente">PCD/Neurodivergente</option>
                 <option value="Negro/Pardo">Negro/Pardo</option>
-                <option value="Mulheres">Mulheres</option>
+                <option value="Mulher">Mulher</option>
                 <option value="45+">45+</option>
               </select>
             </div>
-            <div class="form-row">
+            <div class="candidate-field-row">
               <label for="regStatus">Status inicial</label>
               <select id="regStatus" v-model="newCandidateForm.status" class="field">
                 <option value="">Selecione</option>
                 <option value="Inscrito">Inscrito</option>
+                <option value="Em análise">Em análise</option>
                 <option value="Aprovado">Aprovado</option>
                 <option value="Lista de espera">Lista de espera</option>
               </select>
@@ -693,9 +851,13 @@
             </div>
           </div>
 
+          <div v-if="registrationError" class="state-error registration-error">{{ registrationError }}</div>
+
           <div class="modal-actions">
-            <button type="button" class="btn-outline" @click="selectedUpdateAction = null">Cancelar</button>
-            <button type="button" class="btn-primary" @click="registerCandidateIndividually">Cadastrar aluno</button>
+            <button type="button" class="btn-outline" @click="closeIndividualRegistration">Cancelar</button>
+            <button type="button" class="btn-primary" :disabled="registeringCandidate" @click="registerCandidateIndividually">
+              {{ registeringCandidate ? 'Cadastrando...' : 'Cadastrar aluno' }}
+            </button>
           </div>
         </div>
 
@@ -763,7 +925,10 @@
           </div>
 
           <div class="file-upload-area">
-            <FileCheck :size="40" :stroke-width="2" />
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+              <polyline points="22 4 12 14.01 9 11.01" />
+            </svg>
             <p>Clique para selecionar ou arraste o arquivo</p>
             <small>Formatos aceitos: .xlsx, .xls, .csv (máx. 10MB)</small>
           </div>
@@ -798,7 +963,7 @@
         </div>
 
         <!-- Lista de Espera -->
-        <div v-else-if="selectedUpdateAction === 'lista-espera'" class="modal-content">
+        <div v-else-if="selectedUpdateAction === 'lista-espera'" class="modal-content modal-large waitlist-modal">
           <div class="modal-back">
             <button type="button" @click="selectedUpdateAction = null" class="back-link">← Voltar</button>
           </div>
@@ -821,18 +986,18 @@
 
           <p class="modal-desc">Gerencie convocações adicionais para preencher vagas disponíveis a partir da lista de espera.</p>
 
-          <div class="form-row">
+          <div class="waitlist-form-row waitlist-form-row--count">
             <label for="convokeCount">Quantidade de convocações</label>
             <input id="convokeCount" v-model="waitlistForm.convokeCount" type="number" class="field" placeholder="Digite a quantidade" />
             <small>Máximo: 48 candidatos disponíveis</small>
           </div>
 
-          <div class="form-row">
+          <div class="waitlist-form-row">
             <label for="convokeDate">Prazo para confirmação</label>
             <input id="convokeDate" v-model="waitlistForm.convokeDate" type="text" class="field" placeholder="dd/mm/aaaa" />
           </div>
 
-          <div class="form-row">
+          <div class="waitlist-form-row">
             <label for="convokeNotes">Observações (opcional)</label>
             <textarea id="convokeNotes" v-model="waitlistForm.notes" class="field" rows="3" placeholder="Adicione informações relevantes sobre esta convocação..." />
           </div>
@@ -882,11 +1047,12 @@
 
 <script>
 import { computed, onMounted, ref, watch } from 'vue';
-import { FileCheck } from 'lucide-vue-next';
 import { useRoute, useRouter } from 'vue-router';
 import { classService } from '@/services/classService';
 import { enrollmentService } from '@/services/enrollmentService';
+import { peopleService } from '@/services/peopleService';
 import { stageService } from '@/services/stageService';
+import { courseService } from '@/services/courseService';
 import ConfirmDialog from '@/components/ConfirmDialog.vue';
 
 const cycle = ['Inscrição', 'Seleção', 'Nivelamento', 'Imersão', 'Encerrado'];
@@ -1053,6 +1219,8 @@ export default {
     const editingStage = ref({ id: null, name: '', description: '' });
     const showUpdateSelectionModal = ref(false);
     const selectedUpdateAction = ref(null);
+    const registeringCandidate = ref(false);
+    const registrationError = ref('');
     const newCandidateForm = ref({
       name: '',
       cpf: '',
@@ -1176,7 +1344,7 @@ export default {
 
       let maxIndex = 0;
       stages.value.forEach((stage) => {
-        const index = cycle.indexOf(mapCycle(stage.name));
+        const index = cycle.indexOf(mapCycle(stage?.name || ''));
         if (index > maxIndex) maxIndex = index;
       });
       return maxIndex;
@@ -1224,7 +1392,7 @@ export default {
     const stageBucket = computed(() => {
       const summary = { selecao: 0, nivelamento: 0, imersao: 0 };
       stages.value.forEach((stage) => {
-        const value = normalizeText(stage.name);
+        const value = normalizeText(stage?.name || '');
         if (value.includes('sele')) summary.selecao += 1;
         if (value.includes('nivel')) summary.nivelamento += 1;
         if (value.includes('imers')) summary.imersao += 1;
@@ -1506,6 +1674,144 @@ export default {
       showUpdateSelectionModal.value = true;
     };
 
+    // ── Nivelamento : carregar cursos, progressões e estatísticas ─────────────
+    const courses = ref([]);
+    const progressions = ref([]);
+    const assignments = ref([]);
+    const loadingNivelamento = ref(false);
+
+    const loadNivelamentoData = async () => {
+      loadingNivelamento.value = true;
+      try {
+        const asgs = await courseService.getAssignmentsByClassId(classId.value).catch(() => []);
+        const progs = await courseService.getProgressionsByClassId(classId.value).catch(() => []);
+        const all = await courseService.getAll().catch(() => []);
+        assignments.value = Array.isArray(asgs) ? asgs : [];
+        progressions.value = Array.isArray(progs) ? progs : [];
+
+        const assignedIds = Array.from(new Set(assignments.value.map(a => a.course?.id).filter(Boolean)));
+        if (assignedIds.length > 0) {
+          courses.value = Array.isArray(all) ? all.filter(c => assignedIds.includes(c.id)) : [];
+        } else {
+          courses.value = [];
+        }
+      } catch (err) {
+        console.error('Erro ao carregar nivelamento:', err);
+      } finally {
+        loadingNivelamento.value = false;
+      }
+    };
+
+    const courseItems = computed(() => {
+      if (!courses.value.length) return [];
+      return courses.value.map(course => {
+        const courseProgressions = progressions.value.filter(p => p.course?.id === course.id);
+        const total = courseProgressions.length || 1;
+        const notStarted = courseProgressions.filter(p => (String(p.status || '').toLowerCase()).includes('não iniciado') || p.status === 'não iniciado').length;
+        const inProgress = courseProgressions.filter(p => (String(p.status || '').toLowerCase()).includes('em andamento') || p.status === 'em andamento').length;
+        const completed = courseProgressions.filter(p => (String(p.status || '').toLowerCase()).includes('concluído') || p.status === 'concluído').length;
+        const avgCompletion = courseProgressions.length ? Math.round((courseProgressions.reduce((acc, p) => acc + Number(p.completionPercentage || p.completionPct || p.completion || 0), 0)) / total) : 0; // eslint-disable-line
+        return {
+          id: course.id,
+          name: course.name,
+          knowledgeArea: course.knowledgeArea?.name,
+          required: assignments.value.find(a => a.course?.id === course.id)?.required !== false,
+          completionPct: avgCompletion,
+          pctNotStarted: Math.round((notStarted / total) * 100),
+          pctInProgress: Math.round((inProgress / total) * 100),
+          pctCompleted: Math.round((completed / total) * 100),
+          assigned: assignedIdsIncludes(assignments.value, course.id),
+        };
+      });
+    });
+
+    function assignedIdsIncludes(list, id) {
+      try { return list.some(x => x.course?.id === id); } catch (e) { return false; }
+    }
+
+    const courseStats = computed(() => ({
+      total: courseItems.value.length,
+      notStarted: courseItems.value.filter(c => c.completionPct === 0).length,
+      inProgress: courseItems.value.filter(c => c.completionPct > 0 && c.completionPct < 100).length,
+      completed: courseItems.value.filter(c => c.completionPct === 100).length,
+    }));
+
+    const getCompletionColor = (pct) => {
+      if (pct >= 80) return '#27ae60';
+      if (pct >= 40) return '#f39c12';
+      return '#e74c3c';
+    };
+
+    const getNivelamentoStudents = computed(() => {
+      const map = {};
+      (progressions.value || []).forEach(p => {
+        const pid = p.people?.id || p.peopleId || p.personId || p.person?.id || null;
+        if (!pid) return;
+        if (!map[pid]) {
+          map[pid] = {
+            id: pid,
+            name: p.people?.name || p.person?.name || p.personName || '',
+            cpf: p.people?.cpf || p.person?.cpf || '' ,
+            total: 0,
+            sum: 0
+          };
+        }
+        const pct = Number(p.completionPercentage ?? p.completionPct ?? p.completion ?? 0);
+        map[pid].total += 1;
+        map[pid].sum += isNaN(pct) ? 0 : pct;
+      });
+      return Object.values(map).map(s => ({
+        id: s.id,
+        name: s.name,
+        cpf: s.cpf,
+        avg: s.total ? Math.round(s.sum / s.total) : 0
+      }));
+    });
+
+        // Helpers: assign/remove/goTo for courses
+        const assignCourse = async (course) => {
+          try {
+            await courseService.assignCourseToClass(course.id, classId.value, true);
+            await loadNivelamentoData();
+          } catch (err) {
+            alert(`Erro ao adicionar curso: ${err.response?.data?.message || err.message}`);
+          }
+        };
+
+        const removeCourse = async (course) => {
+          const confirmed = await confirmDialog.value.show(`Remover o curso "${course.name}" da turma?`, 'Remover');
+          if (!confirmed) return;
+          try {
+            await courseService.removeCourseFromClass(course.id, classId.value);
+            await loadNivelamentoData();
+          } catch (err) {
+            alert(`Erro ao remover curso: ${err.response?.data?.message || err.message}`);
+          }
+        };
+
+        const goToCourse = (course) => {
+          router.push({ name: 'ClassCourses', params: { programId: programId.value, classId: classId.value }, query: { courseId: course.id } });
+        };
+
+        // Load nivelamento data when Etapas tab is opened
+        const etapasSubTab = ref('nivelamento');
+        const lastEmailInfo = computed(() => {
+          const info = classData.value?.lastEmailSent;
+          if (info && info.date) {
+            const d = new Date(info.date);
+            return `${d.toLocaleDateString('pt-BR')} às ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} por ${info.author || '—'} → ${info.count || 0} alunos com pendências`;
+          }
+          return 'Nenhum e-mail enviado recentemente';
+        });
+
+        watch(() => activeTab.value, (tab) => {
+          if (tab === 'etapas') loadNivelamentoData();
+        });
+
+    // Expose to template
+    
+
+
     const closeUpdateSelectionModal = () => {
       showUpdateSelectionModal.value = false;
       selectedUpdateAction.value = null;
@@ -1752,6 +2058,87 @@ export default {
       editStageError.value = null;
     };
 
+    const closeIndividualRegistration = () => {
+      selectedUpdateAction.value = null;
+      registrationError.value = '';
+      registeringCandidate.value = false;
+      newCandidateForm.value = {
+        name: '',
+        cpf: '',
+        email: '',
+        gender: '',
+        birthDate: '',
+        city: '',
+        education: '',
+        institution: '',
+        quota: '',
+        status: '',
+      };
+    };
+
+    const openIndividualRegistration = () => {
+      registrationError.value = '';
+      selectedUpdateAction.value = 'individual';
+    };
+
+    const parseBrazilianDate = (value) => {
+      if (!value) return null;
+      const raw = String(value).trim();
+      if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
+      const match = raw.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+      if (!match) return null;
+      const [, day, month, year] = match;
+      return `${year}-${month}-${day}`;
+    };
+
+    const firstSelectionStageId = computed(() => {
+      const stage = (stages.value || []).find((item) => normalizeText(item?.name) === 'selecao')
+        || (stages.value || []).find((item) => normalizeText(item?.name) === 'seleção')
+        || (stages.value || [])[0];
+
+      return stage?.id || null;
+    });
+
+    const registerCandidateIndividually = async () => {
+      registeringCandidate.value = true;
+      registrationError.value = '';
+
+      try {
+        const birthDate = parseBrazilianDate(newCandidateForm.value.birthDate);
+        if (!birthDate) {
+          throw new Error('Informe uma data de nascimento válida no formato dd/mm/aaaa.');
+        }
+
+        const stageId = firstSelectionStageId.value;
+        if (!stageId) {
+          throw new Error('Nenhuma etapa disponível para vincular o candidato.');
+        }
+
+        await peopleService.createLink({
+          programaId: Number(programId.value),
+          turmaId: Number(classId.value),
+          etapaId: Number(stageId),
+          statusInicial: newCandidateForm.value.status,
+          nome: newCandidateForm.value.name,
+          dataNascimento: birthDate,
+          genero: newCandidateForm.value.gender,
+          cota: newCandidateForm.value.quota,
+          cpf: newCandidateForm.value.cpf,
+          email: newCandidateForm.value.email,
+          cidade: newCandidateForm.value.city,
+          tipoFormacao: newCandidateForm.value.education,
+          instituicao: newCandidateForm.value.institution,
+        });
+
+        await Promise.all([loadClassDetails(), loadClassPeople(), loadSelectionProcessContext()]);
+        closeIndividualRegistration();
+      } catch (error) {
+        registrationError.value = error?.response?.data?.message || error.message || 'Erro ao cadastrar aluno.';
+      } finally {
+        registeringCandidate.value = false;
+      }
+    };
+
     const formatDate = (date) => {
       if (!date) return '-';
       return new Date(date).toLocaleDateString('pt-BR');
@@ -1796,6 +2183,7 @@ export default {
       classStatusLabel,
       closeCreateStageModal,
       closeEditStageModal,
+      closeIndividualRegistration,
       confirmDialog,
       createStage,
       creatingStage,
@@ -1825,6 +2213,9 @@ export default {
       classPeriodLabel,
       classWorkloadLabel,
       loading,
+      openUpdateSelectionModal,
+      openIndividualRegistration,
+      newCandidateForm,
       newStage,
       nextStageLabel,
       openEditStageModal,
@@ -1850,6 +2241,8 @@ export default {
       peopleSearch,
       peopleStageOptions,
       peopleStatusOptions,
+      registrationError,
+      registeringCandidate,
       selectionConflictButtonLabel,
       selectionConflictCount,
       selectionConflictOnly,
@@ -1880,17 +2273,31 @@ export default {
       stages,
       statusBadgeClass,
       tabs,
+      etapasSubTab,
+      lastEmailInfo,
       totalCandidates,
       updateStage,
       updatingStage,
       selectedUpdateAction,
+      waitlistForm,
       viewPerson,
+      // Nivelamento / Etapas helpers
+      courses,
+      courseItems,
+      courseStats,
+      getNivelamentoStudents,
+      getCompletionColor,
+      loadingNivelamento,
+      loadNivelamentoData,
+      assignCourse,
+      removeCourse,
+      goToCourse,
     };
   },
 };
 </script>
 
-<style>
+<style scoped>
 .figma-page {
   --brand-900: #171f4a;
   --brand-800: #2a3566;
@@ -2817,6 +3224,7 @@ export default {
   padding: 10px;
   font-size: 14px;
   color: var(--brand-900);
+  font-family: inherit;
 }
 
 .field:focus {
@@ -2830,6 +3238,36 @@ export default {
   display: flex;
   justify-content: flex-end;
   gap: 8px;
+}
+
+.individual-modal {
+  width: min(1000px, calc(100vw - 24px));
+  max-width: 1000px;
+}
+
+.individual-modal .form-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 18px;
+}
+
+.individual-modal .candidate-field-row {
+  display: block !important;
+  width: 100%;
+  margin-bottom: 0;
+}
+
+.individual-modal .candidate-field-row label {
+  display: block;
+  width: 100%;
+  margin-bottom: 6px;
+}
+
+.individual-modal .candidate-field-row .field {
+  width: 100%;
+}
+
+.registration-error {
+  margin-top: 8px;
 }
 
 /* People Tab Styles */
@@ -3215,6 +3653,16 @@ export default {
   flex-direction: column;
 }
 
+.modal.modal-waitlist {
+  width: min(920px, calc(100vw - 24px));
+  max-width: 920px;
+  max-height: calc(100vh - 24px);
+  overflow: hidden;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
 .modal-header {
   display: flex;
   justify-content: space-between;
@@ -3252,6 +3700,15 @@ export default {
   width: 100%;
   box-sizing: border-box;
   flex: 1 1 auto;
+}
+
+.modal-content.waitlist-modal {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  flex: 1 1 auto;
+  align-self: stretch;
 }
 
 .modal.modal-large .modal-content.update-selection-home {
@@ -3316,7 +3773,7 @@ export default {
   color: inherit;
 }
 
-.card-icon {
+.modal.modal-large .card-icon {
   width: 34px;
   height: 34px;
   border-radius: 0;
@@ -3328,30 +3785,30 @@ export default {
   background: transparent;
 }
 
-.icon-people {
+.modal.modal-large .icon-people {
   color: var(--teal-500);
 }
 
-.icon-upload {
+.modal.modal-large .icon-upload {
   color: var(--teal-500);
 }
 
-.icon-check {
+.modal.modal-large .icon-check {
   color: var(--teal-500);
 }
 
-.icon-clock {
+.modal.modal-large .icon-clock {
   color: var(--teal-500);
 }
 
-.update-action-card h4 {
+.modal.modal-large .update-action-card h4 {
   margin: 0 0 8px;
   color: var(--brand-900);
   font-size: 17px;
   font-weight: 600;
 }
 
-.update-action-card p {
+.modal.modal-large .update-action-card p {
   margin: 0;
   color: #64748b;
   font-size: 13px;
@@ -3507,7 +3964,7 @@ export default {
   font-size: 10px;
 }
 
-.file-upload-area {
+.modal.modal-large .file-upload-area {
   border: 2px dashed var(--brand-300);
   border-radius: 10px;
   padding: 36px 18px;
@@ -3520,24 +3977,24 @@ export default {
   box-sizing: border-box;
 }
 
-.file-upload-area:hover {
+.modal.modal-large .file-upload-area:hover {
   border-color: var(--teal-500);
   background: #f0fdfa;
 }
 
-.file-upload-area svg {
+.modal.modal-large .file-upload-area svg {
   margin-bottom: 12px;
   color: var(--slate-400);
 }
 
-.file-upload-area p {
+.modal.modal-large .file-upload-area p {
   margin: 0;
   color: var(--brand-900);
   font-weight: 600;
   font-size: 14px;
 }
 
-.file-upload-area small {
+.modal.modal-large .file-upload-area small {
   display: block;
   margin-top: 6px;
   color: var(--slate-600);
@@ -3613,32 +4070,75 @@ export default {
   color: #065f46;
 }
 
-.waitlist-stats {
+.modal-content.waitlist-modal .waitlist-stats {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
-  background: var(--slate-50);
-  padding: 16px;
-  border-radius: 10px;
-  margin-bottom: 16px;
+  gap: 8px;
+  background: #f7f9fd;
+  padding: 12px 16px;
+  border: 1px solid #dde5f4;
+  border-radius: 12px;
+  margin-bottom: 14px;
 }
 
-.stat-item {
+.modal-content.waitlist-modal .stat-item {
   text-align: center;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  justify-content: center;
+  min-height: 54px;
 }
 
-.stat-item span {
+.modal-content.waitlist-modal .stat-item span {
   display: block;
-  color: var(--slate-600);
-  font-size: 12px;
-  margin-bottom: 6px;
+  color: #5b6b94;
+  font-size: 11px;
+  margin-top: 6px;
+  line-height: 1.15;
 }
 
-.stat-item strong {
+.modal-content.waitlist-modal .stat-item strong {
   display: block;
   color: var(--brand-900);
-  font-size: 24px;
-  font-weight: 600;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.modal-content.waitlist-modal .waitlist-form-row {
+  display: block;
+  margin-bottom: 14px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.modal-content.waitlist-modal .waitlist-form-row--count {
+  display: block;
+}
+
+.modal-content.waitlist-modal .waitlist-form-row label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--slate-700);
+}
+
+.modal-content.waitlist-modal .waitlist-form-row .field {
+  width: 100%;
+}
+
+.modal-content.waitlist-modal textarea.field {
+  resize: none;
+}
+
+.modal-content.waitlist-modal .waitlist-form-row small {
+  display: block;
+  margin-top: 6px;
+  color: var(--slate-600);
+  font-size: 12px;
+  line-height: 1.45;
 }
 
 @media (max-width: 1200px) {
@@ -3803,4 +4303,169 @@ export default {
     width: 100%;
   }
 }
+
+/* Scoped styles for Nivelamento additions */
+.nivelamento-tabs { padding: 0 24px; }
+.tab-btn { background: transparent; border: none; padding: 10px 14px; cursor: pointer; font-weight:600; color:var(--slate-600); border-bottom:2px solid transparent; }
+.tab-btn.active { color:var(--teal-600); border-bottom-color:var(--teal-600); }
+.nivelamento-cards { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap:12px; padding: 12px 24px; }
+.n-card { background:#fff; border:1px solid var(--slate-200); border-radius:8px; padding:10px 12px; display:flex; flex-direction:column; justify-content:center; min-height:64px; box-sizing:border-box; }
+.n-card .label { font-size:12px; color:var(--slate-600); margin-bottom:8px; }
+.n-card .value { font-size:24px; font-weight:700; color:var(--slate-900); line-height:1; }
+.n-card.teal .value { color:var(--teal-600); }
+.n-card.amber .value { color:#d97706; }
+.n-card.red .value { color:#dc2626; }
+.email-banner { background:#f0f9ff; border:1px solid #dbeafe; border-radius:8px; padding:12px 16px; margin:0 24px; }
+.courses-panel { margin: 12px 24px; }
+.course-card { display:flex; justify-content:space-between; align-items:center; padding:12px; border-bottom:1px solid var(--slate-100); }
+.students-table table { width:100%; border-collapse:collapse; }
+.students-table th, .students-table td { padding:8px 6px; text-align:left; border-bottom:1px solid var(--slate-100); }
+
+/* Actions row */
+.nivelamento-actions { margin:12px 24px; display:flex; gap:8px; align-items:center; }
+.nivelamento-actions .spacer { flex:1; }
+.nivelamento-actions .btn-outline,
+.nivelamento-actions .btn-primary {
+  height: 32px;
+  padding: 0 12px;
+  font-size: 13px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 1;
+}
+.nivelamento-actions .btn-outline svg {
+  flex-shrink: 0;
+}
+.nivelamento-actions .btn-primary {
+  padding: 0 14px;
+}
+.nivelamento-status-pill {
+  margin-left: 4px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: #dbeafe;
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 0 10px;
+}
+
+/* Course cards layout */
+.courses-list { space-y: 1rem; }
+.course-card-new {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  border: 1px solid var(--slate-200);
+  border-radius: 8px;
+  transition: all 0.2s;
+  text-align: left;
+  margin-bottom: 8px;
+  background: #fff;
+  cursor: pointer;
+}
+.course-card-new:hover {
+  border-color: var(--teal-300);
+  background: #f0fdfa;
+}
+.course-left-new {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+.course-icon {
+  color: var(--slate-400);
+  flex-shrink: 0;
+}
+.course-name-new {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--slate-900);
+}
+.course-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: var(--slate-100);
+  color: var(--slate-600);
+  border: 1px solid var(--slate-200);
+  white-space: nowrap;
+}
+.course-badge-required {
+  background: #fee2e2;
+  color: #dc2626;
+  border-color: #fecaca;
+}
+.course-right-new {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.course-stats-new {
+  text-align: right;
+  min-width: 200px;
+}
+.progress-bar {
+  width: 128px;
+  height: 8px;
+  background: var(--slate-200);
+  border-radius: 999px;
+  overflow: hidden;
+  display: inline-block;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--teal-500);
+  border-radius: 999px;
+}
+.course-media {
+  font-size: 14px;
+  color: var(--slate-700);
+  font-weight: 600;
+  min-width: 60px;
+  text-align: right;
+}
+.course-stats-text {
+  font-size: 12px;
+  color: var(--slate-400);
+  margin-bottom: 8px;
+}
+.progress-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.progress-pct {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--slate-900);
+  min-width: 32px;
+  text-align: right;
+}
+
+/* Tabs background stripe */
+.tabs-bg { display:inline-flex !important; background: #ffffff !important; padding:8px 10px !important; border-radius:8px; align-items:center; gap:6px; z-index:2; border:1px solid var(--slate-100) !important; box-shadow: 0 1px 2px rgba(2,6,23,0.04); }
+.tabs-bg .tab-btn { background: transparent !important; border: none !important; }
+.tab-btn { padding: 8px 12px; cursor: pointer; font-weight:600; color:var(--slate-600); border-bottom:2px solid transparent; background: transparent; }
+.tab-btn.active { color:var(--teal-600); border-bottom-color:var(--teal-600); }
+
+/* ensure the tabs-bg doesn't stretch full width */
+.tabs-bg { box-shadow: none; }
+
+@media (max-width: 1200px) {
+  .nivelamento-cards { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (max-width: 760px) {
+  .nivelamento-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
 </style>

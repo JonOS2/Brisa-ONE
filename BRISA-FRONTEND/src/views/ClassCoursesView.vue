@@ -52,6 +52,7 @@
         <div v-if="courseItems.length === 0" class="no-data">
           Nenhum curso encontrado para esta turma.
         </div>
+
         <div
           v-for="course in courseItems"
           :key="course.id"
@@ -59,6 +60,28 @@
           @click="goToCourse(course)"
         >
           <div class="course-left">
+            <!-- Info do curso -->
+            <div class="course-info">
+              <div class="course-name-row">
+                <span class="course-name">{{ course.name }}</span>
+                <span v-if="course.required" class="tag-required">Obrigatório</span>
+              </div>
+              <span v-if="course.knowledgeArea" class="course-area">{{ course.knowledgeArea }}</span>
+            </div>
+          </div>
+
+          <div class="course-right">
+            <div class="course-stats">
+              <div class="stat">
+                <strong>{{ course.completionPct }}%</strong>
+                <span>Média</span>
+              </div>
+              <div class="stat">
+                <strong>{{ course.pctCompleted }}%</strong>
+                <span>Concluídos</span>
+              </div>
+            </div>
+
             <!-- Badge circular de % -->
             <div class="completion-badge" :style="{ '--pct': course.completionPct, '--color': getCompletionColor(course.completionPct) }">
               <svg viewBox="0 0 36 36" class="circular-chart">
@@ -73,59 +96,74 @@
               <span class="badge-pct">{{ course.completionPct }}%</span>
             </div>
 
-            <!-- Info do curso -->
-            <div class="course-info">
-              <div class="course-name-row">
-                <span class="course-name">{{ course.name }}</span>
-                <span v-if="course.required" class="tag-required">Obrigatório</span>
-              </div>
-              <span v-if="course.knowledgeArea" class="course-area">{{ course.knowledgeArea }}</span>
-
-              <!-- Barra de progresso segmentada -->
-              <div class="progress-bar-wrapper">
-                <div class="progress-bar">
-                  <div
-                    class="progress-segment not-started"
-                    :style="{ width: course.pctNotStarted + '%' }"
-                    :title="`Não iniciado: ${course.pctNotStarted}%`"
-                  ></div>
-                  <div
-                    class="progress-segment in-progress"
-                    :style="{ width: course.pctInProgress + '%' }"
-                    :title="`Em andamento: ${course.pctInProgress}%`"
-                  ></div>
-                  <div
-                    class="progress-segment completed"
-                    :style="{ width: course.pctCompleted + '%' }"
-                    :title="`Concluído: ${course.pctCompleted}%`"
-                  ></div>
-                </div>
-                <div class="progress-legend">
-                  <span class="legend-item not-started-text">
-                    <span class="legend-dot-sm not-started"></span>
-                    Não iniciado {{ course.pctNotStarted }}%
-                  </span>
-                  <span class="legend-item in-progress-text">
-                    <span class="legend-dot-sm in-progress"></span>
-                    Em andamento {{ course.pctInProgress }}%
-                  </span>
-                  <span class="legend-item completed-text">
-                    <span class="legend-dot-sm completed"></span>
-                    Concluído {{ course.pctCompleted }}%
-                  </span>
-                </div>
-              </div>
+            <div class="course-actions">
+              <button v-if="course.assigned" class="btn-remove" @click.stop="removeCourse(course)">Remover</button>
+              <button v-else class="btn-add" @click.stop="assignCourse(course)">Adicionar</button>
             </div>
-          </div>
-
-          <div class="course-actions">
-            <button v-if="course.assigned" class="btn-remove" @click.stop="removeCourse(course)">Remover</button>
-            <button v-else class="btn-add" @click.stop="assignCourse(course)">Adicionar</button>
           </div>
 
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2" class="arrow-icon">
             <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
           </svg>
+        </div>
+      </div>
+
+      <!-- Aviso e Prova Final -->
+      <div class="alert-banner alert-yellow" style="margin-top:18px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3.05h16.94a2 2 0 0 0 1.71-3.05L13.71 3.86a2 2 0 0 0-3.42 0z" />
+          <line x1="12" y1="9" x2="12" y2="13" />
+          <line x1="12" y1="17" x2="12.01" y2="17" />
+        </svg>
+        <div class="alert-copy">
+          <strong>Prova Final do Nivelamento marcada para 30/04</strong>
+          <p>Recomenda-se revisar as notas e progressões antes da prova final.</p>
+        </div>
+        <button type="button" class="alert-link" @click="() => {}">Ver cronograma</button>
+      </div>
+
+      <div class="final-exam-cards" style="margin-top:16px; display:flex; gap:12px;">
+        <div class="exam-card">
+          <h4>Prova Final - Turma A</h4>
+          <p>Data: 30/04 · Local: Online</p>
+          <div class="exam-meta"><strong>Participantes:</strong> {{ courseStats.total }}</div>
+        </div>
+        <div class="exam-card">
+          <h4>Resultado Consolidado</h4>
+          <p>Média de aprovação: <strong>{{ Math.round((courseStats.completed / Math.max(courseStats.total,1)) * 100) }}%</strong></p>
+          <div class="exam-meta"><strong>Cursos:</strong> {{ courseStats.total }}</div>
+        </div>
+      </div>
+
+      <!-- Alunos do Nivelamento -->
+      <div class="students-section" style="margin-top:20px;">
+        <h3>Alunos do Nivelamento</h3>
+        <div class="students-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Nome</th>
+                <th>CPF</th>
+                <th>Progresso médio</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="student in getNivelamentoStudents" :key="student.id">
+                <td>{{ student.name || student.id }}</td>
+                <td>{{ student.cpf || '-' }}</td>
+                <td>
+                  <div class="student-progress">
+                    <div class="student-progress-bar">
+                      <div class="student-progress-fill" :style="{ width: student.avg + '%' }"></div>
+                    </div>
+                    <small>{{ student.avg }}%</small>
+                  </div>
+                </td>
+                <td><span class="status-pill" :class="student.avg===100 ? 'status-approved' : 'status-inprogress'">{{ student.avg===100 ? 'Concluído' : 'Em andamento' }}</span></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -337,6 +375,32 @@ export default {
 
     onMounted(loadData);
 
+    const getNivelamentoStudents = computed(() => {
+      const map = {};
+      (progressions.value || []).forEach(p => {
+        const pid = p.people?.id || p.peopleId || p.personId || p.person?.id || null;
+        if (!pid) return;
+        if (!map[pid]) {
+          map[pid] = {
+            id: pid,
+            name: p.people?.name || p.person?.name || p.personName || '',
+            cpf: p.people?.cpf || p.person?.cpf || '' ,
+            total: 0,
+            sum: 0
+          };
+        }
+        const pct = Number(p.completionPercentage ?? p.completionPct ?? p.completion ?? 0);
+        map[pid].total += 1;
+        map[pid].sum += isNaN(pct) ? 0 : pct;
+      });
+      return Object.values(map).map(s => ({
+        id: s.id,
+        name: s.name,
+        cpf: s.cpf,
+        avg: s.total ? Math.round(s.sum / s.total) : 0
+      }));
+    });
+
     return {
       router, classData, loading,
       courseItems, courseStats,
@@ -349,7 +413,8 @@ export default {
       progressionImportSuccess,
       handleProgressionFileChange,
       importProgressionsExcel,
-      closeProgressionImportModal
+      closeProgressionImportModal,
+      getNivelamentoStudents
     };
   }
 };
@@ -468,6 +533,10 @@ export default {
   transform: translateY(-1px);
 }
 .course-left { display: flex; align-items: center; gap: 20px; flex: 1; }
+.course-right { display:flex; align-items:center; gap:14px; flex-shrink:0; }
+.course-stats { display:flex; flex-direction:column; gap:6px; text-align:right; margin-right:6px; }
+.course-stats .stat { font-size:12px; color:#666; }
+.course-stats .stat strong { display:block; font-size:16px; color:#1F285F; }
 
 /* Badge circular */
 .completion-badge {
@@ -560,6 +629,24 @@ export default {
 .btn-add:hover { background: #f0fbff; }
 .btn-remove { border-color: #f5d2d2; color: #b71c1c; }
 .btn-remove:hover { background: #fff5f5; }
+
+/* Alert and final exam cards */
+.alert-yellow { background:#fff8e6; border-radius:12px; padding:12px 16px; display:flex; gap:12px; align-items:center; border:1px solid #f2e7c9; }
+.alert-yellow svg { flex-shrink:0; color:#f39c12; }
+.alert-copy strong { display:block; color:#1F285F; }
+.alert-link { margin-left:auto; background:none; border:none; color:#1F285F; font-weight:700; cursor:pointer; }
+
+.final-exam-cards { display:flex; gap:12px; }
+.exam-card { background:white; padding:12px 14px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.04); flex:1; }
+.exam-card h4 { margin:0 0 6px 0; color:#1F285F; }
+.exam-meta { margin-top:8px; font-size:13px; color:#666; }
+
+/* Students table */
+.students-table table { width:100%; border-collapse:collapse; margin-top:8px; }
+.students-table th, .students-table td { text-align:left; padding:10px 8px; border-bottom:1px solid #f1f3f6; }
+.student-progress { display:flex; align-items:center; gap:8px; }
+.student-progress-bar { width:140px; height:8px; background:#eaf1fb; border-radius:8px; overflow:hidden; }
+.student-progress-fill { height:100%; background:#27ae60; }
 
 .modal-overlay {
   position: fixed;
