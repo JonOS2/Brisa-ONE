@@ -3628,6 +3628,7 @@ export default {
   align-items: center;
   padding: 12px 16px;
   border-radius: 10px;
+  margin-top: 12px;
   margin-bottom: 16px;
   border-left: 4px solid;
 }
