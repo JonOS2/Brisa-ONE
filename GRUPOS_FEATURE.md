@@ -464,6 +464,28 @@ Desenvolvedor: **Claude Copilot (Haiku 4.5)**
 
 Para continuar a Fase 2, comece pela **Listagem de Grupos na UI** (prioridade 1).
 
+## 🛠️ Evolução recente (2026-05-15)
+
+- Implementado carregamento dinâmico de grupos de imersão no frontend (Fase 2 - item 1):
+  - Arquivo modificado: `BRISA-FRONTEND/src/views/ClassDetailsView.vue`
+  - Função adicionada: `loadImersaoGroups()` — chama `groupService.getGroupsByClass(classId)` e mapeia resposta para `imersaoGroups`.
+  - Gatilho: observa `etapasSubTab` e carrega grupos quando `'imersao'` é selecionado.
+  - Atualiza cartões de métricas (`imersaoMetricsCards`) com contagem de grupos e alunos.
+
+- Substituídos dados de exemplo por carregamento real via API (mock removido).
+
+- Observações:
+  - A implementação é defensiva quanto ao formato da resposta da API (aceita `response.data` como array ou objeto com `groups`).
+  - Erros de rede são logados no console; pode-se exibir feedback visual se desejar.
+
+- Próximos passos recomendados:
+  1. Ajustar a renderização da lista (UX) conforme design
+  2. Implementar detalhe do grupo (GET /groups/{id}) e UI de expansão
+  3. Criar modal de edição e endpoint de atualização (PUT)
+  4. Implementar deleção com confirmação e testes de integração
+
 ---
 
-**Status Final**: ✅ PRONTO PARA PRODUÇÃO (com Fase 2 pendente)
+**Status**: Fase 1: Concluída. Fase 2: Em progresso (Listagem de grupos - frontend implementada).
+
+
