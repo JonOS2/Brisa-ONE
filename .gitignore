@@ -4,3 +4,8 @@ BRISA-BACKEND/src/main/resources/application.properties
 BRISA-BACKEND/src/main/resources/application.properties
 BRISA-BACKEND/src/main/resources/application.properties
 BRISA-BACKEND/src/main/resources/application.properties
+BRISA-BACKEND/.brisa-data/
+backend-career-run.log
+backend-career-run.err.log
+BRISA-FRONTEND/node_modules/
+Brisa ONE/node_modules/

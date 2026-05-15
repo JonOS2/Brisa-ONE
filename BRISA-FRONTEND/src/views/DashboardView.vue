@@ -456,12 +456,12 @@ import {
   TrendingUp,
   Users,
 } from 'lucide-vue-next';
+import { careerService } from '@/services/careerService';
 import { classService } from '@/services/classService';
 import { enrollmentService } from '@/services/enrollmentService';
 import { programService } from '@/services/programService';
 
 const route = useRoute();
-const CAREER_FOLLOWUP_STORAGE_KEY = 'career-followups-v1';
 const SAMPLE_DASHBOARD_OVERVIEW_ITEMS = [
   {
     programId: 11,
@@ -688,7 +688,8 @@ const actionMessage = ref('');
 const overview = ref(null);
 const classes = ref([]);
 const enrollments = ref([]);
-const forceSampleData = ref(true);
+const careerFollowUps = ref([]);
+const forceSampleData = ref(false);
 
 const selectedProgramId = ref('');
 const selectedClassId = ref('');
@@ -739,15 +740,17 @@ async function loadData() {
   errorMessage.value = '';
 
   try {
-    const [overviewData, classesData, enrollmentsData] = await Promise.all([
+    const [overviewData, classesData, enrollmentsData, followUpsData] = await Promise.all([
       programService.getOverview().catch(() => ({ resumo: {}, items: [] })),
       classService.getAll().catch(() => []),
       enrollmentService.getAll().catch(() => []),
+      careerService.getFollowUps().catch(() => []),
     ]);
 
     overview.value = overviewData && typeof overviewData === 'object' ? overviewData : { resumo: {}, items: [] };
     classes.value = Array.isArray(classesData) ? classesData : [];
     enrollments.value = Array.isArray(enrollmentsData) ? enrollmentsData : [];
+    careerFollowUps.value = Array.isArray(followUpsData) ? followUpsData : [];
     actionMessage.value = '';
   } catch (error) {
     errorMessage.value = error.response?.data?.message || error.message || 'Não foi possível carregar o dashboard.';
@@ -917,7 +920,7 @@ const completedStudentEnrollments = computed(() =>
 const participantPeople = computed(() => uniquePeopleFromEnrollments(studentEnrollments.value));
 const activeParticipantPeople = computed(() => uniquePeopleFromEnrollments(activeStudentEnrollments.value));
 
-const storedCareerFollowUps = computed(() => (usingSampleData.value ? SAMPLE_DASHBOARD_FOLLOWUPS : readStoredCareerFollowUps()));
+const storedCareerFollowUps = computed(() => (usingSampleData.value ? SAMPLE_DASHBOARD_FOLLOWUPS : careerFollowUps.value));
 
 const scopedFollowUps = computed(() => {
   if (!storedCareerFollowUps.value.length) return [];
@@ -933,7 +936,7 @@ const latestScopedFollowUps = computed(() => {
   const grouped = new Map();
 
   scopedFollowUps.value.forEach((item) => {
-    const key = String(item?.key || item?.peopleId || item?.id || '');
+    const key = String(item?.key || [item?.peopleId || 'person', item?.classId || 'class', item?.enrollmentId || item?.id || 'followup'].join(':'));
     if (!key) return;
     const current = grouped.get(key);
     if (!current || String(item.surveyDate || '') > String(current.surveyDate || '')) {
@@ -1946,17 +1949,6 @@ function nextMilestoneLabel(classItems, phase) {
   if (!dates.length) return 'Sem data futura';
   dates.sort((left, right) => left.getTime() - right.getTime());
   return formatDate(dates[0]);
-}
-
-function readStoredCareerFollowUps() {
-  if (typeof window === 'undefined') return [];
-  try {
-    const raw = window.localStorage.getItem(CAREER_FOLLOWUP_STORAGE_KEY);
-    const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
 }
 
 function isTechPosition(position, company) {
