@@ -16,8 +16,6 @@ Este repositorio esta organizado em tres pastas principais:
 
 ### 1. Backend
 
-O backend agora pode subir localmente sem PostgreSQL externo usando H2 por padrao.
-
 ```powershell
 cd BRISA-BACKEND
 .\mvnw.cmd spring-boot:run
@@ -44,7 +42,7 @@ npm run dev
 Opcionalmente, copie `.env.example` para `.env` e ajuste a API:
 
 ```dotenv
-VITE_API_BASE_URL=http://localhost:8083/api
+VITE_API_BASE_URL=http://localhost:8082/api
 ```
 
 ### 3. Prototipo Brisa ONE

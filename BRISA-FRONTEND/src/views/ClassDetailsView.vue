@@ -1917,70 +1917,7 @@ export default {
       { label: 'Nota de corte final', value: '75% da maior', valueClass: 'warning-strong' },
       { label: 'Alunos em risco', value: '3', valueClass: 'danger-strong' },
     ]);
-    const imersaoGroups = ref([
-      {
-        id: 1,
-        name: 'Grupo 03',
-        status: 'OK',
-        statusClass: 'is-ok',
-        mentor: 'Prof. João Silva',
-        project: 'Plataforma de Gestão Acadêmica',
-        partnerCompany: 'BRISA',
-        lastGradesUpdate: '25/04/2026',
-        lastMeetingDate: '24/04/2026',
-        students: 5,
-        partialAverage: '7.8',
-        finalAverage: '8.4',
-        studentsDetails: [
-          { id: 'g03-1', name: 'João Silva', partial: '4.2', final: '4.5', situation: 'Regular', situationClass: 'status-regular', attendedLastMeeting: true },
-          { id: 'g03-2', name: 'Maria Santos', partial: '3.8', final: '4.1', situation: 'Regular', situationClass: 'status-regular', attendedLastMeeting: true },
-          { id: 'g03-3', name: 'Carlos Oliveira', partial: '4.5', final: '4.7', situation: 'Regular', situationClass: 'status-regular', attendedLastMeeting: true },
-          { id: 'g03-4', name: 'Ana Costa', partial: '4.0', final: '4.3', situation: 'Regular', situationClass: 'status-regular', attendedLastMeeting: true },
-          { id: 'g03-5', name: 'Pedro Lima', partial: '3.5', final: '3.8', situation: 'Regular', situationClass: 'status-regular', attendedLastMeeting: false },
-        ],
-      },
-      {
-        id: 2,
-        name: 'Grupo 07',
-        status: 'OK',
-        statusClass: 'is-ok',
-        mentor: 'Prof. Maria Santos',
-        project: 'Sistema de Controle de Estoque',
-        partnerCompany: 'BRISA',
-        lastGradesUpdate: '25/04/2026',
-        lastMeetingDate: '24/04/2026',
-        students: 4,
-        partialAverage: '8.2',
-        finalAverage: '8.9',
-        studentsDetails: [
-          { id: 'g07-1', name: 'Fernanda Lima', partial: '4.4', final: '4.8', situation: 'Regular', situationClass: 'status-regular', attendedLastMeeting: true },
-          { id: 'g07-2', name: 'Gustavo Rocha', partial: '4.1', final: '4.6', situation: 'Regular', situationClass: 'status-regular', attendedLastMeeting: true },
-          { id: 'g07-3', name: 'Helena Costa', partial: '3.9', final: '4.4', situation: 'Regular', situationClass: 'status-regular', attendedLastMeeting: true },
-          { id: 'g07-4', name: 'Igor Nascimento', partial: '4.0', final: '4.5', situation: 'Regular', situationClass: 'status-regular', attendedLastMeeting: true },
-        ],
-      },
-      {
-        id: 3,
-        name: 'Grupo 12',
-        status: 'Atenção',
-        statusClass: 'is-warning',
-        mentor: 'Prof. Carlos Oliveira',
-        project: 'App de Mobilidade Urbana',
-        partnerCompany: 'BRISA',
-        lastGradesUpdate: '25/04/2026',
-        lastMeetingDate: '24/04/2026',
-        students: 5,
-        partialAverage: '6.5',
-        finalAverage: '7.2',
-        studentsDetails: [
-          { id: 'g12-1', name: 'João Victor Melo', partial: '3.6', final: '3.9', situation: 'Atenção', situationClass: 'status-warning', attendedLastMeeting: false },
-          { id: 'g12-2', name: 'Karina Souza', partial: '3.8', final: '4.0', situation: 'Regular', situationClass: 'status-regular', attendedLastMeeting: true },
-          { id: 'g12-3', name: 'Lucas Monteiro', partial: '4.0', final: '4.1', situation: 'Regular', situationClass: 'status-regular', attendedLastMeeting: true },
-          { id: 'g12-4', name: 'Mariana Lopes', partial: '3.7', final: '3.9', situation: 'Atenção', situationClass: 'status-warning', attendedLastMeeting: false },
-          { id: 'g12-5', name: 'Nicolas Barros', partial: '3.5', final: '3.8', situation: 'Atenção', situationClass: 'status-warning', attendedLastMeeting: true },
-        ],
-      },
-    ]);
+    const imersaoGroups = ref([]);
     const imersaoExpandedGroupId = ref(1);
     const imersaoGroupTabs = ref({
       1: 'resumo',
@@ -2651,6 +2588,46 @@ export default {
 
         watch(() => activeTab.value, (tab) => {
           if (tab === 'etapas') loadNivelamentoData();
+        });
+
+        // Load imersao groups when sub-tab switches to 'imersao'
+        const loadImersaoGroups = async () => {
+          try {
+            const res = await groupService.getGroupsByClass(classId.value);
+            const groups = (res && res.data && (Array.isArray(res.data) ? res.data : res.data.groups)) || res.data || res || [];
+            imersaoGroups.value = (groups || []).map((g) => ({
+              id: g.id,
+              name: g.projectTheme || g.name || '-',
+              status: g.status || 'Ativo',
+              statusClass: (g.status === 'Atenção') ? 'is-warning' : 'is-ok',
+              mentor: g.leaderName || g.leader || '-',
+              project: g.projectTheme || g.project || '-',
+              partnerCompany: g.projectCompanyName || g.projectCompany || '',
+              lastGradesUpdate: g.lastGradesUpdate || '-',
+              lastMeetingDate: g.lastMeetingDate || '-',
+              students: g.memberCount ?? (g.members?.length ?? 0),
+              partialAverage: g.partialAverage ?? '-',
+              finalAverage: g.finalAverage ?? '-',
+              studentsDetails: (g.members || g.studentDetails || []).map((m) => ({
+                id: m.id,
+                name: m.name,
+                partial: m.partial ?? '-',
+                final: m.final ?? '-',
+                situation: m.situation || 'Regular',
+                situationClass: (m.situation === 'Atenção') ? 'status-warning' : 'status-regular',
+                attendedLastMeeting: !!m.attendedLastMeeting,
+              })),
+            }));
+            // update metrics
+            imersaoMetricsCards.value[0].value = String(imersaoGroups.value.length || 0);
+            imersaoMetricsCards.value[1].value = String(imersaoGroups.value.reduce((s, g) => s + (g.students || 0), 0));
+          } catch (err) {
+            console.error('Erro ao carregar grupos:', err);
+          }
+        };
+
+        watch(() => etapasSubTab.value, (tab) => {
+          if (tab === 'imersao') loadImersaoGroups();
         });
 
     // Expose to template
