@@ -271,59 +271,10 @@
       </div>
     </div>
 
-    <!-- Edit Modal -->
-    <div v-if="isEditing" class="modal-overlay" @click="isEditing = false">
-      <div class="modal-card" @click.stop>
-        <div class="modal-header">
-          <h2>Editar Perfil</h2>
-          <button @click="isEditing = false" class="btn-close">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
-        </div>
-        <div class="modal-body">
-          <p>Funcionalidade de edição em desenvolvimento</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Registrar Vínculo Modal -->
-    <div v-if="showRegisterVinculo" class="modal-overlay" @click="showRegisterVinculo = false">
-      <div class="modal-card" @click.stop>
-        <div class="modal-header">
-          <h2>Registrar novo vínculo</h2>
-          <button @click="showRegisterVinculo = false" class="btn-close">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
-        </div>
-        <div class="modal-body">
-          <p>Formulário de vínculo ainda não implementado. Aqui será possível vincular a pessoa a um programa/turma.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Atualizar Acompanhamento Modal -->
-    <div v-if="showUpdateAcompanhamento" class="modal-overlay" @click="showUpdateAcompanhamento = false">
-      <div class="modal-card" @click.stop>
-        <div class="modal-header">
-          <h2>Atualizar acompanhamento</h2>
-          <button @click="showUpdateAcompanhamento = false" class="btn-close">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
-        </div>
-        <div class="modal-body">
-          <p>Ferramenta para atualizar informações de acompanhamento (notas, situação, observações) em desenvolvimento.</p>
-        </div>
-      </div>
-    </div>
+    <!-- Modals implemented as components -->
+    <EditPersonModal v-if="isEditing" :personId="route.params.id" @close="isEditing = false" @saved="loadPerson" />
+    <EnrollmentModal v-if="showRegisterVinculo" :personId="route.params.id" @close="showRegisterVinculo = false" @saved="loadPerson" />
+    <FollowUpModal v-if="showUpdateAcompanhamento" :personId="route.params.id" @close="showUpdateAcompanhamento = false" @saved="loadPerson" />
   </div>
 </template>
 
@@ -331,6 +282,9 @@
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { peopleService } from '@/services/peopleService';
+import EditPersonModal from '@/components/EditPersonModal.vue';
+import EnrollmentModal from '@/components/EnrollmentModal.vue';
+import FollowUpModal from '@/components/FollowUpModal.vue';
 
 const route = useRoute();
 const router = useRouter();
