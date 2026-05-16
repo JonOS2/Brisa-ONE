@@ -152,7 +152,7 @@ export default {
   name: 'GroupCreateModal',
   props: {
     isOpen: Boolean,
-    classId: Number,
+    classId: { type: [Number, String], default: null },
   },
   emits: ['close', 'group-created'],
   data() {
@@ -190,6 +190,10 @@ export default {
   methods: {
     async loadData() {
       try {
+        if (!this.classId) {
+          this.errorMessage = 'Classe não selecionada';
+          return;
+        }
         // Carregar orientadores (qualquer pessoa)
         const peopleResponse = await peopleService.getAll();
         this.leaders = peopleResponse.data || [];
@@ -207,6 +211,7 @@ export default {
         this.errorMessage = 'Erro ao carregar dados: ' + (error.response?.data?.error || error.message);
       }
     },
+
     searchLeaders() {
       if (this.leaderSearch.trim() === '') {
         this.filteredLeaders = this.leaders;

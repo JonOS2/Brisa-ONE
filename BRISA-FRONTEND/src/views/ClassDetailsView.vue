@@ -28,10 +28,10 @@
           </div>
 
           <div class="hero-main">
-            <h1>{{ classData.program?.name || 'Programa sem nome' }}</h1>
+            <h1>Turma {{ classData.code || '-' }}</h1>
 
             <div class="badge-row">
-              <span class="badge badge-teal">Turma {{ classData.code || '-' }}</span>
+              <span class="badge badge-teal">{{ classData.program?.name || 'Programa' }}</span>
               <span class="badge" :class="statusBadgeClass">{{ classStatusLabel }}</span>
               <span class="badge badge-purple">Etapa: {{ currentStageLabel }}</span>
             </div>
@@ -1696,6 +1696,7 @@
 
     <!-- Modal: Create Group -->
     <GroupCreateModal 
+      v-if="classId"
       :is-open="showGroupCreateModal"
       :class-id="classId"
       @close="showGroupCreateModal = false"
@@ -1917,7 +1918,70 @@ export default {
       { label: 'Nota de corte final', value: '75% da maior', valueClass: 'warning-strong' },
       { label: 'Alunos em risco', value: '3', valueClass: 'danger-strong' },
     ]);
-    const imersaoGroups = ref([]);
+    const imersaoGroups = ref([
+      {
+        id: 1,
+        name: 'Grupo 03',
+        status: 'OK',
+        statusClass: 'is-ok',
+        mentor: 'Prof. João Silva',
+        project: 'Plataforma de Gestão Acadêmica',
+        partnerCompany: 'BRISA',
+        lastGradesUpdate: '25/04/2026',
+        lastMeetingDate: '24/04/2026',
+        students: 5,
+        partialAverage: '7.8',
+        finalAverage: '8.4',
+        studentsDetails: [
+          { id: 'g03-1', name: 'João Silva', partial: '4.2', final: '4.5', situation: 'Regular', situationClass: 'status-regular', attendedLastMeeting: true },
+          { id: 'g03-2', name: 'Maria Santos', partial: '3.8', final: '4.1', situation: 'Regular', situationClass: 'status-regular', attendedLastMeeting: true },
+          { id: 'g03-3', name: 'Carlos Oliveira', partial: '4.5', final: '4.7', situation: 'Regular', situationClass: 'status-regular', attendedLastMeeting: true },
+          { id: 'g03-4', name: 'Ana Costa', partial: '4.0', final: '4.3', situation: 'Regular', situationClass: 'status-regular', attendedLastMeeting: true },
+          { id: 'g03-5', name: 'Pedro Lima', partial: '3.5', final: '3.8', situation: 'Regular', situationClass: 'status-regular', attendedLastMeeting: false },
+        ],
+      },
+      {
+        id: 2,
+        name: 'Grupo 07',
+        status: 'OK',
+        statusClass: 'is-ok',
+        mentor: 'Prof. Maria Santos',
+        project: 'Sistema de Controle de Estoque',
+        partnerCompany: 'BRISA',
+        lastGradesUpdate: '25/04/2026',
+        lastMeetingDate: '24/04/2026',
+        students: 4,
+        partialAverage: '8.2',
+        finalAverage: '8.9',
+        studentsDetails: [
+          { id: 'g07-1', name: 'Fernanda Lima', partial: '4.4', final: '4.8', situation: 'Regular', situationClass: 'status-regular', attendedLastMeeting: true },
+          { id: 'g07-2', name: 'Gustavo Rocha', partial: '4.1', final: '4.6', situation: 'Regular', situationClass: 'status-regular', attendedLastMeeting: true },
+          { id: 'g07-3', name: 'Helena Costa', partial: '3.9', final: '4.4', situation: 'Regular', situationClass: 'status-regular', attendedLastMeeting: true },
+          { id: 'g07-4', name: 'Igor Nascimento', partial: '4.0', final: '4.5', situation: 'Regular', situationClass: 'status-regular', attendedLastMeeting: true },
+        ],
+      },
+      {
+        id: 3,
+        name: 'Grupo 12',
+        status: 'Atenção',
+        statusClass: 'is-warning',
+        mentor: 'Prof. Carlos Oliveira',
+        project: 'App de Mobilidade Urbana',
+        partnerCompany: 'BRISA',
+        lastGradesUpdate: '25/04/2026',
+        lastMeetingDate: '24/04/2026',
+        students: 5,
+        partialAverage: '6.5',
+        finalAverage: '7.2',
+        studentsDetails: [
+          { id: 'g12-1', name: 'João Victor Melo', partial: '3.6', final: '3.9', situation: 'Atenção', situationClass: 'status-warning', attendedLastMeeting: false },
+          { id: 'g12-2', name: 'Karina Souza', partial: '3.8', final: '4.0', situation: 'Regular', situationClass: 'status-regular', attendedLastMeeting: true },
+          { id: 'g12-3', name: 'Lucas Monteiro', partial: '4.0', final: '4.1', situation: 'Regular', situationClass: 'status-regular', attendedLastMeeting: true },
+          { id: 'g12-4', name: 'Mariana Lopes', partial: '3.7', final: '3.9', situation: 'Atenção', situationClass: 'status-warning', attendedLastMeeting: false },
+          { id: 'g12-5', name: 'Nicolas Barros', partial: '3.5', final: '3.8', situation: 'Atenção', situationClass: 'status-warning', attendedLastMeeting: true },
+        ],
+      },
+    ]);
     const imersaoExpandedGroupId = ref(1);
     const imersaoGroupTabs = ref({
       1: 'resumo',
@@ -2577,6 +2641,8 @@ export default {
 
         // Load nivelamento data when Etapas tab is opened
         const etapasSubTab = ref('nivelamento');
+        // When false, keep frontend mocks for imersaoGroups instead of replacing them with API results
+        const useRealImersaoGroups = ref(false);
         const lastEmailInfo = computed(() => {
           const info = classData.value?.lastEmailSent;
           if (info && info.date) {
@@ -2627,8 +2693,14 @@ export default {
         };
 
         watch(() => etapasSubTab.value, (tab) => {
-          if (tab === 'imersao') loadImersaoGroups();
+          if (tab === 'imersao' && useRealImersaoGroups.value) loadImersaoGroups();
         });
+
+        // Manual trigger to refresh groups from API when needed
+        const refreshImersaoGroupsFromApi = async () => {
+          useRealImersaoGroups.value = true;
+          await loadImersaoGroups();
+        };
 
     // Expose to template
     
@@ -3008,6 +3080,8 @@ export default {
 
     return {
       activeTab,
+      programId,
+      classId,
       classData,
       cityDistribution,
       classPeopleNextPage,
